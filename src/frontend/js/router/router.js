@@ -5,7 +5,6 @@ import { closeModal } from '../ui/modal.js';
 import { pageCollection, renderResults } from '../views/collection.js';
 import { pageEvents } from '../views/events.js';
 import { pageHome } from '../views/home.js';
-import { pageMap } from '../views/map.js';
 import { pageNotFound } from '../views/notfound.js';
 import { pageObject } from '../views/object.js';
 import { pagePlaceholder } from '../views/placeholder.js';
@@ -15,6 +14,7 @@ import { pageStaffObjects } from '../views/staff-objects.js';
 import { pageStaffStats } from '../views/staff-stats.js';
 import { pageTickets } from '../views/tickets.js';
 import { pageDepartment, pageDepartments } from '../views/departments.js';
+import { pageImprint, pagePrivacy } from '../views/legal.js';
 import { pageExplore, pageExploreRoute } from '../views/explore.js';
 import { pagePubType, pagePublications } from '../views/publications.js';
 import { mountMaps } from '../ui/maps.js';
@@ -33,10 +33,11 @@ import { SECTIONS, siteById } from '../data/explore.js';
 
 /* Old addresses that moved: the themed tours were replaced by the heritage
    trails in Explore, About merged into Visit, Tsodilo is an Explore page, and
-   the sample exhibitions were removed. */
+   the sample exhibitions, the museum floor-plan map and the virtual-tour
+   placeholder were removed. */
 const MOVED = {
   tours: '#/explore/trails', tour: '#/explore/trails',
-  exhibitions: '#/collection',
+  exhibitions: '#/collection', map: '#/visit', 'page/virtual-tour': '#/',
   'page/about': '#/visit/about', 'page/tsodilo': '#/explore/monuments/tsodilo',
 };
 
@@ -61,11 +62,12 @@ export function route() {
     case 'explore': html = b ? pageExploreRoute(b, c) : pageExplore(); title = (siteById(c) || {}).name || (SECTIONS.find((s) => s.key === b) || {}).title || 'Explore'; after = mountMaps; break;
     case 'publications': html = b ? pagePubType(b) : pagePublications(); title = (PUB_TYPES.find((t) => t.key === b) || { title: 'Publications' }).title; break;
     case 'events': html = pageEvents(); title = 'Events'; break;
+    case 'imprint': html = pageImprint(); title = 'Imprint'; break;
+    case 'privacy': html = pagePrivacy(); title = 'Privacy notice'; break;
     case 'tickets': if (store.T.step === 4) store.T = newT(); html = pageTickets(); title = 'Tickets'; break;
     /* #/collection/<craft> opens the collection filtered to one craft of the
        Art and Crafts of Botswana catalogue; the home page links them so. */
     case 'collection': if (b) store.CQ = newQuery({ craft: b }); html = pageCollection(); title = 'Collection Online'; after = renderResults; break;
-    case 'map': html = pageMap(); title = 'Museum map'; break;
     case 'object': html = pageObject(b); title = (byId(b) || {}).title || 'Object'; break;
     case 'staff':
       /* Guard. Online, the staff area needs a session -- the API enforces

@@ -27,9 +27,6 @@ export const LOCATIONS = [
 ];
 
 export const EVENTS = [
-  { d: '2026-10-03', time: '10:00–12:00', kind: 'Family morning', title: 'Weave a pattern: basket designs for kids', place: 'Education room' },
-  { d: '2026-10-06', time: '14:00', kind: 'Curator’s tour', title: 'Botswana at 60 – behind the objects', place: 'Special exhibition' },
-  { d: '2026-10-15', time: '17:30', kind: 'Talk', title: 'Painters of the 1960s and 70s', place: 'Art Gallery' },
   { d: '2026-10-24', time: '09:30–12:30', kind: 'School holiday workshop', title: 'Rock art of Tsodilo: paint like the ancestors', place: 'Courtyard' },
   /* Past events from the museum's own material (not sample content). The
      events page sorts anything before today into "Past events". */
@@ -40,7 +37,7 @@ export const EVENTS = [
   },
   {
     d: '2017-03-04', time: '05:00', kind: 'Heritage Marathon', title: 'Heritage Marathon – Malaka Village', place: 'Malaka Village Kgotla, 15 min drive from Palapye',
-    img: '/assets/img/home-slides/HeritageMarathon_malaka.jpg', pdf: '/assets/publications/events/20170304_MalakaMarathon.pdf',
+    pdf: '/assets/publications/events/20170304_MalakaMarathon.pdf',
     text: '21 km, 10 km and 5 km fun run. “To enliven Botswana’s yesterday and tomorrow.”',
   },
 ];
@@ -88,8 +85,8 @@ export const LOC_ROOM = {
 /* Main navigation. A third element names the dropdown that ui/shell.js
    builds from the content modules. */
 export const NAV = [
-  ['visit', 'Visit & About'], ['collection', 'Collection'], ['explore', 'Explore', 'explore'],
-  ['events', 'Events'], ['publications', 'Publications', 'publications'],
+  ['visit', 'Visit & About'], ['collection', 'Collection'], ['events', 'Events'],
+  ['explore', 'Explore', 'explore'], ['publications', 'Publications', 'publications'],
   ['departments', 'Departments', 'departments'],
 ];
 export const PAGES = {
@@ -97,8 +94,7 @@ export const PAGES = {
   groups: { t: 'Groups & schools', l: 'Booking for school classes and larger groups.', items: ['Request form for school groups', 'Group sizes and supervision', 'Links to the ticketing system with group capacity'], chip: 'Next iteration' },
   accessibility: { t: 'Accessibility', l: 'Step-free access, assistance and easy-to-read information.', items: ['Access & seating', 'Easy English and Setswana texts', 'Contrast and font-size options on the website'], chip: 'Next iteration' },
   press: { t: 'Press', l: 'Press releases and images.', items: ['Press releases', 'Image downloads', 'Contacts'], chip: 'Outside prototype scope' },
-  'virtual-tour': { t: 'Virtual tour', l: '360° walk-through of the galleries, linked to the object records in the database.', items: ['360° photos of each gallery', 'Hotspots that open the object page from the collection database', 'Works on phone, desktop and VR headset'], chip: 'Planned · phase 2' },
-  ar: { t: 'AR in the exhibition', l: 'Augmented reality on visitors’ phones, triggered by the same QR labels.', items: ['3D models from digitisation', '“View in your room” for selected objects', 'Reconstruction of objects in their original setting'], chip: 'Planned · phase 2' },
+  ar: { t: 'AR in the galleries', l: 'Augmented reality on visitors’ phones, triggered by the same QR labels.', items: ['3D models from digitisation', '“View in your room” for selected objects', 'Reconstruction of objects in their original setting'], chip: 'Planned · phase 2' },
   displays: { t: 'Interactive displays', l: 'Touch screens in the galleries that show content from the collection database.', items: ['Kiosk mode of the collection website', 'Themed stories per gallery', 'Content managed in the same staff area'], chip: 'Planned · phase 2' },
 };
 

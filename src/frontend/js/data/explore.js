@@ -458,6 +458,7 @@ export const TRAILS = [
   {
     id: 'southern', name: 'Southern Region Heritage Trail', region: 'Southern and south-eastern Botswana',
     pdf: `${TR}/Map_SouthernTrail.pdf`, thumb: `${IMG}/publications/Map_SR.jpg`, photo: `${IMG}/trails/map_photo_03.jpg`,
+    focus: 'center 8%', // portrait photo of a statue: keep the head in the 4:3 card
     map: 'https://drive.google.com/open?id=1_0yesnL3BJfexyuv3idLOOLMAG0&usp=sharing',
     pos: [-24.75, 25.75], sites: ['manyana', 'mogonye', 'matsieng', 'bathoen'],
     p: [

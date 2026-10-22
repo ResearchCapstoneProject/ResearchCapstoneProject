@@ -9,11 +9,12 @@ import { esc } from '../core/dom.js';
 /* Masthead, utility bar, footer and the #app outlet the router renders into. */
 
 /* Dropdown entries for the main navigation: [href, label]. The heritage
-   trail maps are listed under Publications but point into Explore. */
+   trail maps live in Explore, so the Publications menu leaves them out; the
+   Publications page itself still points to them. */
 const MENUS = {
   departments: DEPARTMENTS.map((d) => [`#/departments/${d.key}`, d.short]),
   explore: SECTIONS.map((s) => [`#/explore/${s.key}`, s.title]),
-  publications: PUB_TYPES.map((t) => [t.explore || `#/publications/${t.key}`, t.explore ? `${t.title} → Explore` : t.title]),
+  publications: PUB_TYPES.filter((t) => !t.explore).map((t) => [`#/publications/${t.key}`, t.title]),
 };
 
 function navItem([h, l, menu]) {
@@ -33,7 +34,7 @@ export function shell() {
       <span class="tag">PROTOTYPE</span>
       <span class="note">Capstone project with the Botswana National Museum · sample content, not the official website</span>
       <nav aria-label="Prototype screens">
-        <a href="#/" data-pb="">Home</a><a href="#/tickets" data-pb="tickets">Tickets</a><a href="#/collection" data-pb="collection">Collection</a><a href="#/object/BNM-ETH-0302" data-pb="object">Object &amp; QR</a><a href="#/explore" data-pb="explore">Explore</a><a href="#/map" data-pb="map">Map</a><a href="#/staff" data-pb="staff">Staff area</a><button type="button" data-act="reset">Reset demo</button>
+        <a href="#/" data-pb="">Home</a><a href="#/tickets" data-pb="tickets">Tickets</a><a href="#/collection" data-pb="collection">Collection</a><a href="#/object/BNM-ETH-0302" data-pb="object">Object &amp; QR</a><a href="#/explore" data-pb="explore">Explore</a><a href="#/staff" data-pb="staff">Staff area</a><button type="button" data-act="reset">Reset demo</button>
       </nav>
     </div>
   </div>
@@ -72,11 +73,14 @@ export function shell() {
           <p class="small" style="margin:0;color:#9AA3AB">Tel +267 397 4616 / +267 361 0400 · Fax +267 390 2797</p>
           <form class="newsletter" data-act-submit="newsletter"><label class="sr-only" for="nl">E-mail for newsletter</label><input id="nl" type="email" placeholder="Newsletter: your e-mail"><button class="btn sky" type="submit">Subscribe</button></form>
         </div>
-        <div><h4>Visit</h4><ul><li><a href="#/visit">Visit &amp; About</a></li><li><a href="#/tickets">Tickets &amp; time slots</a></li><li><a href="#/page/groups">Groups &amp; schools</a></li><li><a href="#/map">Museum map</a></li><li><a href="#/events">Events</a></li><li><a href="#/page/accessibility">Accessibility</a></li></ul></div>
-        <div><h4>Discover</h4><ul><li><a href="#/collection">Collection Online</a></li><li><a href="#/departments">Departments</a></li><li><a href="#/publications">Publications</a></li><li><a href="#/page/virtual-tour">Virtual tour</a></li></ul></div>
+        <div><h4>Visit</h4><ul><li><a href="#/visit">Visit &amp; About</a></li><li><a href="#/tickets">Tickets &amp; time slots</a></li><li><a href="#/page/groups">Groups &amp; schools</a></li><li><a href="#/page/accessibility">Accessibility</a></li></ul></div>
+        <div><h4>Discover</h4><ul><li><a href="#/collection">Collection Online</a></li><li><a href="#/events">Events</a></li><li><a href="#/publications">Publications</a></li><li><a href="#/departments">Departments</a></li></ul></div>
         <div><h4>Explore</h4><ul>${SECTIONS.map((s) => `<li><a href="#/explore/${s.key}">${esc(s.title)}</a></li>`).join('')}</ul></div>
       </div>
-      <div class="legal"><span>Prototype · Research capstone project in cooperation with the Botswana National Museum, 2026</span><span>Texts and images © Botswana National Museum · objects, prices and events are sample content</span><a href="#/visit/about">About us</a><a href="#/visit/about">Imprint</a><a href="#/visit/about">Privacy</a><a href="#/staff">Staff area</a></div>
+      <div class="legal">
+        <div class="notes"><span>© 2026 Botswana National Museum · texts and images belong to the museum</span><span>Prototype from a research capstone project · prices, bookings and inventory numbers are sample content</span></div>
+        <nav aria-label="Legal"><a href="#/visit/about">About us</a><a href="#/imprint">Imprint</a><a href="#/privacy">Privacy</a><a href="#/staff">Staff area</a></nav>
+      </div>
     </div>
   </footer>`);
   /* See the router: a menu closed by navigation may open again on hover only

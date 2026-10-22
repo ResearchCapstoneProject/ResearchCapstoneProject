@@ -5,7 +5,6 @@ import { store } from './store.js';
 
 export function roomOf(location) { return LOC_ROOM[location] || null; }
 export function roomById(id) { return ROOMS.find((r) => r.id === id) || null; }
-export function objectsInRoom(id) { return published().filter((o) => roomOf(o.location) === id); }
 export const byId = (id) => store.S.objects.find((o) => o.id === id);
 export const published = () => store.S.objects.filter((o) => o.status === 'published');
 export const deptCode = (dept) => (DEPTS.find((d) => d.key === dept) || { code: 'OBJ' }).code;

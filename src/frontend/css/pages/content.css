@@ -131,4 +131,13 @@ address.contact { font-style: normal; font-size: 18px; line-height: 1.7; }
 /* past events */
 .event.past .date b { color: var(--muted); }
 .event .evtext { margin: 6px 0 0; font-size: 15px; color: var(--ink-2); max-width: 70ch; }
-.event .evimg { margin-top: 12px; max-width: min(520px, 100%); }
+
+/* vector graphics: designation badges and the Botswana locator map */
+.badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.badges img { height: 24px; width: auto; }
+.sitelocator { margin: 0; display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; align-items: center; }
+.sitelocator figcaption { margin: 0; }
+.locator { width: 100%; height: auto; display: block; }
+.ccard .pic.art { display: grid; place-items: center; background: var(--sky-soft); padding: 12%; }
+.ccard .pic.art .locator { width: auto; height: 100%; }
+.maplocator { width: 96px; margin: 14px 16px 0; }

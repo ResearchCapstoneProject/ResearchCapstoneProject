@@ -59,6 +59,9 @@ The texts and images of the museum's previous website (DNMM) are in the app:
   `assets/img/collection/acb/`). The catalogue gives no accession numbers, sizes or gallery
   locations, so those are placeholders to replace with the museum's register. Each record names
   its catalogue page (`catalogue`, a new column — run `docker compose down -v` after pulling).
+- `assets/img/svg/` holds vector redraws of the old site's drawn graphics (the Cultural/Natural
+  Heritage badges and the Botswana locator outline). Photos stay raster: converting a photo to SVG
+  cannot add resolution — sharper photos have to come from the museum's originals.
 - Maps use Leaflet (loaded from cdnjs) with OpenStreetMap tiles; positions are approximate unless
   the text gives coordinates (see the header of `explore.js`).
 
@@ -97,8 +100,7 @@ sign-in, object CRUD, image upload and booking check-in.
 
 Still simulated, and deliberately labelled as such in the interface: online payment (the
 provider is not chosen yet — Orange Money, MyZaka, Smega and card are disabled
-placeholders), e-ticket e-mail, the newsletter, the audio guide, Setswana, and the AR and
-virtual-tour pages. They are listed in one place, `FEATURES` in
+placeholders), e-ticket e-mail, the newsletter, the audio guide, Setswana, and the AR page. They are listed in one place, `FEATURES` in
 `src/frontend/js/core/config.js`.
 
 Open questions for the museum are in `doc/TODO.md`.

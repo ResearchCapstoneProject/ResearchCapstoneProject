@@ -1,5 +1,6 @@
 import { pagehead } from '../ui/cards.js';
-import { banner, blocks, card, factlist, gmaps, mapbox, osm, photos } from '../ui/content.js';
+import { banner, blocks, card, designationBadges, factlist, gmaps, mapbox, osm, photos } from '../ui/content.js';
+import { locator } from '../art/locator.js';
 import { pageNotFound } from './notfound.js';
 import { esc } from '../core/dom.js';
 import {
@@ -12,9 +13,9 @@ const APPROX = '<p class="small muted mapnote">Map positions are approximate unl
 
 const siteCard = (s) => card({
   href: hasPage(s) ? siteHref(s) : gmaps(s.pos), ext: !hasPage(s),
-  img: s.card, eyebrow: s.designation || s.place, title: s.name, text: s.designation ? s.place : '',
+  img: s.card, art: s.card ? '' : locator(s.pos, s.name), eyebrow: s.designation || s.place, title: s.name, text: s.designation ? s.place : '',
 });
-const trailCard = (t) => card({ href: `#/explore/trails/${t.id}`, img: t.photo, eyebrow: t.region, title: t.name });
+const trailCard = (t) => card({ href: `#/explore/trails/${t.id}`, img: t.photo, focus: t.focus, eyebrow: t.region, title: t.name });
 
 /* ---------------- #/explore ---------------- */
 export function pageExplore() {
@@ -51,7 +52,6 @@ function pageMuseums(sec) {
   const list = sitesIn('museums');
   const byId = (i) => list.find((s) => s.id === i);
   const item = ([i, label]) => { const s = byId(i); return `<li>${s && hasPage(s) ? `<a href="${siteHref(s)}">${esc(label)}</a>` : esc(label)}</li>`; };
-  const others = list.filter((s) => !['Regional museums', 'Institutional/Specialized Museums'].includes(s.group));
   return `${pagehead([['#/', 'Home'], ['#/explore', 'Explore'], ['', sec.title]], esc(sec.title), esc(sec.lede))}
   <div class="wrap" style="padding-block:32px 72px">
     ${mapbox(list.map(marker), { label: 'Map of museums' })}${APPROX}
@@ -68,8 +68,8 @@ function pageMuseums(sec) {
         <ul>${MUSEUMS_TEXT.institutionalList.map(item).join('')}</ul>
       </div>
     </div>
-    <h2 class="h3" style="margin:48px 0 20px">Museums and heritage houses</h2>
-    <div class="cgrid">${[...others, ...list.filter((s) => s.group === 'Regional museums' && hasPage(s))].map(siteCard).join('')}</div>
+    <h2 class="h3" style="margin:48px 0 20px">All museums and heritage houses</h2>
+    <div class="cgrid">${list.map(siteCard).join('')}</div>
   </div>`;
 }
 
@@ -89,6 +89,8 @@ function pageSite(s, sec) {
   ${banner(s.cover, s.name)}
   <div class="wrap sitepage">
     <aside class="siteside">
+      ${designationBadges(s.designation)}
+      <figure class="sitelocator">${locator(s.pos, s.name)}<figcaption class="small muted">Where in Botswana<br><span class="eyebrow">Schematic map</span></figcaption></figure>
       ${factlist(facts)}
       ${mapbox([marker(s)], { label: `Map: ${s.name}` })}
       ${s.exact ? '' : '<p class="small muted mapnote">Approximate position.</p>'}

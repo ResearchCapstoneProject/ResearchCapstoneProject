@@ -24,7 +24,7 @@ export function pageVisit() {
       <p class="small muted">Last entry one hour before closing. Closed on selected public holidays. Opening hours and prices are placeholders to be confirmed with the museum.</p>
       <h2 class="h3" style="margin:36px 0 14px">Admission</h2>
       <table class="hours">${TICKETS.map((t) => `<tr><td>${esc(t.name)}</td><td>${money(t.price)}</td></tr>`).join('')}<tr><td>School groups (booked via the education office)</td><td>Free</td></tr></table>
-      <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="#/tickets">Book a time slot</a><a class="btn ghost" href="#/map">Museum map</a></div>
+      <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="#/tickets">Book a time slot</a></div>
     </div>
     <div>
       <figure class="visitpic"><img src="${IMG}/contact/photo_contact01.jpg" alt="Entrance of the National Museum in Gaborone"></figure>

@@ -2,6 +2,7 @@
    Publications. Every value is escaped -- the texts are static, but they are
    long and full of quotes and ampersands, and esc() keeps that harmless. */
 import { esc } from '../core/dom.js';
+import { locator } from '../art/locator.js';
 
 /* Long-form text: [{ h, p: [], ul: [], ol: [], img, cols: [{ h, ul }], note }] */
 export function blocks(list = []) {
@@ -32,10 +33,13 @@ export function banner(src, alt = '') {
   return src ? `<div class="banner"><img src="${esc(src)}" alt="${esc(alt)}"></div>` : '';
 }
 
-/* Image card used by every index page. */
-export function card({ href, img, eyebrow = '', title, text = '', ext = false }) {
+/* Image card used by every index page. `art` is inline SVG shown when there
+   is no photo (e.g. a locator map for a museum without pictures). `focus` is
+   the CSS object-position for photos whose subject is off-centre -- the card
+   crops to 4:3, so a portrait photo loses its top and bottom otherwise. */
+export function card({ href, img, art = '', focus = '', eyebrow = '', title, text = '', ext = false }) {
   return `<a class="ccard" href="${esc(href)}"${ext ? ' target="_blank" rel="noopener"' : ''}>
-    <span class="pic">${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : '<span class="nopic" aria-hidden="true"></span>'}</span>
+    <span class="pic${!img && art ? ' art' : ''}">${img ? `<img src="${esc(img)}" alt="" loading="lazy"${focus ? ` style="object-position:${esc(focus)}"` : ''}>` : art || '<span class="nopic" aria-hidden="true"></span>'}</span>
     ${eyebrow ? `<span class="eyebrow">${esc(eyebrow)}</span>` : ''}
     <h3 class="h4">${esc(title)}</h3>
     ${text ? `<p>${esc(text)}</p>` : ''}
@@ -49,13 +53,23 @@ export function factlist(rows = []) {
 /* A map placeholder that ui/maps.js turns into an interactive map.
    markers: [{ pos: [lat, lng], name, href?, kind? }]. Without JavaScript or
    without a connection to the map server, the list of places with links to
-   OpenStreetMap stays visible instead. */
+   OpenStreetMap stays visible instead -- with the SVG locator map for a
+   single place, which needs no connection. */
 export function mapbox(markers, { tall = false, label = 'Map' } = {}) {
   const pts = markers.filter((m) => m.pos);
   if (!pts.length) return '';
   return `<div class="mapbox${tall ? ' tall' : ''}" role="region" aria-label="${esc(label)}" data-map='${esc(JSON.stringify(pts))}'>
-    <ul class="mapfallback">${pts.map((m) => `<li>${m.href ? `<a href="${esc(m.href)}">${esc(m.name)}</a>` : esc(m.name)} · <a href="${osm(m.pos)}" target="_blank" rel="noopener">open map</a></li>`).join('')}</ul>
+    ${pts.length === 1 ? `<div class="maplocator">${locator(pts[0].pos, pts[0].name)}</div>` : ''}<ul class="mapfallback">${pts.map((m) => `<li>${m.href ? `<a href="${esc(m.href)}">${esc(m.name)}</a>` : esc(m.name)} · <a href="${osm(m.pos)}" target="_blank" rel="noopener">open map</a></li>`).join('')}</ul>
   </div>`;
+}
+
+/* "Cultural Heritage" / "Natural Heritage" badges for a designation such as
+   "Natural & Cultural" (vector redraws of the previous website's badges). */
+export function designationBadges(designation = '') {
+  const b = [];
+  if (/cultural|historical/i.test(designation)) b.push(['cultural-heritage', 'Cultural Heritage']);
+  if (/natural/i.test(designation)) b.push(['natural-heritage', 'Natural Heritage']);
+  return b.length ? `<div class="badges">${b.map(([f, l]) => `<img src="/assets/img/svg/${f}.svg" alt="${l}" width="132" height="24">`).join('')}</div>` : '';
 }
 
 export const osm = ([lat, lng]) => `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=13/${lat}/${lng}`;

@@ -13,7 +13,7 @@ src/frontend/            no build step, plain ES modules
                static content: about, departments, explore, publications
        state/  store (the holder), selectors, booking, query, analytics
        ui/     shell, cards, content blocks, maps (Leaflet), modal, lightbox,
-               floor plan, charts
+               charts
        views/  one module per route
        router/ routes + route()
        events/ document-level delegation
@@ -145,7 +145,7 @@ To see it: `docker compose --profile demo up`, then `:8080` (no API) versus
 ## What is still simulated
 
 Payments (Orange Money, MyZaka, Smega and card are disabled placeholders),
-e-mail, the newsletter, the audio guide, Setswana, AR and the virtual tour.
+e-mail, the newsletter, the audio guide, Setswana and AR.
 `core/config.js` has a `FEATURES` object listing them in one place — that list
 is also the answer to several questions in `doc/TODO.md`.
 

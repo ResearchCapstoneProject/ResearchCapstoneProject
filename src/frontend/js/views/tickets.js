@@ -97,7 +97,7 @@ export function tkBody() {
       </div>
       <h2 style="margin-top:36px">Payment</h2>
       <div class="pay">${pay}</div>
-      <label class="check" style="margin-top:24px"><input type="checkbox" id="f-agree" ${store.T.agree ? 'checked' : ''}><span>I accept the house rules and the privacy notice.${e.agree ? ` <b style="color:var(--full)">${e.agree}</b>` : ''}</span></label>
+      <label class="check" style="margin-top:24px"><input type="checkbox" id="f-agree" ${store.T.agree ? 'checked' : ''}><span>I accept the house rules and the <a href="#/privacy" target="_blank" rel="noopener">privacy notice</a>.${e.agree ? ` <b style="color:var(--full)">${e.agree}</b>` : ''}</span></label>
       <div class="navrow"><button class="btn ghost" type="button" data-act="tk-back">Back</button><button class="btn" type="button" data-act="tk-confirm">Confirm booking</button></div>
     </div>`;
   }

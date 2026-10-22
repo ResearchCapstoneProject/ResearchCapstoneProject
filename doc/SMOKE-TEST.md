@@ -20,7 +20,7 @@ single console error and an empty section, not as an obviously broken page.
 #/events                        #/staff
 #/tickets                       #/staff/add
 #/collection                    #/staff/edit/BNM-ETH-0302
-#/map                           #/staff/bookings
+#/imprint  #/privacy            #/staff/bookings
 #/explore  #/explore/trails     #/staff/stats
 #/publications/insect-of-the-month
 #/tours, #/page/about           (must redirect to #/explore/trails, #/visit/about)
@@ -35,7 +35,7 @@ single console error and an empty section, not as an obviously broken page.
 | object | `scan` `view` `light` `lb` `label` `print` | `#/object/BNM-ETH-0302` |
 | navigation | `navmenu` (dropdown caret) `close-nav` | masthead, desktop and mobile |
 | tickets | `day` `slot` `qty` `tk-next` `tk-back` `tk-confirm` `tk-new` | `#/tickets`, all four steps |
-| collection | `dept` `dept-link` `room` `display` `clear-search` | `#/collection`, `#/map` |
+| collection | `dept` `dept-link` `display` `clear-search` `craft-clear` | `#/collection`, `#/collection/Leather` |
 | staff | `del` `rm-img` `checkin` `sday` | `#/staff`, `#/staff/add`, `#/staff/bookings` |
 
 Plus: the four form submits (`#topsearch`, `#teasersearch`, `#colsearch`, newsletter), live input on
@@ -62,7 +62,7 @@ Paste into the console on both builds and diff the two objects — element count
 and text lengths must match per route.
 
 ```js
-const ROUTES = ['', 'visit', 'events', 'tickets', 'collection', 'map', 'explore',
+const ROUTES = ['', 'visit', 'events', 'tickets', 'collection', 'explore',
   'explore/trails', 'departments', 'publications', 'object/BNM-ETH-0302', 'staff', 'staff/add', 'staff/edit/BNM-ETH-0302',
   'staff/bookings', 'staff/stats', 'page/about', 'nonsense'];
 const sleep = ms => new Promise(r => setTimeout(r, ms));

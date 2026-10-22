@@ -10,8 +10,6 @@
 .phero h1 { margin: 14px 0 18px; font-size: clamp(40px, 5.4vw, 72px); font-stretch: 125%; font-weight: 900; line-height: 1; letter-spacing: -.02em; }
 .phero p { margin: 0 0 28px; font-family: var(--serif); font-size: clamp(18px, 1.7vw, 22px); line-height: 1.5; max-width: 46ch; }
 .phero .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
-.btn.ghost.light { color: #fff; border-color: #fff; }
-.btn.ghost.light:hover { background: #fff; color: var(--ink); }
 @media (max-width: 700px) {
   .phero { min-height: 560px; }
   .phero::before { background: linear-gradient(0deg, rgba(11, 12, 14, .9) 0%, rgba(11, 12, 14, .6) 55%, rgba(11, 12, 14, .15) 100%); }

@@ -26,13 +26,13 @@ export function pageStaffStats() {
       <div><b>${total.toLocaleString('en-GB')}</b><span>QR scans in the last 14 days</span></div>
       <div><b>${published().length}</b><span>objects with a QR label</span></div>
       <div><b>${Math.round(total / 14)}</b><span>scans per day on average</span></div>
-      <div><b>${esc(top[0] ? top[0].o.title.slice(0, 28) : '–')}${top[0] && top[0].o.title.length > 28 ? '…' : ''}</b><span>most scanned object</span></div>
+      <div><b class="kpitext" title="${esc(top[0] ? top[0].o.title : '')}">${esc(top[0] ? top[0].o.title : '–')}</b><span>most scanned object</span></div>
     </div>
     <div class="twocol">
       <div>
         <h2 class="h3" style="margin-bottom:6px">Scans per day</h2>
         <p class="small muted" style="margin:0 0 14px">Last 14 days · Mondays are closing days</p>
-        <div class="cols" id="daychart">${series.map((s) => `<div class="col" tabindex="0" data-tip="${esc(`${fmtDate(s.k, { weekday: 'long', day: 'numeric', month: 'long' })}: ${s.n} scans${s.demo ? ` (incl. ${s.demo} from this demo)` : ''}`)}" aria-label="${esc(`${fmtDate(s.k, { weekday: 'short', day: 'numeric', month: 'short' })}: ${s.n} scans`)}"><i class="bar ${s.demo ? 'today' : ''}" style="height:${Math.round((s.n / max) * 100)}%"></i><small>${fromKey(s.k).getDate()}</small></div>`).join('')}</div>
+        <div class="barcols" id="daychart">${series.map((s) => `<div class="col" tabindex="0" data-tip="${esc(`${fmtDate(s.k, { weekday: 'long', day: 'numeric', month: 'long' })}: ${s.n} scans${s.demo ? ` (incl. ${s.demo} from this demo)` : ''}`)}" aria-label="${esc(`${fmtDate(s.k, { weekday: 'short', day: 'numeric', month: 'short' })}: ${s.n} scans`)}"><i class="bar ${s.demo ? 'today' : ''}" style="height:${Math.round((s.n / max) * 100)}%"></i><small>${fromKey(s.k).getDate()}</small></div>`).join('')}</div>
         <h2 class="h3" style="margin:32px 0 12px">Scans by gallery</h2>
         <div class="chart">${rooms.map(([name, n]) => `<div class="hbar small"><span class="lbl">${esc(name)}</span><span class="track"><i style="width:${Math.round((n / roomMax) * 100)}%"></i></span><span class="n">${n}</span></div>`).join('')}</div>
       </div>

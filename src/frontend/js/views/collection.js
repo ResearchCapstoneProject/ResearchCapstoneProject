@@ -12,7 +12,7 @@ export function pageCollection() {
     <div class="filters">
       <form class="search" id="colsearch" role="search"><label class="sr-only" for="cq">Search the collection</label><input type="search" id="cq" value="${esc(store.CQ.q)}" placeholder="Search by title, place, material or inventory number"><button class="btn" type="submit">Search</button></form>
       <div class="row" id="deptchips"></div>
-      <div class="row"><label class="small muted" for="locf">Where in the museum</label><select id="locf" style="width:auto;min-height:40px">${['All', ...ROOMS.map((r) => r.id), 'store'].map((v) => `<option value="${v}" ${store.CQ.room === v ? 'selected' : ''}>${v === 'All' ? 'Anywhere' : v === 'store' ? 'In the store' : esc((roomById(v) || {}).name || v)}</option>`).join('')}</select><a class="small" href="#/map">Show me on the map →</a></div>
+      <div class="row"><label class="small muted" for="locf">Where in the museum</label><select id="locf" style="width:auto;min-height:40px">${['All', ...ROOMS.map((r) => r.id), 'store'].map((v) => `<option value="${v}" ${store.CQ.room === v ? 'selected' : ''}>${v === 'All' ? 'Anywhere' : v === 'store' ? 'In the store' : esc((roomById(v) || {}).name || v)}</option>`).join('')}</select></div>
     </div>
     <div class="resulthead"><div id="rcount" class="muted" aria-live="polite"></div>
       <div style="display:flex;gap:10px;align-items:center"><label for="sort" class="small muted">Sort by</label><select id="sort"><option value="inv" ${store.CQ.sort === 'inv' ? 'selected' : ''}>Inventory number</option><option value="title" ${store.CQ.sort === 'title' ? 'selected' : ''}>Title A–Z</option><option value="new" ${store.CQ.sort === 'new' ? 'selected' : ''}>Recently added</option></select></div>

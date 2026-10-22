@@ -23,7 +23,6 @@ export const FEATURES = {
   newsletter: false,
   audioGuide: false,
   setswana: false,        // the EN/TN switch is decorative
-  virtualTour: false,
   ar: false,
 };
 

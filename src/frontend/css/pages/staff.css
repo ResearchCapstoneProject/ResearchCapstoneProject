@@ -1,8 +1,14 @@
 /* ---------- staff area ---------- */
 .staffbar { background: var(--bark); color: #F3E9DC; }
-.staffbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; flex-wrap: wrap; }
-.staffbar b { font-stretch: 112%; font-weight: 800; }
-.staffbar .who { font-size: 14px; opacity: .85; }
+.staffbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 10px 24px; min-height: 64px; padding-block: 10px; flex-wrap: wrap; }
+.staffbar .title { display: flex; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; }
+.staffbar b { font-stretch: 112%; font-weight: 800; font-size: 17px; }
+.staffbar .title span { font-size: 14px; opacity: .85; }
+.staffbar .who { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; font-size: 14px; }
+.staffbar .who > span { opacity: .85; }
+.staffbar .who a:not(.btn) { color: #fff; }
+.staffbar .btn.ghost.light { color: #fff; border-color: rgba(255, 255, 255, .7); min-height: 34px; }
+.staffbar .btn.ghost.light:hover { background: #fff; color: var(--bark); border-color: #fff; }
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 28px; overflow-x: auto; }
 .tabs a { padding: 14px 16px; text-decoration: none; color: var(--ink-2); font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -1px; white-space: nowrap; }
 .tabs a.on { color: var(--ink); border-bottom-color: var(--ink); }
@@ -11,6 +17,8 @@
 .kpis div { border: 1px solid var(--line); padding: 16px; }
 .kpis b { display: block; font-size: 30px; font-stretch: 118%; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.1; }
 .kpis span { font-size: 13px; color: var(--muted); }
+/* a tile whose value is a name, not a number: smaller, at most two lines */
+.kpis b.kpitext { font-size: 18px; font-stretch: 105%; line-height: 1.25; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 @media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .tablewrap { overflow-x: auto; border-top: 2px solid var(--ink); }
 table.data { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 720px; }

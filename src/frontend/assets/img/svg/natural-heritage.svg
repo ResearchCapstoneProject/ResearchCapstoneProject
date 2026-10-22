@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 24" width="132" height="24" role="img" aria-label="Natural Heritage">
+  <!-- Designation badge from the previous DNMM website (image_global/Natural.png), redrawn as
+       vector in the logo colours. textLength keeps the width fixed whatever
+       sans-serif font the viewer has. -->
+  <rect width="132" height="24" rx="3" fill="#009BE4"/>
+  <text x="66" y="16.5" text-anchor="middle" textLength="114" lengthAdjust="spacingAndGlyphs"
+        font-family="Archivo, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#0B0C0E">Natural Heritage</text>
+</svg>

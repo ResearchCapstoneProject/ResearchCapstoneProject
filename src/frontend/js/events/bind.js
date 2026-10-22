@@ -88,7 +88,6 @@ document.addEventListener('click', (e) => {
     case 'tk-new': store.T = newT(); tkRerender(true); break;
     case 'dept': store.CQ.dept = t.dataset.v; renderResults(); break;
     case 'dept-link': store.CQ = newQuery({ dept: t.dataset.v }); break;
-    case 'room': store.CQ = newQuery({ room: t.dataset.id }); if (location.hash === '#/collection') route(); else location.hash = '#/collection'; break;
     case 'display': store.CQ.display = !store.CQ.display; renderResults(); break;
     case 'craft-clear': store.CQ.craft = ''; history.replaceState(null, '', '#/collection'); renderResults(); break;
     case 'clear-search': store.CQ = newQuery(); $('#cq').value = ''; if ($('#locf')) $('#locf').value = 'All'; renderResults(); break;
