@@ -3,15 +3,14 @@ import { card, factlist } from '../ui/content.js';
 import { pageNotFound } from './notfound.js';
 import { esc } from '../core/dom.js';
 import { PUB_TYPES, pubTypeByKey } from '../data/publications.js';
-import { TRAILS } from '../data/explore.js';
 
-const cover = (t) => (t.items ? (t.items.find((i) => i.thumb) || {}).thumb : TRAILS[0].thumb);
+const cover = (t) => { const i = t.items.find((x) => x.thumb || x.poster) || {}; return i.thumb || i.poster; };
 
 /* ---------------- #/publications ---------------- */
 export function pagePublications() {
-  return `${pagehead([['#/', 'Home'], ['', 'Publications']], 'Publications', 'Brochures, the Zebra’s Voice magazine and the Natural History Division’s monthly features. Heritage trail maps are in the Explore section.')}
+  return `${pagehead([['#/', 'Home'], ['', 'Publications']], 'Publications', 'Brochures, the Zebra’s Voice magazine and the Natural History Division’s monthly features.')}
   <div class="wrap" style="padding-block:40px 80px">
-    <div class="cgrid">${PUB_TYPES.map((t) => card({ href: t.explore || `#/publications/${t.key}`, img: cover(t), eyebrow: t.eyebrow, title: t.title, text: t.lede })).join('')}</div>
+    <div class="cgrid">${PUB_TYPES.map((t) => card({ href: `#/publications/${t.key}`, img: cover(t), eyebrow: t.eyebrow, title: t.title, text: t.lede })).join('')}</div>
   </div>`;
 }
 
@@ -20,13 +19,6 @@ export function pagePubType(key) {
   const t = pubTypeByKey(key);
   if (!t) return pageNotFound();
   const head = pagehead([['#/', 'Home'], ['#/publications', 'Publications'], ['', t.title]], esc(t.title), esc(t.lede));
-  if (t.explore) {
-    return `${head}
-    <div class="wrap" style="padding-block:40px 80px">
-      <div class="callout"><div><div class="eyebrow">Moved to Explore</div><h2 class="h3" style="margin:8px 0 6px">Trips and heritage trails</h2><p>Each trail has its own page with the downloadable map, an interactive map and the monuments and museums along the way.</p></div><a class="btn arrow" href="${t.explore}">Go to Explore </a></div>
-      <div class="cgrid" style="margin-top:36px">${TRAILS.map((x) => card({ href: `#/explore/trails/${x.id}`, img: x.thumb, eyebrow: 'Trail map', title: x.name })).join('')}</div>
-    </div>`;
-  }
   if (t.key === 'plant-of-the-month' || t.key === 'insect-of-the-month') {
     return `${head}<div class="wrap" style="padding-block:24px 80px">${t.items.map(feature).join('')}</div>`;
   }
@@ -41,17 +33,19 @@ export function pagePubType(key) {
   </div>`;
 }
 
-/* One Plant or Insect of the Month poster, as an article. */
+/* One Plant or Insect of the Month poster, as an article. Every item has the
+   same parts -- poster, facts, text, download -- so the months look alike.
+   A block is [heading, text or [paragraphs], optional list]. */
 function feature(i) {
-  const pic = i.thumb ? `<figure class="featpic"><a href="${esc(i.full || i.thumb)}" target="_blank" rel="noopener"><img src="${esc(i.thumb)}" alt="${esc(i.cap || i.title)}" loading="lazy"></a>${i.cap ? `<figcaption>${esc(i.cap)}</figcaption>` : ''}</figure>` : '';
+  const paras = (x) => (Array.isArray(x) ? x : x ? [x] : []).map((t) => `<p>${esc(t)}</p>`).join('');
   return `<article class="feature">
     <div class="feathead"><div class="eyebrow">${esc(i.date)}</div><h2 class="h2">${esc(i.title)}</h2></div>
-    <div class="featbody${pic ? '' : ' nopic'}">
-      ${pic}
+    <div class="featbody">
+      <figure class="featpic"><a href="${esc(i.pdf)}" target="_blank" rel="noopener"><img src="${esc(i.poster)}" alt="Poster: ${esc(i.title)}, ${esc(i.date)}" loading="lazy"></a><figcaption>The poster as published · click to open the PDF</figcaption></figure>
       <div class="prose">
         ${factlist((i.facts || []).map(([k, v]) => [k, esc(v)]))}
-        ${(i.p || []).map((x) => `<p>${esc(x)}</p>`).join('')}
-        ${(i.blocks || []).map(([h, x, list]) => `<h3 class="h4" style="margin:22px 0 8px">${esc(h)}</h3>${x ? `<p>${esc(x)}</p>` : ''}${list ? `<ul>${list.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}`).join('')}
+        ${paras(i.p)}
+        ${(i.blocks || []).map(([h, x, list]) => `<h3 class="h4" style="margin:22px 0 8px">${esc(h)}</h3>${paras(x)}${list ? `<ul>${list.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}`).join('')}
         <p><a class="btn ghost small" href="${esc(i.pdf)}" target="_blank" rel="noopener">Download the poster (PDF)</a></p>
       </div>
     </div>

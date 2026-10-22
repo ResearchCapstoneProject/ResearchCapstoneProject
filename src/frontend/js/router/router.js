@@ -38,6 +38,7 @@ import { SECTIONS, siteById } from '../data/explore.js';
 const MOVED = {
   tours: '#/explore/trails', tour: '#/explore/trails',
   exhibitions: '#/collection', map: '#/visit', 'page/virtual-tour': '#/',
+  'publications/heritage-trails': '#/explore/trails',
   'page/about': '#/visit/about', 'page/tsodilo': '#/explore/monuments/tsodilo',
 };
 

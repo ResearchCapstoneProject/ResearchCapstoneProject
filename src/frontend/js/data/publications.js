@@ -1,14 +1,16 @@
 /* Publications, grouped by type ("Publications" in the navigation).
 
    The Plant and Insect of the Month texts are transcribed from the Natural
-   History Division's posters as published. The heritage trail maps are a
-   publication type too, but they live in Explore next to the places they
-   describe; the type here only points there. */
+   History Division's posters as published, and every item shows its poster
+   (rendered from the PDF into assets/img/publications/posters/), so all four
+   read the same way: poster, facts, text, download. The heritage trail maps
+   are published by the museum too, but they live only in Explore, next to
+   the places they describe. */
 import { IMG, PUB } from './about.js';
 
 const THUMB = `${IMG}/publications`;
 const BRO = `${PUB}/brochures`;
-const NH = `${IMG}/natural-history/pix`;
+const POSTER = `${IMG}/publications/posters`;
 
 export const PUB_TYPES = [
   {
@@ -46,12 +48,28 @@ export const PUB_TYPES = [
     items: [
       {
         title: 'The Mighty Mophane Tree', date: 'November 2025',
+        poster: `${POSTER}/plant-of-the-month-mophane-tree-november-2025.webp`,
         pdf: `${PUB}/plant-of-the-month/plant-of-the-month-mophane-tree-november-2025.pdf`,
-        p: ['The November 2025 poster covers the mophane tree: its description, distribution and habitat, ecological importance and cultural and practical significance. Open the PDF to read it.'],
+        facts: [['Species', 'Colophospermum mopane'], ['Family', 'FABACEAE'], ['Common name', 'Mopane tree / Butterfly-shaped tree / Turpentine tree'], ['Local name', 'Mophane / Mupane in Hambukushu / Omupane in Herero']],
+        blocks: [
+          ['Description', [
+            'Colophospermum mopane, commonly known as the Mopane tree, is one of Southern Africa’s most iconic and ecologically important tree species. Belonging to the legume family (Fabaceae), it is instantly recognizable by its distinctive butterfly-shaped leaves and remarkable ability to thrive in the hot, dry savannas of Botswana and beyond.',
+            'The Mopane’s thick, leathery leaves are a testament to its adaptation to drought. Shaped like butterfly wings, the paired leaflets fold together during intense heat, reducing water loss through evaporation. The leaves which are bright green when in summer turn golden brown during autumn before dropping.',
+            'Its bark is dark and deeply fissured (cracked, split or furrowed), while the wood is dense, hard, and termite-resistant, making it one of the most durable timbers in Southern Africa. This strength has made it invaluable for construction, fencing, and traditional craftsmanship in rural communities.',
+            'Mopane trees produce small, yellowish-green flowers that attract a variety of pollinators between November and February. These are followed by distinctive twisted, leathery seed pods, often containing a single seed. The pods are food for wildlife, especially elephants, which also browse on the tree’s leaves and branches.',
+          ]],
+          ['Distribution and Habitat', 'Colophospermum mopane is widespread across Botswana, Namibia, Zimbabwe, and northern South Africa. In Botswana, it dominates large areas of Ngamiland, Chobe, and the Central District, thriving in alkaline, clay-rich soils that crack deeply in the dry season. Its distribution marks one of the most extensive woodland types in the region.'],
+          ['Ecological Importance', 'The Mopane tree plays a vital ecological role. Its leaves provide the exclusive food source for the Mopane worm (Imbrasia belina), a nutrient-rich caterpillar widely harvested for food and trade. Mopane woodlands also serve as important habitats for birds, insects, and mammals, maintaining biodiversity in regions where few other tree species can survive. The insects belonging to Psyllid group (Arytaina mopane) produce wax scales called “lerps” on the leaves that are eaten by people and animals.'],
+          ['Cultural and Practical Significance', 'In Setswana culture, the Mopane tree symbolizes resilience, endurance, and sustenance. Its wood provides shelter, its leaves support life, and its shade offers relief in the searing heat. Whether as a source of food, medicine (leaves and bark are used in traditional medicine for treating ailments such as stomach issues and wounds), or material (building homes, furniture, firewood and fences), Mopane remains deeply woven into both the ecological and cultural fabric of Botswana.'],
+          ['Fun Fact', [
+            'The Mopane’s common name “butterfly tree” refers to its distinctive leaves that resemble a butterfly in flight, a fitting symbol for transformation and resilience in the heart of Botswana’s wild beauty.',
+            'NB: Did you know there’s a live Mopane tree specimen at the National Botanical Garden and many preserved specimens at the National Herbarium, also at the Botanical Garden?',
+          ]],
+        ],
       },
       {
         title: 'Aloe zebrina Baker', date: 'June 2025',
-        thumb: `${IMG}/web/natural-history/pix/plant-of-the-month-june-bg.jpg`, full: `${NH}/plant-of-the-month-june-bg.jpg`,
+        poster: `${POSTER}/plant-of-the-month-june-print.webp`,
         pdf: `${PUB}/plant-of-the-month/plant-of-the-month-june-print.pdf`,
         facts: [['Family', 'ASPHODELACEAE'], ['Local name', 'Kgophane / Kgope'], ['Common name', 'Variegated aloe / Zebra aloe']],
         blocks: [
@@ -68,6 +86,8 @@ export const PUB_TYPES = [
     items: [
       {
         title: 'Meet the Alates (winged termites)', date: 'December 2025',
+        poster: `${POSTER}/insect-of-the-month-december-2025.webp`,
+        facts: [['Common name', 'Winged termites (Alates)'], ['Order', 'Blattodea'], ['Infraorder', 'Isoptera']],
         pdf: `${PUB}/insect-of-the-month/insect-of-the-month-december-2025.pdf`,
         p: [
           'Winter being a distant memory, the summer rains have once again nourished the ground with much needed moisture and in turn triggering a remarkable natural event- the emergence of the Alates (winged termites). Yes! those very same annoying insects that are always on our doorsteps and shedding their wings all over the place after it rains.',
@@ -81,10 +101,9 @@ export const PUB_TYPES = [
       },
       {
         title: 'Stink bugs (Nezara viridula)', date: 'July 2025',
-        /* Fig. 1 of the draft: the museum's own specimens. Fig. 2 is an
-           iNaturalist photo and is kept in the repository but not shown,
-           pending permission (third-party material). */
-        thumb: `${NH}/insect-of-the-month-july-2025-image2.jpeg`, cap: 'Entomology collection specimen',
+        /* The published poster, as for the other months. (The iNaturalist
+           photo from the unpublished draft stays unused -- see THIRD-PARTY.) */
+        poster: `${POSTER}/insect-of-the-month-july-2025.webp`,
         pdf: `${PUB}/insect-of-the-month/insect-of-the-month-july-2025.pdf`,
         facts: [['Order', 'HEMIPTERA'], ['Family', 'PENTATOMIDAE'], ['Species', 'Nezara viridula'], ['Local name', 'Podile'], ['Common name', 'Stink bugs']],
         p: ['This month we shine the spotlight on one of nature’s pungent little creatures- the stink bugs. For the month of May, stink bugs have been the subject of increased sightings across Botswana, appearing in workplaces and homes alike, with people taking to social media about this unusual and yet, not so strange occurrence with the approach of winter.'],
@@ -94,11 +113,6 @@ export const PUB_TYPES = [
         ],
       },
     ],
-  },
-  {
-    key: 'heritage-trails', title: 'Heritage trail maps', eyebrow: 'Trips · National Trails',
-    lede: 'The museum’s heritage trail maps are now part of the Explore section, next to the monuments and museums along each route.',
-    explore: '#/explore/trails',
   },
 ];
 

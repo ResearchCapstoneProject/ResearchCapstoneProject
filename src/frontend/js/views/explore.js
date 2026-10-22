@@ -109,7 +109,6 @@ function pageTrails() {
   <div class="wrap" style="padding-block:32px 72px">
     ${mapbox(TRAILS.flatMap((t) => [trailMarker(t), ...(t.extra || []).map(([n, pos]) => ({ pos, name: `${t.name} · ${n}`, href: `#/explore/trails/${t.id}`, kind: 'trails' }))]), { label: 'Map of heritage trails' })}
     <div class="cgrid" style="margin-top:36px">${TRAILS.map(trailCard).join('')}</div>
-    <p class="small muted" style="margin-top:28px">The trail maps are also listed with the museum’s other <a href="#/publications">publications</a>.</p>
   </div>`;
 }
 

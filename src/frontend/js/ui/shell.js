@@ -8,13 +8,11 @@ import { openStatus } from '../data/opening.js';
 import { esc } from '../core/dom.js';
 /* Masthead, utility bar, footer and the #app outlet the router renders into. */
 
-/* Dropdown entries for the main navigation: [href, label]. The heritage
-   trail maps live in Explore, so the Publications menu leaves them out; the
-   Publications page itself still points to them. */
+/* Dropdown entries for the main navigation: [href, label]. */
 const MENUS = {
   departments: DEPARTMENTS.map((d) => [`#/departments/${d.key}`, d.short]),
   explore: SECTIONS.map((s) => [`#/explore/${s.key}`, s.title]),
-  publications: PUB_TYPES.filter((t) => !t.explore).map((t) => [`#/publications/${t.key}`, t.title]),
+  publications: PUB_TYPES.map((t) => [`#/publications/${t.key}`, t.title]),
 };
 
 function navItem([h, l, menu]) {

@@ -120,11 +120,12 @@ address.contact { font-style: normal; font-size: 18px; line-height: 1.7; }
 .feature:last-child { border-bottom: 0; }
 .feathead { margin-bottom: 24px; }
 .feathead .eyebrow { color: var(--ochre-ink); margin-bottom: 8px; }
-.featbody { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 48px; align-items: start; }
-.featbody.nopic { grid-template-columns: minmax(0, 1fr); }
-@media (max-width: 860px) { .featbody { grid-template-columns: 1fr; gap: 24px; } }
+/* fixed poster column, so portrait and landscape posters line up the same */
+.featbody { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: 48px; align-items: start; }
+@media (max-width: 860px) { .featbody { grid-template-columns: 1fr; gap: 24px; } .featpic { position: static; max-width: 420px; } }
 .featpic { margin: 0; }
-.featpic img { width: 100%; }
+.featpic { position: sticky; top: 100px; }
+.featpic img { width: 100%; border: 1px solid var(--line); box-shadow: 0 8px 22px rgba(18, 20, 23, .12); }
 .featpic figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
 .featbody .facts { margin-top: 0; }
 
