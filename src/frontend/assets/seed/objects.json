@@ -1,146 +1,1041 @@
 [
   {
-    "id": "BNM-ETH-0142",
-    "art": "basket",
+    "id": "BNM-ETH-0301",
+    "art": "generic",
     "dept": "Ethnography",
-    "title": "Coiled basket with “Tears of the Giraffe” pattern",
-    "origin": "Hambukushu weaver, Etsha, Ngamiland",
-    "date": "c. 1985",
-    "material": "Mokola palm leaf, natural motsentsila dye",
-    "dims": "Ø 38 cm, H 12 cm",
+    "title": "Collecting baskets (Ditlatlana)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Basketry · Woven plant fibre",
+    "dims": "",
     "location": "Gallery 2 · People & Crafts",
-    "text": "Baskets from north-western Botswana are coiled from strips of mokola palm leaf and coloured with natural dyes. Every pattern has a name – this one, rows of small dark triangles, is known as “Tears of the Giraffe”. Weavers learn the designs from older relatives and adapt them, so no two baskets are the same."
+    "text": "Used to collect grains and wild fruits.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0301-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0301-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0301-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0301-4.webp",
+      "/assets/img/collection/acb/bnm-eth-0301-5.webp",
+      "/assets/img/collection/acb/bnm-eth-0301-6.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 6–7"
   },
   {
-    "id": "BNM-ARC-0031",
-    "art": "rockart",
+    "id": "BNM-ETH-0302",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Storage baskets",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Basketry · Woven plant fibre",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to store grains such as maize, millet and sorghum.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0302-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0302-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0302-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0302-4.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 8–9"
+  },
+  {
+    "id": "BNM-ETH-0303",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Storage basket/granary (Sesigo)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Basketry · Woven plant fibre",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to store grains such as maize, millet and sorghum. It is normally mounted on a platform of sticks to avoid invasion by pests.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0303-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0303-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 10"
+  },
+  {
+    "id": "BNM-ETH-0304",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Itundu basket",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Basketry · Woven plant fibre, cow dung",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to store grain. It is covered with cow dung to protect it against insect attack.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0304-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 11"
+  },
+  {
+    "id": "BNM-ETH-0305",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Winnowing tray (Leselo)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Basketry · Mokolwane palm",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to separate the chaff from pounded grains. Woven using the mokolwane plant.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0305-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 11"
+  },
+  {
+    "id": "BNM-ETH-0306",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Beer strainer (Motlhotlho)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Basketry · Woven plant fibre",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to sieve beer and herbs.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0306-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 11"
+  },
+  {
+    "id": "BNM-ETH-0307",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Fish trap (Letloa)",
+    "origin": "Okavango communities",
+    "date": "",
+    "material": "Basketry · Woven plant fibre",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used by Okavango communities for fishing. They vary in size according to the fish to be trapped.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0307-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 11"
+  },
+  {
+    "id": "BNM-ETH-0308",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Skirt perfumer and perfume mortar (Otjihanda le Kakonzokokakora)",
+    "origin": "Ovaherero",
+    "date": "",
+    "material": "Basketry · Woven plant fibre",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "The Ovaherero dress is spread around the dome-shaped skirt perfumer. Scented herbs are burnt inside the mortar, allowing scented smoke to engulf the dress and give it a fragrant scent. Some were used for prestige and others for ritual purposes.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0308-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 12"
+  },
+  {
+    "id": "BNM-ETH-0309",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Straw bag and hat",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Basketry · Woven straw",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Made of woven straw.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0309-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0309-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 12"
+  },
+  {
+    "id": "BNM-ETH-0310",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Traditional broom (Lefeelo)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Basketry · Reeds or grass",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "A broom made of reeds or grass, used to sweep the lelwapa.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0310-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 13"
+  },
+  {
+    "id": "BNM-ETH-0311",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Reed mat (Moalo/Moseme)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Basketry · Woven reed",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Made of woven reed and used for sleeping and sitting. Nowadays used for decorating inside houses.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0311-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 13"
+  },
+  {
+    "id": "BNM-ARC-0501",
+    "art": "generic",
     "dept": "Archaeology",
-    "title": "Rock painting tracing: eland and hunters",
+    "title": "Tsodilo pottery",
     "origin": "Tsodilo Hills, Ngamiland",
-    "date": "Tracing 1990s; painting undated",
-    "material": "Pigment on polyester film",
-    "dims": "84 × 60 cm",
-    "location": "Gallery 1 · Tsodilo",
-    "text": "Tsodilo, Botswana’s first UNESCO World Heritage Site, holds more than 4,500 rock paintings. Because the originals cannot leave the hills, archaeologists record them as full-size tracings. This sheet documents an eland – an animal of great spiritual importance – together with small human figures."
-  },
-  {
-    "id": "BNM-ARC-0217",
-    "art": "stonetool",
-    "dept": "Archaeology",
-    "title": "Hand axe",
-    "origin": "Kalahari, Central District",
-    "date": "Early Stone Age",
-    "material": "Quartzite",
-    "dims": "L 16 cm",
-    "location": "Gallery 1 · Deep Time",
-    "text": "Shaped by striking flakes from both faces of a stone, hand axes were all-purpose tools used for hundreds of thousands of years. Finds like this show that people lived in the Kalahari long before it became the landscape we know today."
-  },
-  {
-    "id": "BNM-ARC-0388",
-    "art": "beads",
-    "dept": "Archaeology",
-    "title": "String of ostrich eggshell beads",
-    "origin": "San community, Ghanzi District",
-    "date": "20th century",
-    "material": "Ostrich eggshell, sinew",
-    "dims": "L 62 cm",
-    "location": "Store · on request",
-    "text": "Ostrich eggshell beads are among the oldest ornaments made by people in southern Africa. Each bead is broken from the shell, drilled and ground smooth by hand. Strings like this were – and still are – given as gifts that bind friends and families together."
-  },
-  {
-    "id": "BNM-ETH-0290",
-    "art": "pot",
-    "dept": "Ethnography",
-    "title": "Clay storage pot (nkgo)",
-    "origin": "Bakwena potter, Molepolole",
-    "date": "c. 1950",
-    "material": "Fired clay, burnished",
-    "dims": "H 44 cm, Ø 40 cm",
+    "date": "c. AD 1200",
+    "material": "Pottery · Fired clay",
+    "dims": "",
     "location": "Gallery 2 · People & Crafts",
-    "text": "Large pots like this kept water and sorghum beer (bojalwa) cool inside the home. The potter built the body from coils of clay, smoothed the surface with a stone and decorated the shoulder with an incised zigzag band before firing."
+    "text": "Discovered at Tsodilo Hills and dates from around AD 1200.",
+    "images": [
+      "/assets/img/collection/acb/bnm-arc-0501-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 16"
   },
   {
-    "id": "BNM-ETH-0077",
-    "art": "segaba",
+    "id": "BNM-ARC-0502",
+    "art": "generic",
+    "dept": "Archaeology",
+    "title": "Toutswe pottery",
+    "origin": "Maiphitlhwane",
+    "date": "AD 1050–1300",
+    "material": "Pottery · Fired clay",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Discovered at Maiphitlhwane and dates from AD 1050–1300.",
+    "images": [
+      "/assets/img/collection/acb/bnm-arc-0502-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 16"
+  },
+  {
+    "id": "BNM-ARC-0503",
+    "art": "generic",
+    "dept": "Archaeology",
+    "title": "Potsherds",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Pottery · Fired clay",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Pots and potsherds help archaeologists to determine the origins of different ethnic groups and the dating of sites.",
+    "images": [
+      "/assets/img/collection/acb/bnm-arc-0503-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 16"
+  },
+  {
+    "id": "BNM-ETH-0312",
+    "art": "generic",
     "dept": "Ethnography",
-    "title": "Segaba (one-string fiddle)",
-    "origin": "Kweneng District",
-    "date": "c. 1970",
-    "material": "Wood, tin, wire, fibre bow",
-    "dims": "L 98 cm",
-    "location": "Gallery 3 · Music & Sound",
-    "text": "The segaba is a bowed instrument with a single string stretched along a wooden stick and a tin used as a resonator. It accompanies songs about everyday life, love and travel and is still played in Botswana today."
+    "title": "Clay bowl (Mogopo)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Pottery · Fired clay",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Made of clay and glazed. It is used to serve food.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0312-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 17"
   },
   {
-    "id": "BNM-ETH-0158",
-    "art": "stool",
+    "id": "BNM-ETH-0313",
+    "art": "generic",
     "dept": "Ethnography",
-    "title": "Carved wooden stool",
-    "origin": "Bayei carver, Okavango",
-    "date": "Mid-20th century",
-    "material": "Hardwood",
-    "dims": "H 28 cm, Ø 46 cm",
-    "location": "Store · on request",
-    "text": "Carved from a single block of wood, stools like this belonged to the head of a household and were offered to honoured guests. Tool marks on the underside show how the carver worked with an adze."
+    "title": "Cooking pot",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Pottery · Fired clay",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used for cooking.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0313-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 17"
   },
   {
-    "id": "BNM-ART-0012",
-    "art": "painting",
-    "dept": "Art",
-    "title": "Morning at the Kgotla",
-    "origin": "Botswana painter (sample record)",
-    "date": "1972",
-    "material": "Oil on board",
-    "dims": "61 × 91 cm",
-    "location": "Art Gallery · Room A",
-    "text": "The kgotla is the traditional meeting place where a community gathers to discuss and decide its affairs. The painter captures first light over the village, when elders begin to arrive and sit beneath the tree. Works by local artists from the 1960s onwards form the core of the national art collection."
+    "id": "BNM-ETH-0314",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Beer/water pot (Setsaga/Tlhatlolelo)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Pottery · Fired clay",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used for storing beer or water. Was also traditionally used as an incubator for premature babies.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0314-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 17"
   },
   {
-    "id": "BNM-ART-0045",
-    "art": "tapestry",
-    "dept": "Art",
-    "title": "Tapestry: Village Life",
-    "origin": "Lentswe la Oodi Weavers, Oodi",
-    "date": "1981",
-    "material": "Hand-spun wool",
-    "dims": "120 × 180 cm",
-    "location": "Art Gallery · Room B",
-    "text": "The weaving workshop at Oodi, founded in the early 1970s, became known for large tapestries that tell stories of village life. Cattle, rondavels, fields and people are woven in bold, flat colours – a visual language that still shapes design in Botswana."
+    "id": "BNM-ETH-0315",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Beer/water pots (Dinkgwana)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Pottery · Fired clay",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used for storing beer or water.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0315-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0315-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0315-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0315-4.webp",
+      "/assets/img/collection/acb/bnm-eth-0315-5.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 18"
   },
   {
-    "id": "BNM-NAT-0503",
-    "art": "zebra",
-    "dept": "Natural History",
-    "title": "Plains zebra hide",
-    "origin": "Makgadikgadi Pans",
-    "date": "Collected 1988",
-    "material": "Tanned hide",
-    "dims": "210 × 140 cm",
-    "location": "Gallery 4 · Kalahari Life",
-    "text": "The zebra is Botswana’s national animal and appears on the coat of arms. Its black and white stripes are echoed in the national flag as a symbol of people living together in harmony. Each year thousands of zebras migrate between the Makgadikgadi Pans and the Boteti River."
+    "id": "BNM-ETH-0316",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Decorative clay pots (Dinkgwana tsa makgabisa)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Pottery · Fired clay",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "These are glazed pots, usually made for decorative purposes.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0316-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0316-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0316-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0316-4.webp",
+      "/assets/img/collection/acb/bnm-eth-0316-5.webp",
+      "/assets/img/collection/acb/bnm-eth-0316-6.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 19"
   },
   {
-    "id": "BNM-HIS-0004",
-    "art": "locomotive",
-    "dept": "History",
-    "title": "Steam locomotive",
-    "origin": "Railway through the Bechuanaland Protectorate",
-    "date": "Early 20th century",
-    "material": "Iron, steel",
-    "dims": "L approx. 18 m",
-    "location": "Museum courtyard",
-    "text": "The railway line built through Bechuanaland in the 1890s connected the territory with the Cape and Bulawayo and shaped where towns grew. This locomotive in the museum courtyard is a favourite with school groups."
+    "id": "BNM-ETH-0317",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Stirrer (Lefetlho)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to stir mealie meal, millet, sorghum and other food that needs mixing.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0317-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0317-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 22"
   },
   {
-    "id": "BNM-HIS-0019",
-    "art": "flag",
-    "dept": "History",
-    "title": "Flag from the first Independence Day",
-    "origin": "Gaborone",
-    "date": "30 September 1966",
-    "material": "Cotton",
-    "dims": "90 × 135 cm",
-    "location": "Special exhibition · Botswana at 60",
-    "text": "On 30 September 1966 the Bechuanaland Protectorate became the Republic of Botswana. Light blue stands for water and rain – “pula”, also the national motto – and the black band with white borders for harmony between peoples. In 2026 the country celebrates sixty years of independence."
+    "id": "BNM-ETH-0318",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Wooden spoons (Leso/Leswana)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Small spoons are used for eating, while big spoons are used for stirring either traditional beer or food.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0318-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0318-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0318-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0318-4.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 22"
+  },
+  {
+    "id": "BNM-ETH-0319",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Wooden bowl (Mogopo)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Morula or mopipi wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Made of soft wood from morula or mopipi tree trunks. Used to serve a variety of foods.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0319-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0319-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0319-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0319-4.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 22"
+  },
+  {
+    "id": "BNM-ETH-0320",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Milk container (Orumba)",
+    "origin": "Herero",
+    "date": "",
+    "material": "Wood carving · Cow skin",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "A round milk container made of cow skin. Used by Herero women for preparing and storing ngondivi.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0320-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 23, 47"
+  },
+  {
+    "id": "BNM-ETH-0321",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Milk container (Lekuka)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used for the preparation and fermentation of sour milk.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0321-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 23, 47"
+  },
+  {
+    "id": "BNM-ETH-0322",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Milk container (Kgamelo)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used for storing milk when milking cows.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0322-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0322-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 23"
+  },
+  {
+    "id": "BNM-ETH-0323",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Milk container (Karonga/Detonga)",
+    "origin": "Hambukushu",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "A straight-sided wooden container used by the Hambukushu to store milk.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0323-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 23"
+  },
+  {
+    "id": "BNM-ETH-0324",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Pestle and mortar (Motshe le Kika)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Traditionally, pestles work hand in hand with mortars. Pestles are used for pounding grain and biltong, and for crushing dried fruits, seeds and nuts in the mortar.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0324-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0324-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 23"
+  },
+  {
+    "id": "BNM-ETH-0325",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Traditional kgotla chair (Setilo sa dikgole)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Wood, leather thongs",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Kgotla chairs are made from wood and leather thongs.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0325-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0325-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 24"
+  },
+  {
+    "id": "BNM-ETH-0326",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Walking sticks",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Normally used by elderly people for balance or support when walking. Some were used for prestige and others for ritual purposes.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0326-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0326-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0326-3.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 24"
+  },
+  {
+    "id": "BNM-ETH-0327",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Stool (Sepora)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used before the introduction of kgotla chairs. They were then used by boys and elder males.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0327-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0327-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 24"
+  },
+  {
+    "id": "BNM-ETH-0328",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Thumb piano (Setinkane)",
+    "origin": "Basarwa and Hambukushu",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Musical instrument traditionally played by the Basarwa and Hambukushu. Some groups attach a small gourd for better resonance.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0328-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0328-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 25"
+  },
+  {
+    "id": "BNM-ETH-0329",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Drums (Moropa)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Carved wood, animal skin",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Musical instruments used for traditional dances, ceremonies, rituals and festivals.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0329-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0329-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0329-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0329-4.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 25"
+  },
+  {
+    "id": "BNM-ETH-0330",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Carved figurines: animals",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "These were normally carved from wood into the shapes of animals and people, in many different figures and sizes. Some were used to chase harmful spirits away from the village, whereas nowadays they are used for decoration.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0330-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0330-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0330-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0330-4.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 26"
+  },
+  {
+    "id": "BNM-ETH-0331",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Carved figurines",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "These were normally carved from wood into different shapes and sizes and then used for decoration.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0331-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0331-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 27"
+  },
+  {
+    "id": "BNM-ETH-0332",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Thatching tool",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to even out the grass when thatching a hut.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0332-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0332-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 28"
+  },
+  {
+    "id": "BNM-ETH-0333",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Carved dolls",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Carved wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "A woman figurine used for various purposes, e.g. by a woman who has no children but wants to conceive. If a woman should die without having borne children, a doll is buried with her to give her a better fortune in the next life.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0333-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 28"
+  },
+  {
+    "id": "BNM-ETH-0334",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Snuff box",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Wood carving · Horn",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to store snuff.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0334-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 28"
+  },
+  {
+    "id": "BNM-ETH-0335",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Ostrich eggshell (Lee la Ntshe)",
+    "origin": "!Kung, Kalahari",
+    "date": "",
+    "material": "Beadwork · Ostrich eggshell",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Broken eggshells are used for beadwork. Ostrich eggshells are used as water containers by the nomadic !Kung of the Kalahari.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0335-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 31"
+  },
+  {
+    "id": "BNM-ETH-0336",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Necklaces, tie and earrings (Dibaga le Manyena)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Beadwork · Ostrich eggshell and glass beads",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Made of beads and ostrich eggshell.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0336-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0336-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0336-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0336-4.webp",
+      "/assets/img/collection/acb/bnm-eth-0336-5.webp",
+      "/assets/img/collection/acb/bnm-eth-0336-6.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 32"
+  },
+  {
+    "id": "BNM-ETH-0337",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Aprons (Makgabe)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Beadwork · Ostrich eggshell and glass beads",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Made of ostrich eggshell and usually worn by young women.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0337-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0337-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0337-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0337-4.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 33–34"
+  },
+  {
+    "id": "BNM-ETH-0338",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Cosmetic bags (Kgetsana ya dinkgisa monate)",
+    "origin": "Basarwa",
+    "date": "",
+    "material": "Beadwork · Glass beads",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used by Basarwa women to keep cosmetics.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0338-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 34"
+  },
+  {
+    "id": "BNM-ETH-0339",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Waist, wrist and head bands (Maseka)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Beadwork · Ostrich eggshell and glass beads",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Made of ostrich eggshell beads. Worn as normal regalia or for ceremonial purposes.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0339-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0339-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0339-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0339-4.webp",
+      "/assets/img/collection/acb/bnm-eth-0339-5.webp",
+      "/assets/img/collection/acb/bnm-eth-0339-6.webp",
+      "/assets/img/collection/acb/bnm-eth-0339-7.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 35"
+  },
+  {
+    "id": "BNM-ETH-0340",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Bellows (Moubelo)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Iron smelting and blacksmithing · Wood, leather",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Bellows are used for heating charcoal when forging iron.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0340-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0340-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 37, 39"
+  },
+  {
+    "id": "BNM-ETH-0341",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Metal tools (Didirisiwa tsa tshipi)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Iron smelting and blacksmithing · Iron, wood",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Iron was smelted and shaped into blades used to make various household, farming and hunting tools.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0341-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0341-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0341-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0341-4.webp",
+      "/assets/img/collection/acb/bnm-eth-0341-5.webp",
+      "/assets/img/collection/acb/bnm-eth-0341-6.webp",
+      "/assets/img/collection/acb/bnm-eth-0341-7.webp",
+      "/assets/img/collection/acb/bnm-eth-0341-8.webp",
+      "/assets/img/collection/acb/bnm-eth-0341-9.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 38–39"
+  },
+  {
+    "id": "BNM-ETH-0342",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Leather scraper (Lengwaelo/Mokwaipo)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Iron smelting and blacksmithing · Iron",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to scrape off bits of meat and fat and smooth the animal skin before treatment and softening.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0342-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 38"
+  },
+  {
+    "id": "BNM-ETH-0343",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Blades",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Iron smelting and blacksmithing · Iron",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Iron was smelted and shaped into blades used to make various household, farming and hunting tools.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0343-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0343-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 39"
+  },
+  {
+    "id": "BNM-ETH-0344",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Leopard skin (Letlalo la Nkwe)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Leather · Leopard skin",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Traditional regalia placed on the shoulders of the Kgosi during his inauguration. It carries a lot of symbolism: it makes the Kgosi appear regal and shows his dignity and bravery as tribal leader.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0344-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 41"
+  },
+  {
+    "id": "BNM-ETH-0345",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Dancing skirt, apron and cloak",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Leather · Leather (animal skin)",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Symbolises traditional Tswana wear, but is now used by traditional dance troupes. The skirt is wrapped around the back, covering the torso, with the loin apron at the front. The cloak is fastened around the shoulders.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0345-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0345-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0345-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0345-4.webp",
+      "/assets/img/collection/acb/bnm-eth-0345-5.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 42"
+  },
+  {
+    "id": "BNM-ETH-0346",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Leather mat, cloak and blanket (Phate, Mokobolwane)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Leather · Goat, springbok and sheep skin",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to keep warm during cold periods. Usually made from goat, springbok and sheep skins.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0346-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0346-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0346-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0346-4.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 43"
+  },
+  {
+    "id": "BNM-ETH-0347",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Leather trousers, shirts and hat (Borokgwe, Hempe le Hutshe)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Leather · Leather (animal skin)",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "A modern style of dress, made of soft tanned skin stitched by machine into contemporary patterns and styles.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0347-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0347-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0347-3.webp",
+      "/assets/img/collection/acb/bnm-eth-0347-4.webp",
+      "/assets/img/collection/acb/bnm-eth-0347-5.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 44"
+  },
+  {
+    "id": "BNM-ETH-0348",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Leather trousers (Mongato)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Leather · Animal skin, sinew",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Made from animal skin with its fur removed. Sinew binding is used to stitch the trousers.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0348-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 45"
+  },
+  {
+    "id": "BNM-ETH-0349",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Loin cloth (Tshega)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Leather · Leather (animal skin)",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Worn by boys before puberty. The flap of skin covers the front and the leather thongs pass between the legs. Used by traditional Tswana groups, particularly the Basarwa.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0349-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0349-2.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 45"
+  },
+  {
+    "id": "BNM-ETH-0350",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Baby sling (Thari)",
+    "origin": "Basarwa",
+    "date": "",
+    "material": "Leather · Calf skin",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used by Basarwa women to carry a baby securely on the back. Made from calf skin because of its softness and durability.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0350-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 45"
+  },
+  {
+    "id": "BNM-ETH-0351",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Cloak/carrying bag",
+    "origin": "Basarwa",
+    "date": "",
+    "material": "Leather · Leather (animal skin)",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "The cloak is used for carrying roots, melons or household goods on the back. Used by Basarwa groups.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0351-1.webp",
+      "/assets/img/collection/acb/bnm-eth-0351-2.webp",
+      "/assets/img/collection/acb/bnm-eth-0351-3.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 45"
+  },
+  {
+    "id": "BNM-ETH-0352",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Whip (Seme)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Leather · Leather (animal skin)",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to whip yoked animals pulling wagons or sledges.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0352-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 45"
+  },
+  {
+    "id": "BNM-ETH-0353",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Water container (Kgetsi ya Metsi)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Leather · Leather (animal skin)",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to store water and keep it cool, especially during long trips.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0353-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 46"
+  },
+  {
+    "id": "BNM-ETH-0354",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Leather preservative (Tshitlo)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Leather · Animal brain, fat, tree sap",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used to soften and preserve leather. It is a mixture of animal brain matter, fat and hardened tree sap.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0354-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 46"
+  },
+  {
+    "id": "BNM-ETH-0355",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Shield and spear (Thebe le Segai/Chaka)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Leather · Hide, wood, iron",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used as weapons and for protection during fighting.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0355-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 46"
+  },
+  {
+    "id": "BNM-ETH-0356",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Medicine bag and divining bones (Kgetsi ya Ditaola)",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Leather · Leather, bone",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used by traditional healers to store divining bones.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0356-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 46"
+  },
+  {
+    "id": "BNM-ETH-0357",
+    "art": "generic",
+    "dept": "Ethnography",
+    "title": "Leather purse",
+    "origin": "Botswana",
+    "date": "",
+    "material": "Leather · Leather (animal skin)",
+    "dims": "",
+    "location": "Gallery 2 · People & Crafts",
+    "text": "Used by women to carry cosmetics and personal belongings.",
+    "images": [
+      "/assets/img/collection/acb/bnm-eth-0357-1.webp"
+    ],
+    "catalogue": "Art and Crafts of Botswana, p. 46"
   }
 ]

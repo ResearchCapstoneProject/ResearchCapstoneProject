@@ -7,6 +7,7 @@
 .thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
 .thumb { width: 74px; height: 74px; padding: 0; border: 1px solid var(--line); background: var(--sand); cursor: pointer; overflow: hidden; }
 .thumb svg, .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.thumb img { object-fit: contain; padding: 6%; }
 .thumb:hover { border-color: var(--ink); }
 .thumb[aria-pressed="true"] { border: 2px solid var(--ink); }
 .lightbox { width: min(940px, 100%); display: grid; gap: 14px; }

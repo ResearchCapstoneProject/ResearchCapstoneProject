@@ -31,9 +31,13 @@ export function roomScene(svg, o = null) {
 
 
 /* ---------------- object views (several images per object) -------- */
+/* Offline an image is a URL string (a seed asset or a data URL); from the API
+   it is { id, url, position }. Everything that renders one goes through here. */
+export const imgSrc = (im) => (typeof im === 'string' ? im : (im && im.url) || '');
+
 export function viewsOf(o) {
   if (o.images && o.images.length) {
-    return o.images.map((src, i) => ({ html: `<img src="${src}" alt="${esc(o.title)}">`, cap: i === 0 ? 'Museum photo' : `Museum photo ${i + 1}` }));
+    return o.images.map((im, i) => ({ html: `<img src="${esc(imgSrc(im))}" alt="${esc(o.title)}">`, cap: i === 0 ? 'Museum photo' : `Museum photo ${i + 1}` }));
   }
   const base = () => (ART[o.art] || ART.generic)(o);
   return [
@@ -43,4 +47,4 @@ export function viewsOf(o) {
   ];
 }
 
-export function pic(o) { const src = (o.images && o.images[0]) || o.image; if (src) return `<img src="${esc(src)}" alt="${esc(o.title)}">`; return (ART[o.art] || ART.generic)(o); }
+export function pic(o) { const src = imgSrc((o.images && o.images[0]) || o.image); if (src) return `<img src="${esc(src)}" alt="${esc(o.title)}">`; return (ART[o.art] || ART.generic)(o); }

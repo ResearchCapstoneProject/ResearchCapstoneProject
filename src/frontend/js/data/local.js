@@ -27,12 +27,28 @@ export function decorateSeedObjects(rows) {
     onDisplay: !o.location.startsWith('Store'),
     added: Date.UTC(2026, 7, 1 + i),
     seed: true,
-    images: [],
+    images: o.images || [],
   }));
+}
+
+/* A browser that saved its demo state before the seed changed would keep a
+   stale collection. Drop seed records the seed no longer has (the sample
+   objects removed in favour of the ACB catalogue) and add the ones it has not
+   seen yet; `seedIds` remembers which ones it has, so a seed object deleted
+   in the staff area does not come back on the next load. */
+export function addNewSeedObjects(state, seed) {
+  const current = new Set(seed.objects.map((o) => o.id));
+  state.objects = state.objects.filter((o) => !o.seed || current.has(o.id));
+  const known = new Set(state.seedIds || state.objects.filter((o) => o.seed).map((o) => o.id));
+  const fresh = decorateSeedObjects(seed.objects).filter((o) => !known.has(o.id) && !state.objects.some((x) => x.id === o.id));
+  state.objects.push(...fresh);
+  state.seedIds = seed.objects.map((o) => o.id);
+  return state;
 }
 
 export const freshState = (seed) => ({
   objects: decorateSeedObjects(seed.objects),
+  seedIds: seed.objects.map((o) => o.id),
   bookings: [],
   scans: {},
 });

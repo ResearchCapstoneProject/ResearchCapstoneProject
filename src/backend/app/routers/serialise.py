@@ -16,6 +16,7 @@ def object_out(o: MuseumObject) -> ObjectOut:
         dims=o.dims,
         location=o.location.label if o.location else "",
         text=o.body,
+        catalogue=o.catalogue,
         status=o.status,
         on_display=o.on_display,
         # ms since epoch, so the client's `added` sort keeps working unchanged

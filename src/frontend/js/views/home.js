@@ -1,15 +1,21 @@
 import { eventRow, exCard, objCard } from '../ui/cards.js';
-import { tourCard } from '../ui/tours.js';
+import { card } from '../ui/content.js';
+import { trailCards } from './explore.js';
+import { splitEvents } from './events.js';
 import { ICON } from '../art/icons.js';
 import { basketArt } from '../art/objects.js';
-import { EVENTS, EXHIBITIONS, TOURS } from '../data/constants.js';
+import { EXHIBITIONS } from '../data/constants.js';
+import { ABOUT } from '../data/about.js';
+import { SECTIONS } from '../data/explore.js';
 import { openStatus } from '../data/opening.js';
 import { published } from '../state/selectors.js';
+import { esc } from '../core/dom.js';
 
 /* ---------------- pages ---------------- */
 export function pageHome() {
   const st = openStatus();
   const latest = [...published()].sort((a, b) => b.added - a.added).slice(0, 4);
+  const { upcoming } = splitEvents();
   return `
   <section class="hero" aria-label="Featured exhibition">
     <div class="band" aria-hidden="true"></div>
@@ -43,12 +49,14 @@ export function pageHome() {
     <div class="wrap welcome">
       <div><div class="eyebrow" style="margin-bottom:10px">Dumelang – welcome</div><h2 class="h2">Botswana’s story, from the Stone Age to today</h2></div>
       <div>
-        <p class="lede" style="margin:0">Founded in 1967, a year after independence, the National Museum and Art Gallery in Gaborone collects, researches and shares the natural and cultural heritage of Botswana. Its divisions cover archaeology, natural history, ethnography, education and art – and it cares for heritage sites across the country, including the Tsodilo Hills.</p>
+        <p class="lede" style="margin:0 0 14px">${esc(ABOUT[0])}</p>
+        <p class="lede" style="margin:0">${esc(ABOUT[2])}</p>
         <div class="facts">
           <div><b>1967</b><span>founded by Act of Parliament</span></div>
           <div><b>5</b><span>divisions, one museum</span></div>
-          <div><b>4,500+</b><span>rock paintings at Tsodilo</span></div>
+          <div><b>8,000+</b><span>ethnographic artefacts</span></div>
         </div>
+        <p style="margin:24px 0 0"><a class="btn ghost small arrow" href="#/visit/about">About the museum </a></p>
       </div>
     </div>
   </section>
@@ -73,15 +81,23 @@ export function pageHome() {
 
   <section>
     <div class="wrap">
-      <div class="sec-head"><div><div class="eyebrow">Tours &amp; routes</div><h2 class="h2">Find your way through the galleries</h2></div><a class="btn ghost small arrow" href="#/map">Museum map </a></div>
-      <div class="tourgrid">${TOURS.map(tourCard).join('')}</div>
+      <div class="sec-head"><div><div class="eyebrow">Tours &amp; trips</div><h2 class="h2">Heritage trails across Botswana</h2></div><a class="btn ghost small arrow" href="#/explore/trails">All heritage trails </a></div>
+      <p class="lede" style="margin:-12px 0 28px">Four routes published by the museum link monuments, museums and natural sites. Each trail map can be downloaded for the road.</p>
+      <div class="cgrid">${trailCards()}</div>
+    </div>
+  </section>
+
+  <section class="bg-mist">
+    <div class="wrap">
+      <div class="sec-head"><div><div class="eyebrow">Explore</div><h2 class="h2">Heritage beyond the museum</h2></div><a class="btn ghost small arrow" href="#/explore">Map of all places </a></div>
+      <div class="cgrid three">${SECTIONS.filter((x) => x.key !== 'trails').map((x) => card({ href: `#/explore/${x.key}`, img: x.cover, eyebrow: x.eyebrow, title: x.title })).join('')}</div>
     </div>
   </section>
 
   <section>
     <div class="wrap">
-      <div class="sec-head"><div><div class="eyebrow">What’s on</div><h2 class="h2">Events in October</h2></div><a class="btn ghost small arrow" href="#/events">Full calendar </a></div>
-      <div class="events">${EVENTS.map(eventRow).join('')}</div>
+      <div class="sec-head"><div><div class="eyebrow">What’s on</div><h2 class="h2">Upcoming events</h2></div><a class="btn ghost small arrow" href="#/events">Upcoming &amp; past events </a></div>
+      ${upcoming.length ? `<div class="events">${upcoming.slice(0, 4).map((e) => eventRow(e)).join('')}</div>` : '<p class="muted">No upcoming events are listed at the moment. <a href="#/events">See past events</a>.</p>'}
     </div>
   </section>
 
@@ -90,8 +106,8 @@ export function pageHome() {
       <div class="sec-head"><div><div class="eyebrow">Museum digital</div><h2 class="h2">Visit online, discover more in the galleries</h2></div></div>
       <div class="digital">
         <a href="#/collection">${ICON.grid}<span class="chip live dot">Live in prototype</span><h3>Collection Online</h3><p>Search and browse every published object record.</p></a>
-        <a href="#/object/BNM-ETH-0142">${ICON.qr}<span class="chip live dot">Live in prototype</span><h3>QR codes on objects</h3><p>Scan a label in the gallery to open the object page.</p></a>
-        <a href="#/tours">${ICON.route}<span class="chip live dot">Live in prototype</span><h3>Themed tours</h3><p>Short routes through the museum, made for a phone.</p></a>
+        <a href="#/object/BNM-ETH-0302">${ICON.qr}<span class="chip live dot">Live in prototype</span><h3>QR codes on objects</h3><p>Scan a label in the gallery to open the object page.</p></a>
+        <a href="#/explore/trails">${ICON.route}<span class="chip live dot">Live in prototype</span><h3>Heritage trails</h3><p>Trips to monuments and museums, with maps to download.</p></a>
         <a href="#/page/virtual-tour">${ICON.tour}<span class="chip plan dot">Planned</span><h3>Virtual tour</h3><p>Walk through the galleries in 360° from anywhere.</p></a>
         <a href="#/page/ar">${ICON.ar}<span class="chip plan dot">Planned</span><h3>AR in the exhibition</h3><p>See objects in 3D and in their original setting.</p></a>
         <a href="#/page/displays">${ICON.screen}<span class="chip plan dot">Planned</span><h3>Interactive displays</h3><p>Touch screens in the galleries fed by the same database.</p></a>

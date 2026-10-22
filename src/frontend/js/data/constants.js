@@ -38,6 +38,18 @@ export const EVENTS = [
   { d: '2026-10-06', time: '14:00', kind: 'Curator’s tour', title: 'Botswana at 60 – behind the objects', place: 'Special exhibition' },
   { d: '2026-10-15', time: '17:30', kind: 'Talk', title: 'Painters of the 1960s and 70s', place: 'Art Gallery' },
   { d: '2026-10-24', time: '09:30–12:30', kind: 'School holiday workshop', title: 'Rock art of Tsodilo: paint like the ancestors', place: 'Courtyard' },
+  /* Past events from the museum's own material (not sample content). The
+     events page sorts anything before today into "Past events". */
+  {
+    d: '2025-08-15', time: '11:00', kind: 'Museum staff talk', title: 'Sustainable Tourism Initiatives in Botswana', place: 'Little Theatre',
+    by: 'Matlhogonolo Tswiio', pdf: '/assets/publications/events/sustainable-tourism-initiatives-in-botswana.pdf',
+    text: 'Background on tourism in Botswana · Key issues for sustainable tourism · Community based natural resources management · Eco tourism strategy · Policy framework',
+  },
+  {
+    d: '2017-03-04', time: '05:00', kind: 'Heritage Marathon', title: 'Heritage Marathon – Malaka Village', place: 'Malaka Village Kgotla, 15 min drive from Palapye',
+    img: '/assets/img/home-slides/HeritageMarathon_malaka.jpg', pdf: '/assets/publications/events/20170304_MalakaMarathon.pdf',
+    text: '21 km, 10 km and 5 km fun run. “To enliven Botswana’s yesterday and tomorrow.”',
+  },
 ];
 
 /* opening hours & prices (placeholders to be confirmed with the museum) */
@@ -80,38 +92,18 @@ export const LOC_ROOM = {
   'Store · on request': null,
 };
 
-/* ---------- themed tours ---------- */
-export const TOURS = [
-  {
-    id: 'highlights', title: 'The museum in 60 minutes', mins: 60, start: 'Entrance hall', who: 'First-time visitors',
-    sub: 'Seven objects that tell the story of Botswana, from the Stone Age to independence.',
-    intro: 'Short on time? This route takes you through every gallery and stops at the objects our guides are asked about most.',
-    stops: ['BNM-ARC-0217', 'BNM-ARC-0031', 'BNM-ETH-0142', 'BNM-ETH-0077', 'BNM-NAT-0503', 'BNM-ART-0045', 'BNM-HIS-0019'],
-  },
-  {
-    id: 'bot60', title: 'Botswana at 60', mins: 30, start: 'Special exhibition', who: 'Anyone interested in history',
-    sub: 'Independence in 1966 and the country that grew from it.',
-    intro: 'A short route for the Diamond Jubilee: the flag of the first Independence Day, the art of the young nation and the railway that shaped its towns.',
-    stops: ['BNM-HIS-0019', 'BNM-ART-0012', 'BNM-ART-0045', 'BNM-HIS-0004'],
-  },
-  {
-    id: 'family', title: 'Family tour: animals & patterns', mins: 45, start: 'Gallery 4', who: 'Children aged 6 to 12',
-    sub: 'Stripes, beads and a one-string fiddle – with something to spot at every stop.',
-    intro: 'Made for families: each stop has one question for the children and one thing to find in the display case.',
-    stops: ['BNM-NAT-0503', 'BNM-ETH-0142', 'BNM-ARC-0388', 'BNM-ARC-0031', 'BNM-ETH-0077'],
-  },
-];
-
+/* Main navigation. A third element names the dropdown that ui/shell.js
+   builds from the content modules. */
 export const NAV = [
-  ['visit', 'Visit'], ['exhibitions', 'Exhibitions'], ['collection', 'Collection'], ['tours', 'Tours'], ['events', 'Events'], ['page/about', 'About'],
+  ['visit', 'Visit & About'], ['exhibitions', 'Exhibitions'], ['collection', 'Collection'],
+  ['departments', 'Departments', 'departments'], ['explore', 'Explore', 'explore'],
+  ['publications', 'Publications', 'publications'], ['events', 'Events'],
 ];
 export const PAGES = {
   learn: { t: 'Learn', l: 'Programmes for schools, families and lifelong learners.', items: ['School visits and teaching material per grade', 'Holiday workshops', 'Outreach: the museum’s mobile exhibitions in rural areas'], chip: 'Outside prototype scope' },
-  about: { t: 'About the museum', l: 'History, mission and team of the National Museum and Art Gallery.', items: ['History since 1967', 'Divisions: Archaeology, Natural History, Ethnology, Education, Art', 'Heritage sites in the museum’s care', 'Imprint & privacy'], chip: 'Outside prototype scope' },
   groups: { t: 'Groups & schools', l: 'Booking for school classes and larger groups.', items: ['Request form for school groups', 'Group sizes and supervision', 'Links to the ticketing system with group capacity'], chip: 'Next iteration' },
   accessibility: { t: 'Accessibility', l: 'Step-free access, assistance and easy-to-read information.', items: ['Access & seating', 'Easy English and Setswana texts', 'Contrast and font-size options on the website'], chip: 'Next iteration' },
   press: { t: 'Press', l: 'Press releases and images.', items: ['Press releases', 'Image downloads', 'Contacts'], chip: 'Outside prototype scope' },
-  tsodilo: { t: 'Tsodilo Hills', l: 'Botswana’s first UNESCO World Heritage Site, with more than 4,500 rock paintings.', items: ['Visitor information for Tsodilo', 'Link to rock-art records in the collection database', 'Future: virtual tour of the site'], chip: 'Outside prototype scope' },
   'virtual-tour': { t: 'Virtual tour', l: '360° walk-through of the galleries, linked to the object records in the database.', items: ['360° photos of each gallery', 'Hotspots that open the object page from the collection database', 'Works on phone, desktop and VR headset'], chip: 'Planned · phase 2' },
   ar: { t: 'AR in the exhibition', l: 'Augmented reality on visitors’ phones, triggered by the same QR labels.', items: ['3D models from digitisation', '“View in your room” for selected objects', 'Reconstruction of objects in their original setting'], chip: 'Planned · phase 2' },
   displays: { t: 'Interactive displays', l: 'Touch screens in the galleries that show content from the collection database.', items: ['Kiosk mode of the collection website', 'Themed stories per gallery', 'Content managed in the same staff area'], chip: 'Planned · phase 2' },

@@ -1,12 +1,13 @@
 import { $, esc } from '../core/dom.js';
 import { ROOMS } from '../data/constants.js';
 import { objectsInRoom, roomById } from '../state/selectors.js';
-/* The museum floor plan, as one inline SVG. Shared by the map page, the
-   object page mini-plan and the tour route plans. */
+/* The museum floor plan, as one inline SVG. Shared by the map page and the
+   object page mini-plan. The numbered `stops` option drew the old themed-tour
+   routes, which the heritage trails in Explore replaced; it is unused now. */
 
 /* ------------------------------------------------------------------
    Added features: image gallery per object, museum floor plan,
-   themed tours, scan statistics for staff.
+   scan statistics for staff.
 ------------------------------------------------------------------- */
 /* ---------------- museum floor plan ------------------------------- */
 

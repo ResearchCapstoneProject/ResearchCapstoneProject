@@ -62,10 +62,16 @@ def store(raw: bytes) -> dict:
 
 
 def url_for(filename: str) -> str:
+    # Seeded photos (the ACB catalogue) ship with the frontend and are stored
+    # as their absolute path under /assets; uploads are bare generated names.
+    if filename.startswith("/"):
+        return filename
     return f"/uploads/{filename}"
 
 
 def remove(filename: str) -> None:
+    if filename.startswith("/"):
+        return  # a bundled seed asset, not an upload -- never delete it
     try:
         (settings.upload_dir / filename).unlink(missing_ok=True)
     except OSError:

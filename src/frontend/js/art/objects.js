@@ -19,14 +19,15 @@ export function basketArt({ bg = '#EADFCB', size = 400, label = 'Coiled basket, 
   </svg>`;
 }
 
+/* The museum's mark: woven strips in the logo colours, the same drawing as
+   /favicon.svg (keep the two in step). */
 export function emblem() {
-  const c = 24;
-  return `<svg viewBox="0 0 48 48" aria-hidden="true">
-    <circle cx="24" cy="24" r="23" fill="#121417"/>
-    ${ringTriangles(c, c, 13, 21, 14, '#6DA9D2')}
-    <circle cx="24" cy="24" r="11" fill="#fff"/>
-    <circle cx="24" cy="24" r="4.5" fill="#121417"/>
-  </svg>`;
+  const strip = (cx, cy, len, deg) => `<rect x="${-len / 2}" y="-29" width="${len}" height="58" rx="5" transform="translate(${cx} ${cy}) rotate(${deg})"/>`;
+  return `<svg viewBox="20 30 380 380" aria-hidden="true"><g stroke="#0B0C0E" stroke-width="12" stroke-linejoin="round">
+    <g fill="#009BE4">${strip(168, 120, 164, 45)}${strip(276, 120, 164, 45)}</g>
+    <g fill="#FFFFFF">${strip(170, 306, 144, 45)}${strip(278, 306, 144, 45)}</g>
+    <g fill="#E28E2C">${strip(112, 214, 156, -45)}${strip(222, 214, 156, -45)}${strip(332, 214, 156, -45)}</g>
+  </g></svg>`;
 }
 
 export function rockArt(o = {}) {

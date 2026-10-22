@@ -15,34 +15,54 @@ import { bindForm, pageStaffForm } from '../views/staff-form.js';
 import { pageStaffObjects } from '../views/staff-objects.js';
 import { pageStaffStats } from '../views/staff-stats.js';
 import { pageTickets } from '../views/tickets.js';
-import { pageTour, pageTours } from '../views/tours.js';
+import { pageDepartment, pageDepartments } from '../views/departments.js';
+import { pageExplore, pageExploreRoute } from '../views/explore.js';
+import { pagePubType, pagePublications } from '../views/publications.js';
+import { mountMaps } from '../ui/maps.js';
 import { pageVisit } from '../views/visit.js';
 import { store } from '../state/store.js';
 import { $ } from '../core/dom.js';
 import { PAGES } from '../data/constants.js';
 import { newT } from '../state/booking.js';
-import { byId, tourById } from '../state/selectors.js';
+import { byId } from '../state/selectors.js';
 import { isOnline } from '../data/repo.js';
 import { pageStaffLogin } from '../views/staff-login.js';
+import { DEPARTMENTS } from '../data/departments.js';
+import { PUB_TYPES } from '../data/publications.js';
+import { SECTIONS, siteById } from '../data/explore.js';
+
+/* Old addresses that moved: the themed tours were replaced by the heritage
+   trails in Explore, About merged into Visit, Tsodilo is an Explore page. */
+const MOVED = {
+  tours: '#/explore/trails', tour: '#/explore/trails',
+  'page/about': '#/visit/about', 'page/tsodilo': '#/explore/monuments/tsodilo',
+};
 
 /* ---------------- router ---------------- */
 export function route() {
   const h = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
   const [a = '', b = '', c = ''] = h.split('/');
+  const moved = MOVED[a] || MOVED[`${a}/${b}`];
+  if (moved) { history.replaceState(null, '', moved); route(); return; }
   closeModal();
   const nav = $('#mainnav'); nav.classList.remove('open');
   $('#searchbar').hidden = true;
-  let html; let title = 'Home'; let after = null;
+  /* Close the dropdowns. `shut` keeps a hover menu from staying open under
+     the pointer after a click; the shell clears it on mouseleave. */
+  document.querySelectorAll('.navitem').forEach((n) => { n.classList.remove('open'); n.classList.toggle('shut', n.matches(':hover')); n.querySelector('[data-act="navmenu"]').setAttribute('aria-expanded', 'false'); });
+  if (document.activeElement && document.activeElement.closest('.navitem')) document.activeElement.blur();
+  let html; let title = 'Home'; let after = null; let anchor = null;
   switch (a) {
     case '': html = pageHome(); break;
-    case 'visit': html = pageVisit(); title = 'Visit'; break;
+    case 'visit': html = pageVisit(); title = 'Visit & About'; if (b) anchor = `sec-${b}`; after = mountMaps; break;
+    case 'departments': html = b ? pageDepartment(b, c) : pageDepartments(); title = (DEPARTMENTS.find((d) => d.key === b) || { short: 'Departments' }).short; break;
+    case 'explore': html = b ? pageExploreRoute(b, c) : pageExplore(); title = (siteById(c) || {}).name || (SECTIONS.find((s) => s.key === b) || {}).title || 'Explore'; after = mountMaps; break;
+    case 'publications': html = b ? pagePubType(b) : pagePublications(); title = (PUB_TYPES.find((t) => t.key === b) || { title: 'Publications' }).title; break;
     case 'exhibitions': html = pageExhibitions(); title = 'Exhibitions'; break;
     case 'events': html = pageEvents(); title = 'Events'; break;
     case 'tickets': if (store.T.step === 4) store.T = newT(); html = pageTickets(); title = 'Tickets'; break;
     case 'collection': html = pageCollection(); title = 'Collection Online'; after = renderResults; break;
     case 'map': html = pageMap(); title = 'Museum map'; break;
-    case 'tours': html = pageTours(); title = 'Tours'; break;
-    case 'tour': html = pageTour(b); title = (tourById(b) || {}).title || 'Tour'; break;
     case 'object': html = pageObject(b); title = (byId(b) || {}).title || 'Object'; break;
     case 'staff':
       /* Guard. Online, the staff area needs a session -- the API enforces
@@ -66,5 +86,6 @@ export function route() {
   document.querySelectorAll('[data-nav]').forEach((el) => el.classList.toggle('on', el.dataset.nav === a || (a === 'object' && el.dataset.nav === 'collection') || (a === 'page' && el.dataset.nav === `page/${b}`)));
   document.querySelectorAll('[data-pb]').forEach((el) => el.classList.toggle('on', el.dataset.pb === a));
   window.scrollTo(0, 0);
+  if (anchor) { const el = document.getElementById(anchor); if (el) el.scrollIntoView(); }
   if (store.PENDING) { const p = store.PENDING; store.PENDING = null; p(); }
 }

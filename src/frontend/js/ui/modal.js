@@ -1,7 +1,7 @@
 import { store } from '../state/store.js';
 import { $, esc } from '../core/dom.js';
-/* The single modal host. Resets the lightbox and tour-player state directly
-   rather than importing them, which would make those modules cyclic. */
+/* The single modal host. Resets the lightbox state directly rather than
+   importing it, which would make the modules cyclic. */
 
 /* ---------------- modals ---------------- */
 export function openModal(html, label) {
@@ -12,7 +12,7 @@ export function openModal(html, label) {
   const f = $('#modal [data-act="close"]'); if (f) f.focus();
 }
 export function closeModal() {
-  store.LB = { id: null, i: 0 }; store.TOURSTATE = { id: null, i: 0 };
+  store.LB = { id: null, i: 0 };
   const m = $('#modal'); if (!m) return;
   m.remove(); document.body.style.overflow = '';
   if (store.lastFocus && document.contains(store.lastFocus)) store.lastFocus.focus();

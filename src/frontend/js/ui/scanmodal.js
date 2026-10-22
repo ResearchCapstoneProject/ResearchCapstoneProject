@@ -12,7 +12,7 @@ export function openScan(id) {
   store.S.scans[id] = (store.S.scans[id] || 0) + 1; save();
   openModal(`<div class="phonewrap">
     <div class="explain">
-      <div class="eyebrow" style="color:#9FC7E4">In the gallery</div>
+      <div class="eyebrow" style="color:var(--sky-soft)">In the gallery</div>
       <h2>What a visitor sees after scanning</h2>
       <ol><li>The visitor points the phone camera at the QR code on the label.</li><li>The object page opens in the browser – no app, no login.</li><li>Content comes live from the collection database, so staff edits appear immediately.</li></ol>
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn sky" type="button" data-act="close">Close</button><button class="btn ghost" type="button" data-act="scan" data-id="${o.id}" style="color:#fff;border-color:#fff">Scan again</button></div>

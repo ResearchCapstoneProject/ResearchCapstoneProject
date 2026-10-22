@@ -23,12 +23,15 @@ export function exCard(e, big = false) {
     </div>
   </a>`;
 }
-export function eventRow(ev) {
+export function eventRow(ev, past = false) {
   const d = fromKey(ev.d);
-  return `<div class="event">
-    <div class="date"><b>${d.getDate()}</b><span>${d.toLocaleDateString('en-GB', { month: 'short' })}<br>${d.toLocaleDateString('en-GB', { weekday: 'short' })}</span></div>
-    <div><div class="eyebrow">${esc(ev.kind)}</div><h3>${esc(ev.title)}</h3><div class="meta">${esc(ev.time)} · ${esc(ev.place)}</div></div>
-    <a class="btn ghost small" href="#/tickets">Book</a>
+  const action = past
+    ? (ev.pdf ? `<a class="btn ghost small" href="${esc(ev.pdf)}" target="_blank" rel="noopener">Flyer (PDF)</a>` : '<span class="chip">Past</span>')
+    : '<a class="btn ghost small" href="#/tickets">Book</a>';
+  return `<div class="event${past ? ' past' : ''}${ev.img ? ' withimg' : ''}">
+    <div class="date"><b>${d.getDate()}</b><span>${d.toLocaleDateString('en-GB', { month: 'short' })}<br>${past ? d.getFullYear() : d.toLocaleDateString('en-GB', { weekday: 'short' })}</span></div>
+    <div><div class="eyebrow">${esc(ev.kind)}</div><h3>${esc(ev.title)}</h3><div class="meta">${esc(ev.time)} · ${esc(ev.place)}${ev.by ? ` · ${esc(ev.by)}` : ''}</div>${ev.text ? `<p class="evtext">${esc(ev.text)}</p>` : ''}${ev.img ? `<img class="evimg" src="${esc(ev.img)}" alt="" loading="lazy">` : ''}</div>
+    ${action}
   </div>`;
 }
 export function pagehead(crumbs, title, lede = '') {

@@ -2,7 +2,8 @@
 Research Capstone Project created in collaboration with the National Museum of Botswana.
 
 A website for the museum with online ticketing (timed slots), a searchable collection
-database, QR-coded gallery labels, self-guided tours and a staff area for curators and the
+database, QR-coded gallery labels, the museum's departments, publications and heritage sites
+(Explore, with maps and heritage trails) and a staff area for curators and the
 front desk.
 
 
@@ -42,6 +43,25 @@ files, two origins — which is the honest way to demonstrate that the site stil
 the museum's connection drops during a presentation.
 
 
+## Content
+The texts and images of the museum's previous website (DNMM) are in the app:
+- `src/frontend/js/data/about.js`, `departments.js`, `explore.js`, `publications.js` hold the texts.
+  Passages quoted from the museum's collaboration brief (October 2026) are marked in the file
+  headers and must not be edited without the museum.
+- `src/frontend/assets/img/` holds **every** image of the old site, including ones the website does
+  not show (PSD sources, sprites, banners). `assets/img/web/` has web-sized copies of the very
+  large photos; the originals stay next to the others.
+- `src/frontend/assets/publications/` holds the brochures, the Zebra's Voice, the heritage trail
+  maps, the Plant/Insect of the Month posters and event flyers. One PDF is 68 MB, above GitHub's
+  50 MB warning — consider Git LFS before pushing more of these.
+- The collection includes the 60 entries of the museum's catalogue *Art and Crafts of Botswana*
+  (`BNM-ETH-0301`–`0357`, `BNM-ARC-0501`–`0503` in `assets/seed/objects.json`, photos in
+  `assets/img/collection/acb/`). The catalogue gives no accession numbers, sizes or gallery
+  locations, so those are placeholders to replace with the museum's register. Each record names
+  its catalogue page (`catalogue`, a new column — run `docker compose down -v` after pulling).
+- Maps use Leaflet (loaded from cdnjs) with OpenStreetMap tiles; positions are approximate unless
+  the text gives coordinates (see the header of `explore.js`).
+
 ## Layout
 ```
 doc/            README, TODO, ARCHITECTURE, SMOKE-TEST, THIRD-PARTY
@@ -71,7 +91,8 @@ against the prototype.
 
 ## Status
 Working: the collection database and search, timed-slot ticketing with real capacity
-limits, QR labels and scan statistics, tours, the museum map, and the staff area with
+limits, QR labels and scan statistics, the Departments / Explore / Publications sections with the
+content of the museum's previous website, the museum map, and the staff area with
 sign-in, object CRUD, image upload and booking check-in.
 
 Still simulated, and deliberately labelled as such in the interface: online payment (the

@@ -12,30 +12,51 @@
 .lang button[aria-pressed="true"] { background: var(--ink); color: #fff !important; }
 
 .masthead { position: sticky; top: 0; z-index: 40; background: var(--paper); border-bottom: 1px solid var(--line); }
-.masthead .wrap { display: flex; align-items: center; gap: 28px; min-height: 76px; }
+.masthead .wrap { display: flex; align-items: center; gap: 16px; min-height: 76px; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); flex: none; }
 .brand svg { width: 44px; height: 44px; }
 .brand b { display: block; font-size: 17px; font-stretch: 125%; font-weight: 800; line-height: 1.05; letter-spacing: -.01em; }
 .brand span { display: block; font-size: 12px; color: var(--muted); letter-spacing: .02em; }
-.mainnav { display: flex; gap: 4px; margin-left: auto; }
-.mainnav a { color: var(--ink); text-decoration: none; font-weight: 600; font-size: 15px; padding: 8px 10px; border-bottom: 3px solid transparent; }
+.mainnav { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.mainnav a { color: var(--ink); text-decoration: none; font-weight: 600; font-size: 15px; padding: 8px 7px; border-bottom: 3px solid transparent; white-space: nowrap; }
 .mainnav a:hover { border-bottom-color: var(--sky); }
-.mainnav a.on { border-bottom-color: var(--ink); }
+.mainnav a.on { border-bottom-color: var(--ochre); }
+
+/* dropdowns: open on hover / focus on desktop, on the caret button on touch
+   screens and in the mobile menu */
+.navitem { position: relative; display: flex; align-items: center; }
+.navitem > a { padding-right: 2px; }
+.navcaret { width: 24px; height: 32px; display: grid; place-items: center; background: none; border: 0; padding: 0; cursor: pointer; color: var(--muted); }
+.navcaret svg { width: 12px; height: 12px; transition: transform .15s; }
+.navitem.open .navcaret svg { transform: rotate(180deg); }
+.navmenu { display: none; position: absolute; top: 100%; left: 0; z-index: 50; min-width: 240px; margin: 0; padding: 8px 0; list-style: none; background: var(--paper); border: 1px solid var(--line); border-top: 3px solid var(--sky); box-shadow: 0 12px 28px rgba(18, 20, 23, .14); }
+.navmenu a { display: block; padding: 9px 16px; border: 0; font-weight: 600; font-size: 15px; }
+.navmenu a:hover { background: var(--sky-soft); color: var(--deep); }
+.navitem:not(.shut):hover .navmenu, .navitem:not(.shut):focus-within .navmenu, .navitem.open .navmenu { display: block; }
 .headactions { display: flex; align-items: center; gap: 10px; }
 .iconbtn { width: 44px; height: 44px; display: grid; place-items: center; background: none; border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; }
 .iconbtn:hover { border-color: var(--ink); }
 .menubtn { display: none; }
-.flagrule { height: 12px; background: linear-gradient(var(--sky) 0 33%, #fff 33% 41%, var(--ink) 41% 59%, #fff 59% 67%, var(--sky) 67% 100%); }
+/* The logo's colours as a rule under the header: blue, white, orange. */
+.flagrule { height: 10px; background: linear-gradient(var(--sky) 0 45%, #fff 45% 55%, var(--ochre) 55% 100%); }
 .searchbar { border-bottom: 1px solid var(--line); background: var(--paper); }
 .searchbar form { display: flex; gap: 10px; padding-block: 16px; }
 .searchbar input { flex: 1; min-width: 0; }
 
-@media (max-width: 1080px) {
+/* Seven tabs, three with dropdowns: below 1280px they no longer fit next
+   to the brand, so the menu button takes over. */
+@media (max-width: 1279px) {
   .mainnav { display: none; }
   .menubtn { display: grid; }
   .headactions { margin-left: auto; }
-  .mainnav.open { display: flex; flex-direction: column; position: absolute; left: 0; right: 0; top: 100%; background: var(--paper); border-bottom: 1px solid var(--line); padding: 8px var(--gutter) 16px; margin: 0; }
+  .mainnav.open { display: flex; flex-direction: column; align-items: stretch; position: absolute; left: 0; right: 0; top: 100%; background: var(--paper); border-bottom: 1px solid var(--line); padding: 8px var(--gutter) 16px; margin: 0; }
   .mainnav.open a { font-size: 18px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .mainnav.open .navitem { flex-wrap: wrap; border-bottom: 1px solid var(--line); }
+  .mainnav.open .navitem > a { flex: 1; border-bottom: 0; }
+  .mainnav.open .navcaret { width: 44px; height: 44px; }
+  .navitem .navmenu, .navitem:not(.shut):hover .navmenu, .navitem:not(.shut):focus-within .navmenu { display: none; }
+  .mainnav.open .navitem.open .navmenu { display: block; position: static; flex-basis: 100%; box-shadow: none; border: 0; padding: 0 0 8px 16px; min-width: 0; }
+  .mainnav.open .navmenu a { font-size: 16px; padding: 9px 0; border-bottom: 0; }
 }
 @media (max-width: 560px) {
   .utility .hide-s { display: none; }
@@ -49,4 +70,5 @@
   .headactions .searchbtn { display: none; }
 }
 .mainnav .mobile-only { display: none; }
-@media (max-width: 1080px) { .mainnav.open .mobile-only { display: block; } }
+@media (max-width: 1279px) { .mainnav.open .mobile-only { display: block; } }
+@media (min-width: 1280px) and (max-width: 1439px) { .masthead .brand span { display: none; } .masthead .brand b { font-size: 16px; } }

@@ -5,19 +5,20 @@ frontend's offline fallback fetches. One source of truth, no codegen, no
 drift between what the API serves and what the standalone demo shows.
 
 Derived fields (status, onDisplay, added, seed) are NOT in the JSON. They are
-applied here and, identically, in js/data/seed.js on the client.
+applied here and, identically, in decorateSeedObjects() in js/data/local.js.
 """
 import json
 import random
 from datetime import date, datetime, timedelta
 
+from PIL import Image
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from ..config import SEED_DIR, settings
+from ..config import FRONTEND_DIR, SEED_DIR, settings
 from ..models import (
     Booking, BookingLine, Department, Exhibition, Location, MuseumEvent,
-    MuseumObject, ScanEvent, StaffUser, TicketType, Tour, TourStop,
+    MuseumObject, ObjectImage, ScanEvent, StaffUser, TicketType, Tour, TourStop,
 )
 from ..security import hash_password
 from ..services import availability, inventory
@@ -59,11 +60,21 @@ def seed_content(db: Session) -> None:
             dims=row.get("dims", ""),
             location_id=loc.id if loc else None,
             body=row.get("text", ""),
+            catalogue=row.get("catalogue", ""),
             # The derived fields the prototype applied in its .map() at load.
             status="published",
             is_seed=True,
             added_at=datetime(2026, 8, 1) + timedelta(days=i),
         ))
+        # Photos that ship with the frontend (ACB catalogue). The row keeps
+        # the asset path; services/images.url_for passes it through.
+        for pos, url in enumerate(row.get("images", [])):
+            with Image.open(FRONTEND_DIR / url.lstrip("/")) as im:
+                w, h = im.size
+            db.add(ObjectImage(object_id=row["id"], position=pos, filename=url,
+                               mime="image/webp", width=w, height=h,
+                               bytes=(FRONTEND_DIR / url.lstrip("/")).stat().st_size,
+                               alt=row["title"]))
     db.flush()
 
     for i, row in enumerate(_load("exhibitions")):

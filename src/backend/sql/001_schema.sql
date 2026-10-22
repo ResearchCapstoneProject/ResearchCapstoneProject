@@ -152,6 +152,7 @@ CREATE TABLE museum_object (
   dims         VARCHAR(128) NOT NULL DEFAULT '',
   location_id  SMALLINT UNSIGNED NULL,
   body         TEXT         NOT NULL,
+  catalogue    VARCHAR(255) NOT NULL DEFAULT '',   -- where the record is published, e.g. 'Art and Crafts of Botswana, p. 22'
   status       ENUM('published','draft') NOT NULL DEFAULT 'draft',
   is_seed      TINYINT(1)   NOT NULL DEFAULT 0,
   added_at     DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

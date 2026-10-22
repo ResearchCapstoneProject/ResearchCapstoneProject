@@ -18,7 +18,7 @@ import { store } from '../state/store.js';
 import { applyServerConfig } from './constants.js';
 import { ApiError, Unreachable, probeHealth, request } from './api.js';
 import {
-  clearLocal, freshState, loadSeed, readLocal, writeLocal,
+  addNewSeedObjects, clearLocal, freshState, loadSeed, readLocal, writeLocal,
 } from './local.js';
 
 export const mode = () => store.api.mode;
@@ -72,7 +72,8 @@ export async function bootstrap() {
   }
 
   const seed = await loadSeed();
-  store.S = readLocal() || freshState(seed);
+  const saved = readLocal();
+  store.S = saved ? addNewSeedObjects(saved, seed) : freshState(seed);
   return store.api.mode;
 }
 

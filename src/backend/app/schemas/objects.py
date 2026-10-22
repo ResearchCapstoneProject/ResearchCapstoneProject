@@ -22,6 +22,7 @@ class ObjectOut(CamelModel):
     dims: str = ""
     location: str = ""
     text: str = ""
+    catalogue: str = ""
     status: str
     on_display: bool
     added: int          # ms since epoch, matching Date.UTC() in the prototype

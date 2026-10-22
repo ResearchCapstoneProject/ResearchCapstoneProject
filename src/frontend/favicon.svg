@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="20 30 380 380">
+  <!-- Botswana National Museum mark: woven strips, redrawn from favicon.ico.
+       Blue and white strips run top-left to bottom-right, the orange strips
+       cross them and sit on top, like the weave of a basket. -->
+  <g stroke="#0B0C0E" stroke-width="12" stroke-linejoin="round">
+    <g fill="#009BE4">
+      <rect x="-82" y="-29" width="164" height="58" rx="5" transform="translate(168 120) rotate(45)"/>
+      <rect x="-82" y="-29" width="164" height="58" rx="5" transform="translate(276 120) rotate(45)"/>
+    </g>
+    <g fill="#FFFFFF">
+      <rect x="-72" y="-29" width="144" height="58" rx="5" transform="translate(170 306) rotate(45)"/>
+      <rect x="-72" y="-29" width="144" height="58" rx="5" transform="translate(278 306) rotate(45)"/>
+    </g>
+    <g fill="#E28E2C">
+      <rect x="-78" y="-29" width="156" height="58" rx="5" transform="translate(112 214) rotate(-45)"/>
+      <rect x="-78" y="-29" width="156" height="58" rx="5" transform="translate(222 214) rotate(-45)"/>
+      <rect x="-78" y="-29" width="156" height="58" rx="5" transform="translate(332 214) rotate(-45)"/>
+    </g>
+  </g>
+</svg>

@@ -26,7 +26,6 @@ export const store = {
 
   // --- transient UI ---
   LB: { id: null, i: 0 },          // lightbox   { object id, image index }
-  TOURSTATE: { id: null, i: 0 },   // tour player { tour id, stop index }
   SB: { date: null },              // staff bookings: selected day
   PENDING: null,                   // callback drained after the next route
   formImage: null,

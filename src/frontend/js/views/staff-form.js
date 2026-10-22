@@ -8,6 +8,7 @@ import { $, esc } from '../core/dom.js';
 import { pad4 } from '../core/format.js';
 import { DEPTS, LOCATIONS } from '../data/constants.js';
 import { save } from '../data/local.js';
+import { imgSrc } from '../art/registry.js';
 import { byId, deptCode, objectURL } from '../state/selectors.js';
 import { published } from '../state/selectors.js';
 
@@ -63,7 +64,7 @@ export function updatePreview() {
   $('#pv').innerHTML = `<div class="card">${objCard(tmp).replace('<a class="objcard"', '<div class="objcard"').replace(/<\/a>\s*$/, '</div>')}</div>${objLabel(tmp, objectURL(f.id))}`;
   const list = $('#uplist');
   if (list) list.innerHTML = store.formImages.length
-    ? store.formImages.map((src, i) => `<div class="upitem"><img src="${src}" alt=""><button type="button" class="btn link" data-act="rm-img" data-i="${i}">Remove</button>${i === 0 ? '<span class="chip">Main</span>' : ''}</div>`).join('')
+    ? store.formImages.map((im, i) => `<div class="upitem"><img src="${esc(imgSrc(im))}" alt=""><button type="button" class="btn link" data-act="rm-img" data-i="${i}">Remove</button>${i === 0 ? '<span class="chip">Main</span>' : ''}</div>`).join('')
     : '<p class="small muted" style="margin:0">No photos yet – the prototype shows a placeholder illustration until the museum uploads one.</p>';
 }
 export function submitForm(editId) {

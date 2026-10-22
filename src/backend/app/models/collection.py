@@ -53,6 +53,7 @@ class MuseumObject(Base):
         SmallInteger, ForeignKey("location.id", ondelete="SET NULL"), nullable=True
     )
     body: Mapped[str] = mapped_column(Text)
+    catalogue: Mapped[str] = mapped_column(String(255), default="")
     status: Mapped[str] = mapped_column(
         Enum("published", "draft", name="object_status"), default="draft"
     )

@@ -11,17 +11,19 @@ python3 -m http.server 5173 -d src/frontend      # then open http://localhost:51
 refactor (a missing export, a stale destructure, `window[e.art]` under module scope) shows up as a
 single console error and an empty section, not as an obviously broken page.
 
-## Routes — all 17 must render
+## Routes — all must render
 
 ```
-#/                              #/tours
-#/visit                         #/tour/highlights
-#/exhibitions                   #/object/BNM-ETH-0142
+#/                              #/object/BNM-ETH-0302
+#/visit  #/visit/about          #/departments/ethnology/basketry
+#/exhibitions                   #/explore/monuments/tsodilo
 #/events                        #/staff
 #/tickets                       #/staff/add
-#/collection                    #/staff/edit/BNM-ETH-0142
+#/collection                    #/staff/edit/BNM-ETH-0302
 #/map                           #/staff/bookings
-#/page/about                    #/staff/stats
+#/explore  #/explore/trails     #/staff/stats
+#/publications/insect-of-the-month
+#/tours, #/page/about           (must redirect to #/explore/trails, #/visit/about)
 #/nonsense   (must show "Not found", not a blank page)
 ```
 
@@ -30,15 +32,15 @@ single console error and an empty section, not as an obviously broken page.
 | Group | Verbs | How to reach them |
 |---|---|---|
 | chrome | `reset` `lang-tn` `toast` `search-toggle` `menu` `close` | prototype bar, utility bar, masthead |
-| object | `scan` `view` `light` `lb` `label` `print` | `#/object/BNM-ETH-0142` |
-| tours | `tour-start` `tour-go` `close-nav` | `#/tour/highlights` |
+| object | `scan` `view` `light` `lb` `label` `print` | `#/object/BNM-ETH-0302` |
+| navigation | `navmenu` (dropdown caret) `close-nav` | masthead, desktop and mobile |
 | tickets | `day` `slot` `qty` `tk-next` `tk-back` `tk-confirm` `tk-new` | `#/tickets`, all four steps |
 | collection | `dept` `dept-link` `room` `display` `clear-search` | `#/collection`, `#/map` |
 | staff | `del` `rm-img` `checkin` `sday` | `#/staff`, `#/staff/add`, `#/staff/bookings` |
 
 Plus: the four form submits (`#topsearch`, `#teasersearch`, `#colsearch`, newsletter), live input on
 `#cq` and the `f-name`/`f-email`/`f-phone` fields, `change` on `#sort` and `#locf`, and `Escape` /
-`ArrowLeft` / `ArrowRight` in both the lightbox and the tour player.
+`ArrowLeft` / `ArrowRight` in the lightbox.
 
 ## Checks that have caught real regressions
 
@@ -58,8 +60,8 @@ Paste into the console on both builds and diff the two objects — element count
 and text lengths must match per route.
 
 ```js
-const ROUTES = ['', 'visit', 'exhibitions', 'events', 'tickets', 'collection', 'map', 'tours',
-  'tour/highlights', 'object/BNM-ETH-0142', 'staff', 'staff/add', 'staff/edit/BNM-ETH-0142',
+const ROUTES = ['', 'visit', 'exhibitions', 'events', 'tickets', 'collection', 'map', 'explore',
+  'explore/trails', 'departments', 'publications', 'object/BNM-ETH-0302', 'staff', 'staff/add', 'staff/edit/BNM-ETH-0302',
   'staff/bookings', 'staff/stats', 'page/about', 'nonsense'];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const out = {};

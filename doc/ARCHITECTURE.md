@@ -9,13 +9,17 @@ src/frontend/            no build step, plain ES modules
   css/{base,layout,components,pages}/
   js/  core/   dom, format, hash, time, qr        (no museum specifics)
        art/    procedural SVG artwork + registry
-       data/   constants, seed, opening hours, api, local, repo
+       data/   constants, seed, opening hours, api, local, repo, and the
+               static content: about, departments, explore, publications
        state/  store (the holder), selectors, booking, query, analytics
-       ui/     shell, cards, modal, lightbox, tour player, floor plan, charts
+       ui/     shell, cards, content blocks, maps (Leaflet), modal, lightbox,
+               floor plan, charts
        views/  one module per route
        router/ routes + route()
        events/ document-level delegation
   assets/fonts/          woff2 extracted from the prototype
+  assets/img/            all images of the museum's previous website
+  assets/publications/   brochures, magazines, trail maps, posters (PDF)
   assets/seed/*.json     shared with the backend seeder
 
 src/backend/

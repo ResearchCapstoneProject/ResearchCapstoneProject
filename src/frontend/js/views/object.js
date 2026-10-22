@@ -4,7 +4,7 @@ import { pageNotFound } from './notfound.js';
 import { ICON } from '../art/icons.js';
 import { viewsOf } from '../art/registry.js';
 import { $, esc } from '../core/dom.js';
-import { byId, objectURL, published, roomOf, toursOf } from '../state/selectors.js';
+import { byId, objectURL, published, roomOf } from '../state/selectors.js';
 import { store } from '../state/store.js';
 import { objCard } from '../ui/cards.js';
 import { request } from '../data/api.js';
@@ -18,7 +18,6 @@ export function pageObject(id) {
   const store = !o.onDisplay;
   const views = viewsOf(o);
   const room = roomOf(o.location);
-  const inTours = toursOf(o.id);
   return `
   <div class="wrap">
     <nav class="crumbs" aria-label="Breadcrumb" style="padding-top:28px"><a href="#/">Home</a><span aria-hidden="true">/</span><a href="#/collection">Collection</a><span aria-hidden="true">/</span><span>${esc(o.dept)}</span></nav>
@@ -36,7 +35,6 @@ export function pageObject(id) {
         <div class="eyebrow">${esc(o.dept)}</div>
         <h1>${esc(o.title)}</h1>
         <div class="sub">${esc([o.origin, o.date].filter(Boolean).join(' · '))}</div>
-        ${inTours.length ? `<div class="tourchips">${inTours.map((t) => `<a class="chip dev" href="#/tour/${t.id}">On the tour: ${esc(t.title)}</a>`).join('')}</div>` : ''}
         <div class="where ${store ? 'store' : ''}">${store ? ICON.box : ICON.pin}<span>${store ? '<b>In the store</b> – can be viewed on request' : `<b>On display:</b> ${esc(o.location)}`}</span></div>
         ${room ? `<div class="planmini"><div class="planbox">${floorPlan({ highlight: room })}</div><a class="small" href="#/map">Open the full museum map →</a></div>` : ''}
         <div class="prose"><p>${esc(o.text || 'Description will follow.')}</p></div>
@@ -48,6 +46,7 @@ export function pageObject(id) {
           <dt>Material</dt><dd>${esc(o.material || '–')}</dd>
           <dt>Dimensions</dt><dd>${esc(o.dims || '–')}</dd>
           <dt>Location</dt><dd>${esc(o.location || '–')}</dd>
+          ${o.catalogue ? `<dt>Published in</dt><dd>${esc(o.catalogue)}</dd>` : ''}
         </dl>
         <div class="eyebrow" style="margin-bottom:10px">Planned for this record</div>
         <div class="future">

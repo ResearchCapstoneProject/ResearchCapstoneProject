@@ -6,7 +6,6 @@ import { openLight } from '../ui/lightbox.js';
 import { closeModal } from '../ui/modal.js';
 import { openScan } from '../ui/scanmodal.js';
 import { toast } from '../ui/toast.js';
-import { openTour } from '../ui/tourplayer.js';
 import { renderResults } from '../views/collection.js';
 import { pageStaffBookings } from '../views/staff-bookings.js';
 import { updatePreview } from '../views/staff-form.js';
@@ -23,7 +22,10 @@ import { newQuery } from '../state/query.js';
 import { pageStaffLogin } from '../views/staff-login.js';
 
 /* ---------------- events ---------------- */
+const closeMenus = () => document.querySelectorAll('.navitem.open').forEach((n) => { n.classList.remove('open'); n.querySelector('[data-act="navmenu"]').setAttribute('aria-expanded', 'false'); });
+
 document.addEventListener('click', (e) => {
+  if (!e.target.closest('.navitem')) closeMenus();
   /* Handle in-page links ourselves: some preview frames turn a plain
      fragment link into a navigation of the surrounding page. */
   if (!e.defaultPrevented && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0) {
@@ -67,8 +69,7 @@ document.addEventListener('click', (e) => {
     }
     case 'light': openLight(t.dataset.id, Number(t.dataset.i)); break;
     case 'lb': { const o = byId(store.LB.id); if (!o) break; const n = viewsOf(o).length; openLight(store.LB.id, (store.LB.i + Number(t.dataset.d) + n) % n); break; }
-    case 'tour-start': openTour(t.dataset.id, 0); break;
-    case 'tour-go': openTour(store.TOURSTATE.id, store.TOURSTATE.i + Number(t.dataset.d)); break;
+    case 'navmenu': { const item = t.closest('.navitem'); const open = !item.classList.contains('open'); document.querySelectorAll('.navitem.open').forEach((n) => { n.classList.remove('open'); n.querySelector('[data-act="navmenu"]').setAttribute('aria-expanded', 'false'); }); item.classList.toggle('open', open); item.classList.remove('shut'); t.setAttribute('aria-expanded', String(open)); break; }
     case 'close-nav': closeModal(); break;
     case 'label': openLabel(t.dataset.id); break;
     case 'print': document.body.classList.add('printing'); window.print(); setTimeout(() => document.body.classList.remove('printing'), 500); break;
@@ -141,15 +142,12 @@ document.addEventListener('change', (e) => {
   if (e.target.id === 'locf') { store.CQ.room = e.target.value; renderResults(); }
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Escape') { closeModal(); closeMenus(); }
   if (!$('#modal')) return;
   if (store.LB.id && $('.lightbox')) {
     const n = viewsOf(byId(store.LB.id)).length;
     if (e.key === 'ArrowRight') openLight(store.LB.id, (store.LB.i + 1) % n);
     if (e.key === 'ArrowLeft') openLight(store.LB.id, (store.LB.i - 1 + n) % n);
-  } else if (store.TOURSTATE.id && $('.tournav')) {
-    if (e.key === 'ArrowRight') openTour(store.TOURSTATE.id, store.TOURSTATE.i + 1);
-    if (e.key === 'ArrowLeft') openTour(store.TOURSTATE.id, store.TOURSTATE.i - 1);
   }
 });
 window.addEventListener('hashchange', route);

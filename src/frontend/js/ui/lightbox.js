@@ -5,7 +5,7 @@ import { viewsOf } from '../art/registry.js';
 import { esc } from '../core/dom.js';
 import { byId } from '../state/selectors.js';
 
-/* ---------------- lightbox & tour player --------------------------- */
+/* ---------------- lightbox ---------------------------------------- */
 export function openLight(objId, i) {
   const o = byId(objId); if (!o) return;
   store.LB = { id: objId, i };

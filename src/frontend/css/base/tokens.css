@@ -1,6 +1,9 @@
 /* ------------------------------------------------------------------
    Botswana National Museum — website prototype
-   Tokens: flag blue + black/white band, Kalahari ochre & sand, basket brown
+   Tokens: taken from the museum's logo (favicon.ico) -- blue #009BE4,
+   orange #E28E2C, white and the black outline. --deep and --ochre-ink are
+   darker shades of the two logo colours that reach WCAG AA as text on
+   white (5.3:1 and 5.8:1).
 ------------------------------------------------------------------- */
 :root {
   --ink: #121417;
@@ -10,12 +13,13 @@
   --line-strong: #121417;
   --paper: #FFFFFF;
   --mist: #F1F4F6;
-  --sky: #6DA9D2;          /* Botswana flag light blue */
-  --sky-soft: #DDEBF5;
-  --deep: #1B5782;         /* link / action blue, AA on white */
-  --ochre: #B5652B;        /* rock-art ochre */
-  --ochre-ink: #8C4617;
-  --sand: #EADFCB;         /* Kalahari sand */
+  --sky: #009BE4;          /* logo blue */
+  --sky-soft: #DCF0FB;
+  --deep: #0072AB;         /* link / action blue, AA on white */
+  --ochre: #E28E2C;        /* logo orange */
+  --ochre-ink: #8F5A1C;    /* orange as text, AA on white */
+  --ochre-soft: #FBEBD6;
+  --sand: #F4E7D4;         /* light tint of the logo orange */
   --bark: #4A2E1D;         /* basket dye brown */
   --ok: #2E7447;
   --ok-soft: #E2F0E6;
