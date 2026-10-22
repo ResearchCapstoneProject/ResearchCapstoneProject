@@ -42,7 +42,7 @@ document.addEventListener('click', (e) => {
   const act = t.dataset.act;
   switch (act) {
     case 'reset':
-      if (confirm('Reset the prototype? Added objects, demo bookings and demo scans will be removed.')) {
+      if (confirm('Reset the demo data? Added objects, demo bookings and demo scans will be removed.')) {
         repo.resetDemo().then(() => {
           store.T = newT(); store.CQ = newQuery(); route();
           toast('Demo data reset.');
@@ -128,7 +128,7 @@ document.addEventListener('submit', (e) => {
   } else if (f.id === 'colsearch') {
     e.preventDefault(); store.CQ.q = $('#cq').value.trim(); store.CQ.page = 1; renderResults();
   } else if (f.dataset.actSubmit === 'newsletter') {
-    e.preventDefault(); toast('Newsletter sign-up is part of the full website – not active in the prototype.');
+    e.preventDefault(); toast('The newsletter is coming soon.');
   }
 });
 document.addEventListener('input', (e) => {

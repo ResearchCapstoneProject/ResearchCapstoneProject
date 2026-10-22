@@ -65,7 +65,7 @@ export function updatePreview() {
   const list = $('#uplist');
   if (list) list.innerHTML = store.formImages.length
     ? store.formImages.map((im, i) => `<div class="upitem"><img src="${esc(imgSrc(im))}" alt=""><button type="button" class="btn link" data-act="rm-img" data-i="${i}">Remove</button>${i === 0 ? '<span class="chip">Main</span>' : ''}</div>`).join('')
-    : '<p class="small muted" style="margin:0">No photos yet – the prototype shows a placeholder illustration until the museum uploads one.</p>';
+    : '<p class="small muted" style="margin:0">No photos yet – a placeholder illustration is shown until a photo is uploaded.</p>';
 }
 export function submitForm(editId) {
   const f = readForm();

@@ -7,7 +7,9 @@
 
 export const API_BASE = '/api';
 export const SEED_URL = '/assets/seed';
-export const LS_KEY = 'bnm-prototype-v1';
+export const LS_KEY = 'bnm-website-v1';
+/* The key used before the rename; local.js moves saved data across once. */
+export const LS_KEY_OLD = 'bnm-prototype-v1';
 
 /* One probe, with a short deadline. The app must not sit on a blank screen
    because the API is slow to refuse a connection. */

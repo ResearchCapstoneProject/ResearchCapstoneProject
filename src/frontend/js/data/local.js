@@ -3,7 +3,7 @@
    The whole prototype state lives under one key. Writes can fail (private
    windows, a full quota once images pile up), so every accessor is guarded
    and the app degrades to in-memory rather than throwing. */
-import { LS_KEY, SEED_URL } from '../core/config.js';
+import { LS_KEY, LS_KEY_OLD, SEED_URL } from '../core/config.js';
 import { store } from '../state/store.js';
 
 let seedCache = null;
@@ -53,7 +53,18 @@ export const freshState = (seed) => ({
   scans: {},
 });
 
+/* Saved data from before the storage key was renamed moves to the new key
+   once, so nobody loses their bookings or added objects. */
+function migrateKey() {
+  try {
+    const old = localStorage.getItem(LS_KEY_OLD);
+    if (old !== null && localStorage.getItem(LS_KEY) === null) localStorage.setItem(LS_KEY, old);
+    if (old !== null) localStorage.removeItem(LS_KEY_OLD);
+  } catch { /* storage unavailable: nothing to move */ }
+}
+
 export function readLocal() {
+  migrateKey();
   try {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return null;

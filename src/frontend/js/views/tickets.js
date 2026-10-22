@@ -122,7 +122,7 @@ export function tkSummary() {
   if (store.T.step === 4) {
     return `<aside class="summary" aria-label="Before your visit"><h3>Before your visit</h3>
       <ul class="small" style="margin:0;padding-left:18px;display:grid;gap:8px"><li>Arrive within your entry hour – you can stay until closing.</li><li>Bring your Omang or residence permit for free admission.</li><li>Guided tours meet at the front desk.</li></ul>
-      <p class="fine">Prototype: no e-mail is sent and no payment is taken. Bookings are stored only in this browser.</p></aside>`;
+      <p class="fine">E-mail confirmations and online payment are not available yet – please pay at the front desk.</p></aside>`;
   }
   const vis = visitorsOf(store.T.q); const total = totalOf(store.T.q);
   const lines = TICKETS.filter((t) => store.T.q[t.key]).map((t) => `<dt>${store.T.q[t.key]} × ${esc(t.name)}</dt><dd>${money(t.price * store.T.q[t.key])}</dd>`).join('');
@@ -135,7 +135,7 @@ export function tkSummary() {
       ${lines}
     </dl>
     <div class="total"><span>Total</span><span>${vis ? money(total) : '–'}</span></div>
-    <p class="fine">Prototype: no payment is taken and no data leaves this browser.</p>
+    <p class="fine">Online payment is not available yet – please pay at the front desk.</p>
   </aside>`;
 }
 export function tkConfirm() {

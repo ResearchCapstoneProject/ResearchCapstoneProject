@@ -11,7 +11,7 @@ import { LS_KEY } from '../core/config.js';
    wording against Botswana's data protection law before the site goes live.
    The banner on both pages says so. */
 
-const DRAFT = `<div class="callout" style="margin-bottom:36px"><div><div class="eyebrow">Draft</div><p style="margin-top:6px">This text describes how the website prototype works. It has not yet been reviewed or approved by the Department of National Museum and Monuments and must be confirmed before the website goes live.</p></div></div>`;
+const DRAFT = `<div class="callout" style="margin-bottom:36px"><div><div class="eyebrow">Draft</div><p style="margin-top:6px">This text describes how the website works. It has not yet been reviewed or approved by the Department of National Museum and Monuments and must be confirmed before the website goes live.</p></div></div>`;
 
 const address = [CONTACT.name, CONTACT.street, CONTACT.box, `Tel: ${CONTACT.tel.join(' / ')}`, `Fax: ${CONTACT.fax}`];
 
@@ -22,7 +22,7 @@ export function pageImprint() {
     <div class="textblocks">${blocks([
       { h: 'Publisher', p: ['Botswana National Museum – Department of National Museum and Monuments (DNMM), Ministry of Environment and Tourism, Republic of Botswana.'], ul: address },
       { h: 'Responsible for content', p: ['Head of Division, Technical Support Services (TSS), Department of National Museum and Monuments, at the address above. The museum coordinates the institutional information and collection materials on this website through this division, in consultation with the respective divisions.'] },
-      { h: 'About this website', p: ['This website is a prototype developed in 2026 as a research capstone project by a team of students in collaboration with the Department of National Museum and Monuments. Opening hours, prices, ticket bookings, inventory numbers and some events shown on it are sample content and not binding.'] },
+      { h: 'About this website', p: ['This website was developed in 2026 in a research capstone project by a team of students in collaboration with the Department of National Museum and Monuments. Opening hours, prices, ticket bookings, inventory numbers and some events shown on it are sample content and not binding.'] },
       { h: 'Copyright', p: [
         'Texts, photographs, publications and collection records on this website are the property of the Botswana National Museum unless stated otherwise. Providing these materials for the website does not transfer copyright or ownership. Any reuse beyond private viewing requires the written permission of the museum.',
         'Researchers and commercial photographers who wish to work at the national monuments should contact the Botswana National Museum for permission.',

@@ -8,7 +8,7 @@
        store.api.mode. No per-call timeouts, no probe storm.
      - a later failure latches to offline ONE WAY. It never flips back on its
        own, because flapping in the middle of the booking wizard would corrupt
-       the wizard's state. The prototype bar has a Reconnect button instead.
+       the wizard's state. Reloading the page probes the API again.
      - 401/403 never degrade: the API is up and we are not authorised. That
        conflation is the classic bug in this pattern.
      - other 4xx never degrade either -- a 409 on a full slot is a business

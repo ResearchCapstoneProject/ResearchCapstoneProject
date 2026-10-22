@@ -88,9 +88,8 @@ export function route() {
   }
   $('#app').innerHTML = html;
   if (after) after();
-  document.title = `${title} · Botswana National Museum (Prototype)`;
+  document.title = `${title} · Botswana National Museum`;
   document.querySelectorAll('[data-nav]').forEach((el) => el.classList.toggle('on', el.dataset.nav === a || (a === 'object' && el.dataset.nav === 'collection') || (a === 'page' && el.dataset.nav === `page/${b}`)));
-  document.querySelectorAll('[data-pb]').forEach((el) => el.classList.toggle('on', el.dataset.pb === a));
   window.scrollTo(0, 0);
   if (anchor) { const el = document.getElementById(anchor); if (el) el.scrollIntoView(); }
   if (store.PENDING) { const p = store.PENDING; store.PENDING = null; p(); }

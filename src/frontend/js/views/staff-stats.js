@@ -41,7 +41,7 @@ export function pageStaffStats() {
         <p class="small muted" style="margin:0 0 14px">Which labels visitors actually use – helpful when planning new texts and audio.</p>
         <div class="chart">${top.map((t) => `<div class="hbar"><a class="lbl" href="#/object/${t.o.id}">${esc(t.o.title)}</a><span class="track"><i style="width:${Math.round(((t.n - t.demo) / topMax) * 100)}%"></i><i class="demo" style="width:${Math.round((t.demo / topMax) * 100)}%"></i></span><span class="n">${t.n}</span></div>`).join('')}</div>
         <div class="legend" style="margin-top:14px"><span><i style="background:var(--deep)"></i>Sample data</span><span><i style="background:var(--sky)"></i>Scans from this demo (${demo})</span></div>
-        <p class="small muted" style="margin-top:18px">Every “Simulate visitor scan” in this prototype is counted here, so you can see the numbers move during the presentation.</p>
+        <p class="small muted" style="margin-top:18px">Every “Simulate visitor scan” is counted here, so you can see the numbers change.</p>
       </div>
     </div>
     <details style="margin-top:28px"><summary style="cursor:pointer;font-weight:600;color:var(--deep)">Show the numbers as a table</summary>

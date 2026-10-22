@@ -119,9 +119,9 @@ export function pageHome() {
     <div class="wrap">
       <div class="sec-head"><div><div class="eyebrow">Museum digital</div><h2 class="h2">Visit online, discover more in the galleries</h2></div></div>
       <div class="digital">
-        <a href="#/collection">${ICON.grid}<span class="chip live dot">Live in prototype</span><h3>Collection Online</h3><p>Search and browse every published object record.</p></a>
-        <a href="#/object/BNM-ETH-0302">${ICON.qr}<span class="chip live dot">Live in prototype</span><h3>QR codes on objects</h3><p>Scan a label in the gallery to open the object page.</p></a>
-        <a href="#/explore/trails">${ICON.route}<span class="chip live dot">Live in prototype</span><h3>Heritage trails</h3><p>Trips to monuments and museums, with maps to download.</p></a>
+        <a href="#/collection">${ICON.grid}<span class="chip live dot">Available now</span><h3>Collection Online</h3><p>Search and browse every published object record.</p></a>
+        <a href="#/object/BNM-ETH-0302">${ICON.qr}<span class="chip live dot">Available now</span><h3>QR codes on objects</h3><p>Scan a label in the gallery to open the object page.</p></a>
+        <a href="#/explore/trails">${ICON.route}<span class="chip live dot">Available now</span><h3>Heritage trails</h3><p>Trips to monuments and museums, with maps to download.</p></a>
         <a href="#/page/ar">${ICON.ar}<span class="chip plan dot">Planned</span><h3>AR in the galleries</h3><p>See objects in 3D and in their original setting.</p></a>
         <a href="#/page/displays">${ICON.screen}<span class="chip plan dot">Planned</span><h3>Interactive displays</h3><p>Touch screens in the galleries fed by the same database.</p></a>
       </div>

@@ -10,6 +10,6 @@ export function pagePlaceholder(key) {
   return `${pagehead([['#/', 'Home'], ['', p.t]], esc(p.t), esc(p.l))}
   <div class="wrap placeholder">
     <div><span class="chip ${p.chip.startsWith('Planned') ? 'plan' : 'dev'}">${esc(p.chip)}</span><h2 class="h3" style="margin:16px 0 14px">What this page will contain</h2><ul>${p.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul></div>
-    <div><p class="prose">This page is part of the full website concept but not built in the prototype. The prototype focuses on the homepage, ticketing with time slots, the collection database and QR codes.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="#/">Back to home</a><a class="btn ghost" href="#/collection">Collection Online</a></div></div>
+    <div><p class="prose">This page is being prepared together with the museum and will be published in a later version of the website.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="#/">Back to home</a><a class="btn ghost" href="#/collection">Collection Online</a></div></div>
   </div>`;
 }

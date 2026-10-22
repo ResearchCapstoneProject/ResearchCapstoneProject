@@ -90,10 +90,10 @@ export const NAV = [
   ['departments', 'Departments', 'departments'],
 ];
 export const PAGES = {
-  learn: { t: 'Learn', l: 'Programmes for schools, families and lifelong learners.', items: ['School visits and teaching material per grade', 'Holiday workshops', 'Outreach: the museum’s mobile exhibitions in rural areas'], chip: 'Outside prototype scope' },
+  learn: { t: 'Learn', l: 'Programmes for schools, families and lifelong learners.', items: ['School visits and teaching material per grade', 'Holiday workshops', 'Outreach: the museum’s mobile exhibitions in rural areas'], chip: 'Planned' },
   groups: { t: 'Groups & schools', l: 'Booking for school classes and larger groups.', items: ['Request form for school groups', 'Group sizes and supervision', 'Links to the ticketing system with group capacity'], chip: 'Next iteration' },
   accessibility: { t: 'Accessibility', l: 'Step-free access, assistance and easy-to-read information.', items: ['Access & seating', 'Easy English and Setswana texts', 'Contrast and font-size options on the website'], chip: 'Next iteration' },
-  press: { t: 'Press', l: 'Press releases and images.', items: ['Press releases', 'Image downloads', 'Contacts'], chip: 'Outside prototype scope' },
+  press: { t: 'Press', l: 'Press releases and images.', items: ['Press releases', 'Image downloads', 'Contacts'], chip: 'Planned' },
   ar: { t: 'AR in the galleries', l: 'Augmented reality on visitors’ phones, triggered by the same QR labels.', items: ['3D models from digitisation', '“View in your room” for selected objects', 'Reconstruction of objects in their original setting'], chip: 'Planned · phase 2' },
   displays: { t: 'Interactive displays', l: 'Touch screens in the galleries that show content from the collection database.', items: ['Kiosk mode of the collection website', 'Themed stories per gallery', 'Content managed in the same staff area'], chip: 'Planned · phase 2' },
 };

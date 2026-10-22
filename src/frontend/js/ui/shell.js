@@ -27,15 +27,6 @@ function navItem([h, l, menu]) {
 export function shell() {
   const st = openStatus();
   document.body.insertAdjacentHTML('afterbegin', `
-  <div class="protobar" role="region" aria-label="Prototype navigation">
-    <div class="wrap">
-      <span class="tag">PROTOTYPE</span>
-      <span class="note">Capstone project with the Botswana National Museum · sample content, not the official website</span>
-      <nav aria-label="Prototype screens">
-        <a href="#/" data-pb="">Home</a><a href="#/tickets" data-pb="tickets">Tickets</a><a href="#/collection" data-pb="collection">Collection</a><a href="#/object/BNM-ETH-0302" data-pb="object">Object &amp; QR</a><a href="#/explore" data-pb="explore">Explore</a><a href="#/staff" data-pb="staff">Staff area</a><button type="button" data-act="reset">Reset demo</button>
-      </nav>
-    </div>
-  </div>
   <div class="utility">
     <div class="wrap">
       <div class="status ${st.open ? '' : 'closed'}"><i></i><span>${st.text}</span><span class="hide-s muted">· Gaborone time</span></div>
@@ -76,7 +67,7 @@ export function shell() {
         <div><h4>Explore</h4><ul>${SECTIONS.map((s) => `<li><a href="#/explore/${s.key}">${esc(s.title)}</a></li>`).join('')}</ul></div>
       </div>
       <div class="legal">
-        <div class="notes"><span>© 2026 Botswana National Museum · texts and images belong to the museum</span><span>Prototype from a research capstone project · prices, bookings and inventory numbers are sample content</span></div>
+        <div class="notes"><span>© 2026 Botswana National Museum · texts and images belong to the museum</span><span>Prices, bookings and inventory numbers are sample content</span></div>
         <nav aria-label="Legal"><a href="#/visit/about">About us</a><a href="#/imprint">Imprint</a><a href="#/privacy">Privacy</a><a href="#/staff">Staff area</a></nav>
       </div>
     </div>
