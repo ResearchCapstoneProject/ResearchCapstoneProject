@@ -39,10 +39,26 @@
 
 .visitpic { margin: 0; }
 .visitpic img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+/* About: the photo column ends level with the text at any width. The museum
+   photos keep their size and the building photo takes up the rest of the
+   column height; below 1000px the section stacks instead. */
+.twocol.wide-left { align-items: stretch; }
+.aboutpics { display: grid; gap: 12px; grid-template-rows: minmax(0, 1fr) auto; }
+.aboutpics .visitpic img { height: 100%; min-height: 260px; aspect-ratio: auto; object-fit: cover; }
+.aboutpics .photos.two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; }
+@media (max-width: 1000px) {
+  .twocol.wide-left { grid-template-columns: 1fr; gap: 28px; }
+  .aboutpics { grid-template-rows: auto; }
+  .aboutpics .visitpic img { height: auto; min-height: 0; aspect-ratio: 16 / 9; }
+  .aboutpics .photos.two { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) { .aboutpics .photos.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 address.contact { font-style: normal; font-size: 18px; line-height: 1.7; }
 .statement { margin: 0; padding: 28px 0 0; border-top: 4px solid var(--ochre); }
 .statement p { margin: 12px 0 0; font-family: var(--serif); font-size: clamp(20px, 2vw, 25px); line-height: 1.45; color: var(--ink); }
 .statement:last-child { border-top-color: var(--sky); }
+.statements { display: grid; gap: 28px; margin-top: 32px; }
+.statements .statement p { font-size: clamp(19px, 1.7vw, 22px); }
 
 /* photo strips: open full size in a new tab */
 .photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 0 0 32px; }
@@ -54,15 +70,18 @@ address.contact { font-style: normal; font-size: 18px; line-height: 1.7; }
 
 /* long text with optional side picture */
 .textblocks { display: grid; gap: 36px; }
-.tblock { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; align-items: start; }
-.tblock.withpic { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); }
-@media (max-width: 760px) { .tblock.withpic { grid-template-columns: 1fr; } .tblock .tpic { order: -1; } }
+/* flow-root contains the floated picture; text wraps around it */
+.tblock { display: flow-root; }
+.tblock.withpic .tpic { float: right; width: min(42%, 380px); margin: 6px 0 14px 28px; }
+@media (max-width: 760px) { .tblock.withpic .tpic { float: none; width: 100%; margin: 0 0 16px; } }
 .tbody { font-family: var(--serif); font-size: 18px; line-height: 1.65; color: var(--ink-2); max-width: 68ch; }
 .tbody h2 { font-family: var(--display); color: var(--ink); margin-bottom: 12px; }
 .tbody h3 { font-family: var(--display); color: var(--ink); margin-bottom: 8px; }
 .tbody p { margin: 0 0 1em; }
-.tbody ul, .tbody ol { margin: 0 0 1em; padding-left: 22px; display: grid; gap: 6px; }
-.tbody .note { font-size: 16px; padding: 12px 16px; background: var(--sky-soft); color: var(--ink); }
+/* plain blocks (not grid) so lists wrap around a floated picture too */
+.tbody ul, .tbody ol { margin: 0 0 1em; padding-left: 22px; }
+.tbody li + li { margin-top: 6px; }
+.tbody .note { font-size: 16px; padding: 12px 16px; background: var(--sky-soft); color: var(--ink); display: flow-root; }
 .tpic { margin: 0; }
 .tpic img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
 .tcols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
@@ -81,6 +100,11 @@ address.contact { font-style: normal; font-size: 18px; line-height: 1.7; }
 
 /* maps (Leaflet) */
 .mapbox { position: relative; height: 300px; background: var(--mist); border: 1px solid var(--line); z-index: 0; }
+/* beside a text column (Visit & About contact) the map fills the column height */
+.twocol > .mapbox { align-self: stretch; height: auto; min-height: 300px; }
+.mainmap { margin-top: 32px; }
+.mainmap .mapbox { height: 340px; }
+.museumtext { display: grid; gap: 36px; margin-top: 40px; }
 .mapbox.tall { height: min(520px, 70vh); }
 .mapfallback { margin: 0; padding: 14px 16px 14px 32px; font-size: 14px; display: grid; gap: 4px; max-height: 100%; overflow: auto; }
 .mapbox.offline::before { content: "Interactive map unavailable offline – places and links:"; display: block; padding: 12px 16px 0; font-size: 13px; font-weight: 700; color: var(--muted); }
@@ -95,7 +119,9 @@ address.contact { font-style: normal; font-size: 18px; line-height: 1.7; }
 
 /* departments */
 .deptpage { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 56px; padding-block: 40px 56px; align-items: start; }
-@media (max-width: 900px) { .deptpage { grid-template-columns: 1fr; gap: 32px; } }
+/* the related-links column stays in view instead of ending early */
+.deptside { position: sticky; top: 100px; }
+@media (max-width: 900px) { .deptpage { grid-template-columns: 1fr; gap: 32px; } .deptside { position: static; } }
 .units { list-style: none; padding: 0 !important; gap: 0 !important; border-top: 2px solid var(--ink); }
 .units li { padding: 14px 0; border-bottom: 1px solid var(--line); }
 .units b { font-family: var(--display); color: var(--ink); }

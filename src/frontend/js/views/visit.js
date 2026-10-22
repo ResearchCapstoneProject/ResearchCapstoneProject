@@ -1,5 +1,5 @@
 import { pagehead } from '../ui/cards.js';
-import { card, mapbox, photos, subnav } from '../ui/content.js';
+import { card, mapbox, subnav } from '../ui/content.js';
 import { DAYNAME } from '../core/time.js';
 import { HOURS, TICKETS } from '../data/constants.js';
 import { esc } from '../core/dom.js';
@@ -60,24 +60,30 @@ export function pageVisit() {
         ${ABOUT.map((t) => `<p>${esc(t)}</p>`).join('')}
         <p>${esc(DEPT_INTRO)}</p>
       </div>
-      <figure class="visitpic"><img src="${IMG}/web/natural-history/pix/museum-picture.jpg" alt="Museum building" loading="lazy"></figure>
+      <!-- The museum photos fill the column beside the text instead of
+           sitting in a strip below it, which left a gap under the picture. -->
+      <div class="aboutpics">
+        <figure class="visitpic"><img src="${IMG}/web/natural-history/pix/museum-picture.jpg" alt="Museum building" loading="lazy"></figure>
+        <div class="photos two">${ABOUT_PHOTOS.map((src) => `<figure><a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="Botswana National Museum" loading="lazy"></a></figure>`).join('')}</div>
+      </div>
     </div>
-    <div class="wrap" style="margin-top:36px">${photos(ABOUT_PHOTOS, 'Botswana National Museum')}</div>
   </section>
 
   <section class="bg-mist" id="sec-history">
     <div class="wrap twocol">
-      <div class="prose"><div class="eyebrow">History</div><h2 class="h3" style="margin:10px 0 16px;color:var(--ink)">From a board-run institution to a government department</h2>${HISTORY.map((t) => `<p>${esc(t)}</p>`).join('')}</div>
+      <!-- Vision and mission sit under the history: beside the longer
+           Operations text the History column used to end early. -->
+      <div>
+        <div class="prose"><div class="eyebrow">History</div><h2 class="h3" style="margin:10px 0 16px;color:var(--ink)">From a board-run institution to a government department</h2>${HISTORY.map((t) => `<p>${esc(t)}</p>`).join('')}</div>
+        <div class="statements" id="sec-mission">
+          <blockquote class="statement"><div class="eyebrow">Vision</div><p>${esc(VISION)}</p></blockquote>
+          <blockquote class="statement"><div class="eyebrow">Mission</div><p>${esc(MISSION)}</p></blockquote>
+        </div>
+      </div>
       <div class="prose"><div class="eyebrow">Operations</div><h2 class="h3" style="margin:10px 0 16px;color:var(--ink)">What the museum does</h2>${OPERATIONS.map((t) => `<p>${esc(t)}</p>`).join('')}<p><a href="#/publications/zebras-voice">Read the Zebra’s Voice →</a></p></div>
     </div>
   </section>
 
-  <section id="sec-mission">
-    <div class="wrap twocol">
-      <blockquote class="statement"><div class="eyebrow">Vision</div><p>${esc(VISION)}</p></blockquote>
-      <blockquote class="statement"><div class="eyebrow">Mission</div><p>${esc(MISSION)}</p></blockquote>
-    </div>
-  </section>
 
   <section class="bg-mist" id="sec-divisions">
     <div class="wrap">

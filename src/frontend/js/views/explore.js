@@ -55,7 +55,9 @@ function pageMuseums(sec) {
   return `${pagehead([['#/', 'Home'], ['#/explore', 'Explore'], ['', sec.title]], esc(sec.title), esc(sec.lede))}
   <div class="wrap" style="padding-block:32px 72px">
     ${mapbox(list.map(marker), { label: 'Map of museums' })}${APPROX}
-    <div class="twocol" style="margin-top:40px">
+    <!-- One column: the short institutional text beside the long regional
+         one left a large empty area. -->
+    <div class="museumtext">
       <div class="prose">
         <h2 class="h3">Regional Museums</h2>
         ${MUSEUMS_TEXT.regional.map((t) => `<p>${esc(t)}</p>`).join('')}
@@ -85,6 +87,11 @@ function pageSite(s, sec) {
     ...(s.brochure ? [['Brochure', `<a href="${esc(s.brochure)}" target="_blank" rel="noopener">Download the PDF</a>`]] : []),
     ...(trails.length ? [['Heritage trail', trails.map((t) => `<a href="#/explore/trails/${t.id}">${esc(t.name)}</a>`).join('<br>')]] : []),
   ];
+  /* With only a few lines of text the side column (facts, locator, map) is
+     far taller than the main one, so the map moves under the text instead. */
+  const textLen = (s.sections || []).reduce((n, b) => n + [b.h, ...(b.p || []), ...(b.ul || []), ...(b.ol || [])].join(' ').length, 0);
+  const mapBelow = textLen < 900;
+  const map = `${mapbox([marker(s)], { label: `Map: ${s.name}` })}${s.exact ? '' : '<p class="small muted mapnote">Approximate position.</p>'}`;
   return `${pagehead(crumbs, esc(s.name), esc(s.place))}
   ${banner(s.cover, s.name)}
   <div class="wrap sitepage">
@@ -92,12 +99,12 @@ function pageSite(s, sec) {
       ${designationBadges(s.designation)}
       <figure class="sitelocator">${locator(s.pos, s.name)}<figcaption class="small muted">Where in Botswana<br><span class="eyebrow">Schematic map</span></figcaption></figure>
       ${factlist(facts)}
-      ${mapbox([marker(s)], { label: `Map: ${s.name}` })}
-      ${s.exact ? '' : '<p class="small muted mapnote">Approximate position.</p>'}
+      ${mapBelow ? '' : map}
     </aside>
     <div class="sitemain">
       ${photos(s.photos, s.name)}
       <div class="textblocks">${blocks(s.sections)}</div>
+      ${mapBelow ? `<div class="mainmap">${map}</div>` : ''}
     </div>
   </div>`;
 }

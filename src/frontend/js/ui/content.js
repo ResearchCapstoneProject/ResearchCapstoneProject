@@ -4,9 +4,12 @@
 import { esc } from '../core/dom.js';
 import { locator } from '../art/locator.js';
 
-/* Long-form text: [{ h, p: [], ul: [], ol: [], img, cols: [{ h, ul }], note }] */
+/* Long-form text: [{ h, p: [], ul: [], ol: [], img, cols: [{ h, ul }], note }]
+   The picture comes first and floats right, so the text wraps around it and
+   continues underneath -- a side column left empty space below short photos. */
 export function blocks(list = []) {
   return list.map((s) => `<section class="tblock${s.img ? ' withpic' : ''}">
+    ${s.img ? `<figure class="tpic"><img src="${esc(s.img)}" alt="" loading="lazy"></figure>` : ''}
     <div class="tbody">
       ${s.h ? `<h2 class="h3">${esc(s.h)}</h2>` : ''}
       ${(s.p || []).map((t) => `<p>${esc(t)}</p>`).join('')}
@@ -15,7 +18,6 @@ export function blocks(list = []) {
       ${s.cols ? `<div class="tcols">${s.cols.map((c) => `<div><h3 class="h4">${esc(c.h)}</h3><ul>${c.ul.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div>`).join('')}</div>` : ''}
       ${s.note ? `<p class="note"><b>Please note:</b> ${esc(s.note)}</p>` : ''}
     </div>
-    ${s.img ? `<figure class="tpic"><img src="${esc(s.img)}" alt="" loading="lazy"></figure>` : ''}
   </section>`).join('');
 }
 
