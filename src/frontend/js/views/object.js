@@ -1,6 +1,5 @@
 import { objLabel } from '../ui/label.js';
 import { pageNotFound } from './notfound.js';
-import { ICON } from '../art/icons.js';
 import { viewsOf } from '../art/registry.js';
 import { $, esc } from '../core/dom.js';
 import { byId, objectURL, published } from '../state/selectors.js';
@@ -14,7 +13,6 @@ export function pageObject(id) {
   if (!o) return pageNotFound();
   const url = objectURL(o.id);
   const related = published().filter((x) => x.dept === o.dept && x.id !== o.id).slice(0, 4);
-  const store = !o.onDisplay;
   const views = viewsOf(o);
   return `
   <div class="wrap">
@@ -33,7 +31,6 @@ export function pageObject(id) {
         <div class="eyebrow">${esc(o.dept)}</div>
         <h1>${esc(o.title)}</h1>
         <div class="sub">${esc([o.origin, o.date].filter(Boolean).join(' · '))}</div>
-        <div class="where ${store ? 'store' : ''}">${store ? ICON.box : ICON.pin}<span>${store ? '<b>In the store</b> – can be viewed on request' : `<b>On display:</b> ${esc(o.location)}`}</span></div>
         <div class="prose"><p>${esc(o.text || 'Description will follow.')}</p></div>
         <dl class="facts">
           <dt>Inventory number</dt><dd>${esc(o.id)}</dd>
@@ -42,7 +39,6 @@ export function pageObject(id) {
           <dt>Date</dt><dd>${esc(o.date || '–')}</dd>
           <dt>Material</dt><dd>${esc(o.material || '–')}</dd>
           <dt>Dimensions</dt><dd>${esc(o.dims || '–')}</dd>
-          <dt>Location</dt><dd>${esc(o.location || '–')}</dd>
           ${o.catalogue ? `<dt>Published in</dt><dd>${esc(o.catalogue)}</dd>` : ''}
         </dl>
         <div class="eyebrow" style="margin-bottom:10px">Planned for this record</div>

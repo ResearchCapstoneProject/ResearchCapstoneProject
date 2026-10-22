@@ -86,11 +86,11 @@ document.addEventListener('click', (e) => {
       store.T.step -= 1; store.T.err = {}; tkRerender(true); break;
     case 'tk-confirm': tkConfirm(); break;
     case 'tk-new': store.T = newT(); tkRerender(true); break;
-    case 'dept': store.CQ.dept = t.dataset.v; renderResults(); break;
+    case 'dept': store.CQ.dept = t.dataset.v; store.CQ.page = 1; renderResults(); break;
     case 'dept-link': store.CQ = newQuery({ dept: t.dataset.v }); break;
-    case 'display': store.CQ.display = !store.CQ.display; renderResults(); break;
-    case 'craft-clear': store.CQ.craft = ''; history.replaceState(null, '', '#/collection'); renderResults(); break;
-    case 'clear-search': store.CQ = newQuery(); $('#cq').value = ''; if ($('#locf')) $('#locf').value = 'All'; renderResults(); break;
+    case 'craft-clear': store.CQ.craft = ''; store.CQ.page = 1; history.replaceState(null, '', '#/collection'); renderResults(); break;
+    case 'page': store.CQ.page = Number(t.dataset.p); renderResults(); { const top = $('.resulthead'); if (top) top.scrollIntoView({ block: 'start' }); } break;
+    case 'clear-search': store.CQ = newQuery(); $('#cq').value = ''; renderResults(); break;
     case 'del': {
       const o = byId(t.dataset.id);
       if (o && confirm(`Delete “${o.title}” (${o.id})? Its QR code will stop working.`)) { store.S.objects = store.S.objects.filter((x) => x.id !== o.id); save(); route(); toast(`Deleted ${o.id}.`); }
@@ -126,20 +126,19 @@ document.addEventListener('submit', (e) => {
     store.CQ = newQuery({ q });
     if (location.hash === '#/collection') route(); else location.hash = '#/collection';
   } else if (f.id === 'colsearch') {
-    e.preventDefault(); store.CQ.q = $('#cq').value.trim(); renderResults();
+    e.preventDefault(); store.CQ.q = $('#cq').value.trim(); store.CQ.page = 1; renderResults();
   } else if (f.dataset.actSubmit === 'newsletter') {
     e.preventDefault(); toast('Newsletter sign-up is part of the full website – not active in the prototype.');
   }
 });
 document.addEventListener('input', (e) => {
-  if (e.target.id === 'cq') { store.CQ.q = e.target.value.trim(); renderResults(); }
+  if (e.target.id === 'cq') { store.CQ.q = e.target.value.trim(); store.CQ.page = 1; renderResults(); }
   if (store.T.step === 3 && e.target.id && e.target.id.startsWith('f-')) {
     const m = { 'f-name': 'name', 'f-email': 'email', 'f-phone': 'phone' }; if (m[e.target.id]) store.T[m[e.target.id]] = e.target.value;
   }
 });
 document.addEventListener('change', (e) => {
-  if (e.target.id === 'sort') { store.CQ.sort = e.target.value; renderResults(); }
-  if (e.target.id === 'locf') { store.CQ.room = e.target.value; renderResults(); }
+  if (e.target.id === 'sort') { store.CQ.sort = e.target.value; store.CQ.page = 1; renderResults(); }
 });
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { closeModal(); closeMenus(); }

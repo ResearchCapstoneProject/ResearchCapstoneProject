@@ -11,3 +11,13 @@
 .resulthead { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 20px; flex-wrap: wrap; }
 .resulthead select { width: auto; min-height: 40px; }
 .empty { padding: 48px 0; text-align: center; color: var(--muted); }
+
+/* paging */
+.pager { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 44px; }
+.pgnums { display: flex; align-items: center; gap: 6px; }
+.pgbtn { min-width: 44px; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); font-weight: 700; font-size: 15px; cursor: pointer; font-variant-numeric: tabular-nums; }
+.pgbtn:hover:not([disabled]) { border-color: var(--ink); }
+.pgbtn[aria-current="page"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.pgbtn[disabled] { opacity: .4; cursor: default; }
+.pggap { color: var(--muted); padding: 0 2px; }
+@media (max-width: 560px) { .pager { gap: 10px; } .pager > .pgbtn { flex: 1; } .pgnums { order: -1; width: 100%; justify-content: center; } }

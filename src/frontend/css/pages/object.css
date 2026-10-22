@@ -9,9 +9,6 @@
 .objpage .viewer .tools { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 .objpage h1 { font-size: clamp(30px, 3.6vw, 46px); font-stretch: 118%; margin: 10px 0 12px; }
 .objpage .sub { font-size: 17px; color: var(--ink-2); margin-bottom: 20px; }
-.where { display: flex; gap: 12px; align-items: center; padding: 14px 16px; background: var(--sky-soft); margin-bottom: 28px; font-size: 15px; }
-.where.store { background: var(--mist); }
-.where svg { width: 26px; height: 26px; flex: none; }
 .facts { display: grid; grid-template-columns: 170px minmax(0, 1fr); border-top: 2px solid var(--ink); margin: 28px 0; font-size: 15px; }
 .facts dt, .facts dd { padding: 11px 0; border-bottom: 1px solid var(--line); margin: 0; }
 .facts dt { color: var(--muted); font-weight: 600; }

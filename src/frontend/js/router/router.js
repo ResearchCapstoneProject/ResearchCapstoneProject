@@ -68,7 +68,7 @@ export function route() {
     case 'tickets': if (store.T.step === 4) store.T = newT(); html = pageTickets(); title = 'Tickets'; break;
     /* #/collection/<craft> opens the collection filtered to one craft of the
        Art and Crafts of Botswana catalogue; the home page links them so. */
-    case 'collection': if (b) store.CQ = newQuery({ craft: b }); html = pageCollection(); title = 'Collection Online'; after = renderResults; break;
+    case 'collection': if (b && store.CQ.craft !== b) store.CQ = newQuery({ craft: b }); html = pageCollection(); title = 'Collection Online'; after = renderResults; break;
     case 'object': html = pageObject(b); title = (byId(b) || {}).title || 'Object'; break;
     case 'staff':
       /* Guard. Online, the staff area needs a session -- the API enforces

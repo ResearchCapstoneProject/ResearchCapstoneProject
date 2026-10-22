@@ -35,7 +35,7 @@ single console error and an empty section, not as an obviously broken page.
 | object | `scan` `view` `light` `lb` `label` `print` | `#/object/BNM-ETH-0302` |
 | navigation | `navmenu` (dropdown caret) `close-nav` | masthead, desktop and mobile |
 | tickets | `day` `slot` `qty` `tk-next` `tk-back` `tk-confirm` `tk-new` | `#/tickets`, all four steps |
-| collection | `dept` `dept-link` `display` `clear-search` `craft-clear` | `#/collection`, `#/collection/Leather` |
+| collection | `dept` `dept-link` `clear-search` `craft-clear` `page` | `#/collection`, `#/collection/Leather` |
 | staff | `del` `rm-img` `checkin` `sday` | `#/staff`, `#/staff/add`, `#/staff/bookings` |
 
 Plus: the four form submits (`#topsearch`, `#teasersearch`, `#colsearch`, newsletter), live input on
