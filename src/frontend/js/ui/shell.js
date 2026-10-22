@@ -73,7 +73,7 @@ export function shell() {
           <form class="newsletter" data-act-submit="newsletter"><label class="sr-only" for="nl">E-mail for newsletter</label><input id="nl" type="email" placeholder="Newsletter: your e-mail"><button class="btn sky" type="submit">Subscribe</button></form>
         </div>
         <div><h4>Visit</h4><ul><li><a href="#/visit">Visit &amp; About</a></li><li><a href="#/tickets">Tickets &amp; time slots</a></li><li><a href="#/page/groups">Groups &amp; schools</a></li><li><a href="#/map">Museum map</a></li><li><a href="#/events">Events</a></li><li><a href="#/page/accessibility">Accessibility</a></li></ul></div>
-        <div><h4>Discover</h4><ul><li><a href="#/exhibitions">Exhibitions</a></li><li><a href="#/collection">Collection Online</a></li><li><a href="#/departments">Departments</a></li><li><a href="#/publications">Publications</a></li><li><a href="#/page/virtual-tour">Virtual tour</a></li></ul></div>
+        <div><h4>Discover</h4><ul><li><a href="#/collection">Collection Online</a></li><li><a href="#/departments">Departments</a></li><li><a href="#/publications">Publications</a></li><li><a href="#/page/virtual-tour">Virtual tour</a></li></ul></div>
         <div><h4>Explore</h4><ul>${SECTIONS.map((s) => `<li><a href="#/explore/${s.key}">${esc(s.title)}</a></li>`).join('')}</ul></div>
       </div>
       <div class="legal"><span>Prototype · Research capstone project in cooperation with the Botswana National Museum, 2026</span><span>Texts and images © Botswana National Museum · objects, prices and events are sample content</span><a href="#/visit/about">About us</a><a href="#/visit/about">Imprint</a><a href="#/visit/about">Privacy</a><a href="#/staff">Staff area</a></div>

@@ -1,13 +1,10 @@
-/* Maps an object/exhibition `art` key to its generator, and derives
+/* Maps an object's `art` key to its generator, and derives
    the detail-crop and in-gallery views from a base illustration. */
-import { exArt, exAt60, exKalahari, exTsodilo } from './exhibitions.js';
 import { basketArt, beadsArt, flagArt, genericArt, locomotiveArt, paintingArt, potArt, rockArt, segabaArt, stoneToolArt, stoolArt, tapestryArt, zebraArt } from './objects.js';
 import { $, esc } from '../core/dom.js';
 
 export const ART = { basket: basketArt, rockart: rockArt, stonetool: stoneToolArt, beads: beadsArt, pot: potArt, segaba: segabaArt, stool: stoolArt, painting: paintingArt, tapestry: tapestryArt, zebra: zebraArt, locomotive: locomotiveArt, flag: flagArt, generic: genericArt };
 
-export const EX_ART = { exAt60, exTsodilo, exArt, exKalahari };
-export function exArtwork(e) { return (EX_ART[e.art] || genericArt)(e); }
 
 /* ---------- derived views: detail crop and gallery scene ---------- */
 export function innerOf(svg) { return svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, ''); }

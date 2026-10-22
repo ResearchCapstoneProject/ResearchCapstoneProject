@@ -40,7 +40,7 @@ search engines. Revisit if public SEO becomes a requirement.
 and `file://` is an opaque origin, so the site must be served over HTTP:
 
 ```bash
-python3 -m http.server 5173 -d src/frontend   # then open /html/
+python3 tools/devserver.py 5173   # then open /html/ (sends no-cache, see the file)
 ```
 
 **The store.** `S`, `T`, `CQ` and nine others were top-level `let`s that

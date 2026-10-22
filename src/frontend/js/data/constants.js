@@ -26,13 +26,6 @@ export const LOCATIONS = [
   'Store · on request',
 ];
 
-export const EXHIBITIONS = [
-  { key: 'at60', art: 'exAt60', kind: 'Special exhibition', dates: '30 Sep 2026 – 28 Mar 2027', title: 'Botswana at 60', text: 'Sixty objects for sixty years of independence: from the first Independence Day flag to the design of today’s Gaborone.' },
-  { key: 'tsodilo', art: 'exTsodilo', kind: 'Permanent gallery', dates: 'Gallery 1', title: 'Tsodilo – Mountains of the Gods', text: 'Rock art, tools and stories from Botswana’s first World Heritage Site.' },
-  { key: 'art', art: 'exArt', kind: 'National Art Gallery', dates: 'Rooms A & B', title: 'Painters of the Nation', text: 'Works by Botswana artists from the 1960s to today.' },
-  { key: 'kalahari', art: 'exKalahari', kind: 'Permanent gallery', dates: 'Gallery 4', title: 'Kalahari Life', text: 'Plants and animals that thrive in the sand – and how people live with them.' },
-];
-
 export const EVENTS = [
   { d: '2026-10-03', time: '10:00–12:00', kind: 'Family morning', title: 'Weave a pattern: basket designs for kids', place: 'Education room' },
   { d: '2026-10-06', time: '14:00', kind: 'Curator’s tour', title: 'Botswana at 60 – behind the objects', place: 'Special exhibition' },
@@ -95,9 +88,9 @@ export const LOC_ROOM = {
 /* Main navigation. A third element names the dropdown that ui/shell.js
    builds from the content modules. */
 export const NAV = [
-  ['visit', 'Visit & About'], ['exhibitions', 'Exhibitions'], ['collection', 'Collection'],
-  ['departments', 'Departments', 'departments'], ['explore', 'Explore', 'explore'],
-  ['publications', 'Publications', 'publications'], ['events', 'Events'],
+  ['visit', 'Visit & About'], ['collection', 'Collection'], ['explore', 'Explore', 'explore'],
+  ['events', 'Events'], ['publications', 'Publications', 'publications'],
+  ['departments', 'Departments', 'departments'],
 ];
 export const PAGES = {
   learn: { t: 'Learn', l: 'Programmes for schools, families and lifelong learners.', items: ['School visits and teaching material per grade', 'Holiday workshops', 'Outreach: the museum’s mobile exhibitions in rural areas'], chip: 'Outside prototype scope' },

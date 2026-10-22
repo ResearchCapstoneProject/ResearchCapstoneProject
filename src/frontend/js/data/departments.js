@@ -88,7 +88,7 @@ export const DEPARTMENTS = [
     ],
     cover: `${IMG}/about/about_photo_03.jpg`,
     photos: [],
-    links: [['#/exhibitions', 'Exhibitions']],
+    links: [['#/collection', 'Collection Online']],
   },
 ];
 

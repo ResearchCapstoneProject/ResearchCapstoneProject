@@ -28,7 +28,7 @@ The frontend is plain ES modules with no build step, so a static server is enoug
 must be **served over HTTP**, not opened as a file. `<script type="module">` is subject to
 CORS and `file://` is an opaque origin, so double-clicking `index.html` will not work.
 ```bash
-python3 -m http.server 5173 -d src/frontend    # then open http://localhost:5173/html/
+python3 tools/devserver.py 5173    # then open http://localhost:5173/html/
 ```
 With no API reachable the site runs from `src/frontend/assets/seed/*.json` and keeps
 changes in the browser's localStorage. Everything works except the things that need a
@@ -69,7 +69,7 @@ doc/prototype/  the original single-file prototype, kept for reference
 src/frontend/   html/ css/ js/ assets/   (no build step)
 src/backend/    FastAPI app + sql/
 docker/         MySQL configuration
-tools/          one-off scripts
+tools/          dev server (devserver.py) and one-off scripts
 ```
 `doc/ARCHITECTURE.md` explains how it fits together and, more usefully, why the
 non-obvious decisions were made that way. Read it before changing the data layer, the

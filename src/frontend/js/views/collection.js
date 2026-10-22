@@ -24,8 +24,9 @@ export function renderResults() {
   const base = filtered(true);
   const counts = { All: base.length }; DEPTS.forEach((d) => { counts[d.key] = base.filter((o) => o.dept === d.key).length; });
   $('#deptchips').innerHTML = ['All', ...DEPTS.map((d) => d.key)].map((k) => `<button type="button" class="fchip" data-act="dept" data-v="${k}" aria-pressed="${store.CQ.dept === k}">${k === 'All' ? 'All departments' : k}<span>${counts[k]}</span></button>`).join('')
-    + `<button type="button" class="fchip" data-act="display" aria-pressed="${store.CQ.display}">On display now</button>`;
+    + `<button type="button" class="fchip" data-act="display" aria-pressed="${store.CQ.display}">On display now</button>`
+    + (store.CQ.craft ? `<button type="button" class="fchip" data-act="craft-clear" aria-pressed="true" aria-label="Remove the craft filter ${esc(store.CQ.craft)}">Craft: ${esc(store.CQ.craft)} ✕</button>` : '');
   const list = filtered();
-  $('#rcount').textContent = `${list.length} ${list.length === 1 ? 'object' : 'objects'}${store.CQ.q ? ` for “${store.CQ.q}”` : ''} · all records are sample data`;
+  $('#rcount').textContent = `${list.length} ${list.length === 1 ? 'object' : 'objects'}${store.CQ.q ? ` for “${store.CQ.q}”` : ''}${store.CQ.craft ? ` · ${store.CQ.craft}` : ''} · inventory numbers are provisional`;
   $('#results').innerHTML = list.length ? `<div class="objgrid">${list.map(objCard).join('')}</div>` : `<div class="empty"><p>No objects match your search.</p><button class="btn ghost" type="button" data-act="clear-search">Clear search &amp; filters</button></div>`;
 }

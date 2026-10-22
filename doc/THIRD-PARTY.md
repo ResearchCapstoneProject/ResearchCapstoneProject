@@ -38,7 +38,8 @@ Extracted from the base64 `@font-face` blobs in the prototype by `tools/extract_
 Archivo's **width axis is load-bearing** — the headings set `font-stretch` between 62% and 125%.
 A truncated or subset font falls back to the 100% instance silently, with no console error, so
 `tools/extract_fonts.sh` verifies the WOFF2 magic bytes and the plan's regression check is to
-compare the rendered width of the hero headline (545px at 1440px viewport).
+compare the rendered width of the hero headline's second line, "National Museum" (789px at a
+1440px viewport).
 
 ## Python dependencies
 

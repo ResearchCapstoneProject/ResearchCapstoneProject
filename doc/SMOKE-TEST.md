@@ -4,7 +4,7 @@ Run after **every** frontend step of the refactor. The whole point is that the p
 available at `doc/prototype/botswana-museum-prototype.html` so you can open both and compare.
 
 ```bash
-python3 -m http.server 5173 -d src/frontend      # then open http://localhost:5173/html/
+python3 tools/devserver.py 5173      # then open http://localhost:5173/html/
 ```
 
 **The console must be free of errors at the end.** That is not a formality — most breakage in this
@@ -16,7 +16,7 @@ single console error and an empty section, not as an obviously broken page.
 ```
 #/                              #/object/BNM-ETH-0302
 #/visit  #/visit/about          #/departments/ethnology/basketry
-#/exhibitions                   #/explore/monuments/tsodilo
+#/collection/Leather            #/explore/monuments/tsodilo
 #/events                        #/staff
 #/tickets                       #/staff/add
 #/collection                    #/staff/edit/BNM-ETH-0302
@@ -49,9 +49,11 @@ Plus: the four form submits (`#topsearch`, `#teasersearch`, `#colsearch`, newsle
   leaving it `undefined`).
 - **Booking keeps the phone number.** Book with a phone number, then
   `JSON.parse(localStorage['bnm-prototype-v1']).bookings[0].phone` must be non-empty (bug 3).
-- **Exhibition cards render.** On `#/` and `#/exhibitions`. They resolve their artwork through a
-  lookup map; under module scope the old `window[e.art]()` throws (bug 1).
-- **Hero headline width.** At a 1440px viewport the `#/` `h1` must measure **545px**. A font that
+- **Craft cards filter the collection.** Each of the six cards on `#/` opens
+  `#/collection/<craft>`; the count on the card must equal the result count, and the
+  "Craft: … ✕" chip clears the filter.
+- **Hero headline width.** At a 1440px viewport the second line of the `#/` `h1`
+  ("National Museum") must measure **789px**. A font that
   lost its width axis renders wider, with no console error.
 
 ## Automated layout fingerprint
@@ -60,7 +62,7 @@ Paste into the console on both builds and diff the two objects — element count
 and text lengths must match per route.
 
 ```js
-const ROUTES = ['', 'visit', 'exhibitions', 'events', 'tickets', 'collection', 'map', 'explore',
+const ROUTES = ['', 'visit', 'events', 'tickets', 'collection', 'map', 'explore',
   'explore/trails', 'departments', 'publications', 'object/BNM-ETH-0302', 'staff', 'staff/add', 'staff/edit/BNM-ETH-0302',
   'staff/bookings', 'staff/stats', 'page/about', 'nonsense'];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
