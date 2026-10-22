@@ -1,0 +1,51 @@
+[
+  {
+    "id": "highlights",
+    "title": "The museum in 60 minutes",
+    "mins": 60,
+    "start": "Entrance hall",
+    "who": "First-time visitors",
+    "sub": "Seven objects that tell the story of Botswana, from the Stone Age to independence.",
+    "intro": "Short on time? This route takes you through every gallery and stops at the objects our guides are asked about most.",
+    "stops": [
+      "BNM-ARC-0217",
+      "BNM-ARC-0031",
+      "BNM-ETH-0142",
+      "BNM-ETH-0077",
+      "BNM-NAT-0503",
+      "BNM-ART-0045",
+      "BNM-HIS-0019"
+    ]
+  },
+  {
+    "id": "bot60",
+    "title": "Botswana at 60",
+    "mins": 30,
+    "start": "Special exhibition",
+    "who": "Anyone interested in history",
+    "sub": "Independence in 1966 and the country that grew from it.",
+    "intro": "A short route for the Diamond Jubilee: the flag of the first Independence Day, the art of the young nation and the railway that shaped its towns.",
+    "stops": [
+      "BNM-HIS-0019",
+      "BNM-ART-0012",
+      "BNM-ART-0045",
+      "BNM-HIS-0004"
+    ]
+  },
+  {
+    "id": "family",
+    "title": "Family tour: animals & patterns",
+    "mins": 45,
+    "start": "Gallery 4",
+    "who": "Children aged 6 to 12",
+    "sub": "Stripes, beads and a one-string fiddle – with something to spot at every stop.",
+    "intro": "Made for families: each stop has one question for the children and one thing to find in the display case.",
+    "stops": [
+      "BNM-NAT-0503",
+      "BNM-ETH-0142",
+      "BNM-ARC-0388",
+      "BNM-ARC-0031",
+      "BNM-ETH-0077"
+    ]
+  }
+]

@@ -1,0 +1,15 @@
+/* ---------- type ---------- */
+h1, h2, h3, h4 { margin: 0; line-height: 1.08; text-wrap: balance; font-weight: 800; }
+.display { font-stretch: 125%; font-weight: 800; letter-spacing: -0.01em; }
+.h1 { font-size: clamp(34px, 5.2vw, 64px); font-stretch: 125%; }
+.h2 { font-size: clamp(26px, 3.2vw, 40px); font-stretch: 118%; }
+.h3 { font-size: 22px; font-stretch: 110%; }
+.h4 { font-size: 18px; font-stretch: 105%; font-weight: 700; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.lede { font-family: var(--serif); font-size: clamp(18px, 1.6vw, 21px); line-height: 1.55; color: var(--ink-2); max-width: 62ch; }
+.serif { font-family: var(--serif); }
+.prose { font-family: var(--serif); font-size: 18px; line-height: 1.65; max-width: 64ch; color: var(--ink-2); }
+.prose p { margin: 0 0 1em; }
+.small { font-size: 14px; }
+.muted { color: var(--muted); }
+.tnum { font-variant-numeric: tabular-nums; }

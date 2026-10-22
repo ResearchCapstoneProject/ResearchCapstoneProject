@@ -1,0 +1,31 @@
+# --- secrets / local config ---
+.env
+.env.local
+*.local
+
+# --- python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- runtime data ---
+/data/
+src/backend/uploads/
+*.sqlite3
+*.db
+
+# --- os / editor ---
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+
+# --- scratch ---
+/tmp/
+/scratch/
+

@@ -1,0 +1,32 @@
+/* ------------------------------------------------------------------
+   Botswana National Museum — website prototype
+   Tokens: flag blue + black/white band, Kalahari ochre & sand, basket brown
+------------------------------------------------------------------- */
+:root {
+  --ink: #121417;
+  --ink-2: #353B42;
+  --muted: #5E6770;
+  --line: #D8DEE3;
+  --line-strong: #121417;
+  --paper: #FFFFFF;
+  --mist: #F1F4F6;
+  --sky: #6DA9D2;          /* Botswana flag light blue */
+  --sky-soft: #DDEBF5;
+  --deep: #1B5782;         /* link / action blue, AA on white */
+  --ochre: #B5652B;        /* rock-art ochre */
+  --ochre-ink: #8C4617;
+  --sand: #EADFCB;         /* Kalahari sand */
+  --bark: #4A2E1D;         /* basket dye brown */
+  --ok: #2E7447;
+  --ok-soft: #E2F0E6;
+  --warn: #9A6212;
+  --warn-soft: #F7EBD3;
+  --full: #9E3527;
+  --full-soft: #F5E0DC;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --gutter: clamp(16px, 4vw, 40px);
+  --maxw: 1240px;
+  --radius: 4px;
+  color-scheme: light;
+}

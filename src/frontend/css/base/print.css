@@ -1,0 +1,8 @@
+/* ---------- print: only the label ---------- */
+@media print {
+  body.printing > *:not(.modal) { display: none !important; }
+  body.printing .modal { position: static; background: none; padding: 0; }
+  body.printing .modal .box { box-shadow: none; padding: 0; }
+  body.printing .modal .noprint { display: none !important; }
+  .objlabel, .objlabel * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

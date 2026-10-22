@@ -1,0 +1,30 @@
+[
+  {
+    "d": "2026-10-03",
+    "time": "10:00–12:00",
+    "kind": "Family morning",
+    "title": "Weave a pattern: basket designs for kids",
+    "place": "Education room"
+  },
+  {
+    "d": "2026-10-06",
+    "time": "14:00",
+    "kind": "Curator’s tour",
+    "title": "Botswana at 60 – behind the objects",
+    "place": "Special exhibition"
+  },
+  {
+    "d": "2026-10-15",
+    "time": "17:30",
+    "kind": "Talk",
+    "title": "Painters of the 1960s and 70s",
+    "place": "Art Gallery"
+  },
+  {
+    "d": "2026-10-24",
+    "time": "09:30–12:30",
+    "kind": "School holiday workshop",
+    "title": "Rock art of Tsodilo: paint like the ancestors",
+    "place": "Courtyard"
+  }
+]

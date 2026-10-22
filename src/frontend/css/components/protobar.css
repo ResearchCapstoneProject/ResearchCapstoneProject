@@ -1,0 +1,9 @@
+/* ---------- prototype bar ---------- */
+.protobar { background: var(--ink); color: #E8ECEF; font-size: 13px; }
+.protobar .wrap { display: flex; align-items: center; gap: 16px; min-height: 40px; overflow-x: auto; scrollbar-width: none; }
+.protobar .wrap::-webkit-scrollbar { display: none; }
+.protobar .tag { background: var(--sky); color: var(--ink); font-weight: 800; letter-spacing: .1em; font-size: 11px; padding: 2px 7px; border-radius: 2px; flex: none; }
+.protobar .note { color: #AEB6BE; white-space: nowrap; }
+.protobar nav { display: flex; gap: 4px; margin-left: auto; flex: none; }
+.protobar nav a, .protobar nav button { color: #fff; text-decoration: none; padding: 5px 9px; border-radius: 3px; white-space: nowrap; background: none; border: 0; cursor: pointer; font-size: 13px; }
+.protobar nav a:hover, .protobar nav button:hover, .protobar nav a.on { background: #2B3036; }

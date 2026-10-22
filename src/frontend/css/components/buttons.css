@@ -1,0 +1,26 @@
+/* ---------- buttons & chips ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 10px 20px; border-radius: var(--radius);
+  border: 2px solid var(--ink); background: var(--ink); color: #fff;
+  font-weight: 700; font-size: 15px; text-decoration: none; cursor: pointer; white-space: nowrap;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.btn:hover { background: var(--deep); border-color: var(--deep); color: #fff; }
+.btn.ghost { background: transparent; color: var(--ink); }
+.btn.ghost:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+.btn.sky { background: var(--sky); border-color: var(--sky); color: var(--ink); }
+.btn.sky:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.small { min-height: 36px; padding: 6px 14px; font-size: 14px; }
+.btn.link { background: none; border: 0; color: var(--deep); padding: 0; min-height: 0; text-decoration: underline; font-weight: 600; }
+.btn.link:hover { color: var(--ink); background: none; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn[disabled]:hover { background: var(--ink); border-color: var(--ink); }
+.arrow::after { content: "→"; font-weight: 400; }
+
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; background: var(--mist); color: var(--ink-2); white-space: nowrap; }
+.chip.live { background: var(--ok-soft); color: var(--ok); }
+.chip.dev { background: var(--sky-soft); color: var(--deep); }
+.chip.plan { background: var(--warn-soft); color: var(--warn); }
+.chip.draft { background: var(--warn-soft); color: var(--warn); }
+.chip.dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }

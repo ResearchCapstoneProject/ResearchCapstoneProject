@@ -1,0 +1,25 @@
+/* ---------- floor plan ---------- */
+.planbox { background: var(--paper); border: 1px solid var(--line); padding: 14px; overflow-x: auto; }
+.planbox.big { padding: 20px; }
+.planbox .plan { width: 100%; min-width: 520px; height: auto; }
+.planmini { margin: 0 0 24px; display: grid; gap: 8px; justify-items: start; }
+.planmini .planbox { width: 100%; padding: 10px; }
+.planmini .plan { min-width: 420px; }
+svg.plan .shell { fill: none; stroke: var(--ink); stroke-width: 2; }
+svg.plan .room rect { fill: var(--mist); stroke: #AEB7BF; stroke-width: 1.5; }
+svg.plan .room.service rect { fill: #F6F2EA; }
+svg.plan .room.outdoor rect { fill: #EBF0E7; stroke-dasharray: 7 5; }
+svg.plan .room.on rect { fill: var(--sky-soft); stroke: var(--ink); stroke-width: 3; }
+svg.plan a { cursor: pointer; }
+svg.plan a:hover rect { fill: var(--sand); stroke: var(--ink); }
+svg.plan a:focus-visible rect { stroke: var(--ink); stroke-width: 3; }
+svg.plan .rname { font-family: var(--display); font-size: 13px; font-weight: 700; fill: var(--ink); }
+svg.plan .rsub { font-family: var(--display); font-size: 12px; fill: var(--muted); }
+svg.plan .rcount { font-family: var(--display); font-size: 11px; fill: var(--deep); }
+svg.plan .stop circle { fill: var(--ink); }
+svg.plan .stop text { font-family: var(--display); font-size: 12px; font-weight: 700; fill: #fff; }
+svg.plan .entrance rect { fill: var(--paper); }
+svg.plan .entrance polygon { fill: var(--ink); }
+.planlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0; margin-top: 24px; border-top: 2px solid var(--ink); }
+.planrow { display: grid; gap: 2px; padding: 14px 16px 14px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); }
+.planrow:hover b { text-decoration: underline; }

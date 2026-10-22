@@ -1,0 +1,71 @@
+/* ---------- tickets ---------- */
+.steps { scroll-margin-top: 96px; display: flex; gap: 0; margin: 28px 0 0; padding: 0; list-style: none; counter-reset: s; border-top: 1px solid var(--line); overflow-x: auto; }
+.steps li { flex: 1; min-width: 140px; padding: 14px 16px 0 0; font-size: 14px; font-weight: 600; color: var(--muted); border-top: 4px solid transparent; margin-top: -1px; counter-increment: s; }
+.steps li::before { content: counter(s) "  "; font-weight: 800; }
+.steps li.on { color: var(--ink); border-top-color: var(--ink); }
+.steps li.done { color: var(--ink-2); border-top-color: var(--sky); }
+.tk { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 48px; align-items: start; padding-block: 40px 72px; }
+@media (max-width: 980px) { .tk { grid-template-columns: minmax(0, 1fr); } }
+.tk > * { min-width: 0; }
+.tk h2 { font-size: 24px; font-stretch: 112%; margin-bottom: 18px; }
+.days { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 32px; scrollbar-width: thin; }
+.day { flex: none; width: 84px; padding: 10px 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); cursor: pointer; text-align: center; display: grid; gap: 2px; }
+.day small { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.day b { font-size: 26px; font-stretch: 115%; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.day em { font-style: normal; font-size: 11px; color: var(--muted); min-height: 16px; line-height: 1.3; }
+.day:hover { border-color: var(--ink); }
+.day[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.day[aria-pressed="true"] small, .day[aria-pressed="true"] em { color: #C9D2DA; }
+.day[disabled] { background: var(--mist); color: #9AA3AB; cursor: not-allowed; border-style: dashed; }
+.day .hol { color: var(--ochre-ink); font-weight: 700; }
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.slot { text-align: left; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); cursor: pointer; display: grid; gap: 6px; }
+.slot b { font-size: 20px; font-stretch: 110%; font-variant-numeric: tabular-nums; }
+.slot .cap { height: 4px; background: var(--mist); border-radius: 2px; overflow: hidden; }
+.slot .cap i { display: block; height: 100%; background: var(--sky); }
+.slot .left { font-size: 13px; color: var(--muted); }
+.slot.few .cap i { background: var(--warn); }
+.slot.few .left { color: var(--warn); font-weight: 700; }
+.slot:hover { border-color: var(--ink); }
+.slot[aria-pressed="true"] { border: 2px solid var(--ink); padding: 11px 13px; background: var(--sky-soft); }
+.slot[disabled] { background: var(--mist); cursor: not-allowed; color: #8E979F; }
+.slot[disabled] .left { color: var(--full); font-weight: 700; }
+.slot .tour { font-size: 11px; font-weight: 700; color: var(--ochre-ink); text-transform: uppercase; letter-spacing: .05em; }
+.types { border-top: 2px solid var(--ink); }
+.type { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 20px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.type b { font-size: 17px; }
+.type p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+.type .price { font-weight: 700; font-variant-numeric: tabular-nums; min-width: 70px; text-align: right; }
+.stepper { display: inline-flex; align-items: center; border: 1px solid #AEB7BF; border-radius: var(--radius); }
+.stepper button { width: 40px; height: 40px; border: 0; background: none; font-size: 20px; cursor: pointer; }
+.stepper button:hover:not([disabled]) { background: var(--mist); }
+.stepper button[disabled] { color: #B8C0C7; cursor: not-allowed; }
+.stepper output { min-width: 30px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) { .type { grid-template-columns: minmax(0, 1fr) auto; } .type .price { grid-column: 1; grid-row: 2; text-align: left; } .type .stepper { grid-column: 2; grid-row: 1 / span 2; } }
+.pay { display: grid; gap: 10px; }
+.pay label { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; }
+.pay label:has(input:checked) { border: 2px solid var(--ink); padding: 13px 15px; }
+.pay label.off { cursor: not-allowed; background: var(--mist); color: var(--muted); }
+.pay input { accent-color: var(--ink); width: 18px; height: 18px; margin-top: 3px; }
+.pay small { display: block; color: var(--muted); font-size: 13px; }
+.navrow { display: flex; justify-content: space-between; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+
+.summary { position: sticky; top: 100px; border: 1px solid var(--line); border-top: 4px solid var(--ink); padding: 22px; background: var(--paper); }
+.summary h3 { font-size: 18px; font-stretch: 110%; margin-bottom: 14px; }
+.summary dl { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; font-size: 15px; }
+.summary dt { color: var(--muted); }
+.summary dd { margin: 0; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.summary .total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; }
+.summary .fine { font-size: 13px; color: var(--muted); margin: 14px 0 0; }
+@media (max-width: 980px) { .summary { position: static; } }
+
+.eticket { display: grid; grid-template-columns: minmax(0, 1fr) 220px; border: 2px solid var(--ink); max-width: 760px; background: var(--paper); }
+.eticket .l { padding: 26px 28px; display: grid; gap: 14px; }
+.eticket .r { border-left: 2px dashed var(--ink); padding: 22px; display: grid; justify-items: center; align-content: center; gap: 10px; background: var(--mist); }
+.eticket .r svg { width: 160px; height: 160px; background: #fff; padding: 8px; }
+.eticket .code { font-weight: 800; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+.eticket dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 18px; margin: 0; font-size: 15px; }
+.eticket dt { color: var(--muted); }
+.eticket dd { margin: 0; font-weight: 600; }
+.eticket .flagrule { height: 10px; }
+@media (max-width: 620px) { .eticket { grid-template-columns: 1fr; } .eticket .r { border-left: 0; border-top: 2px dashed var(--ink); } }

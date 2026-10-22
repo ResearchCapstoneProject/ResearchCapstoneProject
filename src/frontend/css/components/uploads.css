@@ -1,0 +1,5 @@
+/* ---------- upload list ---------- */
+.uplist { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+.upitem { position: relative; width: 96px; display: grid; gap: 4px; justify-items: center; }
+.upitem img { width: 96px; height: 96px; object-fit: cover; border: 1px solid var(--line); }
+.upitem .chip { font-size: 10px; }

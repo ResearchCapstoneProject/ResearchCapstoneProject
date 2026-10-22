@@ -1,0 +1,13 @@
+/* ---------- collection ---------- */
+.filters { display: grid; gap: 16px; padding-block: 24px; border-bottom: 1px solid var(--line); }
+.filters .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.filters .search { display: flex; gap: 10px; }
+.filters .search input { flex: 1; min-width: 0; font-size: 17px; }
+.fchip { border: 1px solid #AEB7BF; background: var(--paper); border-radius: 999px; padding: 7px 14px; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.fchip span { color: var(--muted); font-weight: 500; font-variant-numeric: tabular-nums; }
+.fchip:hover { border-color: var(--ink); }
+.fchip[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.fchip[aria-pressed="true"] span { color: #C9D2DA; }
+.resulthead { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 20px; flex-wrap: wrap; }
+.resulthead select { width: auto; min-height: 40px; }
+.empty { padding: 48px 0; text-align: center; color: var(--muted); }

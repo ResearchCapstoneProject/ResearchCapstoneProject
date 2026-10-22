@@ -1,0 +1,28 @@
+/* ---------- tours ---------- */
+.tourgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+@media (max-width: 900px) { .tourgrid { grid-template-columns: 1fr; } }
+.tourcard { display: grid; gap: 10px; text-decoration: none; color: var(--ink); align-content: start; }
+.tourcard .planbox { padding: 10px; background: var(--mist); overflow: hidden; }
+.tourcard .plan { min-width: 0; }
+.tourcard p { margin: 0; font-family: var(--serif); color: var(--ink-2); }
+.tourcard:hover h3 { text-decoration: underline; text-underline-offset: 3px; }
+.tourchips { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 18px; }
+.tourchips a { text-decoration: none; }
+.tourchips a:hover { background: var(--ink); color: #fff; }
+.tourhead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 48px; align-items: start; padding-block: 36px 40px; }
+@media (max-width: 900px) { .tourhead { grid-template-columns: 1fr; gap: 24px; } }
+.tourfacts { display: grid; grid-template-columns: 120px minmax(0, 1fr); margin: 0; border-top: 2px solid var(--ink); font-size: 15px; }
+.tourfacts dt, .tourfacts dd { padding: 11px 0; border-bottom: 1px solid var(--line); margin: 0; }
+.tourfacts dt { color: var(--muted); font-weight: 600; }
+.stops { display: grid; gap: 0; border-top: 2px solid var(--ink); }
+.stops .stop { display: grid; grid-template-columns: 48px 96px minmax(0, 1fr); gap: 18px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); }
+.stops .stop .num { width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-weight: 800; }
+.stops .stop .pic { display: block; width: 96px; height: 96px; background: var(--sand); overflow: hidden; }
+.stops .stop .pic svg, .stops .stop .pic img { width: 100%; height: 100%; object-fit: cover; }
+.stops .stop .txt { display: grid; gap: 3px; }
+.stops .stop b { font-size: 18px; font-stretch: 105%; }
+.stops .stop:hover b { text-decoration: underline; }
+@media (max-width: 560px) { .stops .stop { grid-template-columns: 38px 64px minmax(0, 1fr); gap: 12px; } .stops .stop .pic { width: 64px; height: 64px; } .stops .stop b { font-size: 16px; } }
+.tourbar { height: 4px; background: var(--mist); }
+.tourbar i { display: block; height: 100%; background: var(--sky); }
+.tournav { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; }
