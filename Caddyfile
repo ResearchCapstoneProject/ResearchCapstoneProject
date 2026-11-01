@@ -1,0 +1,52 @@
+# Caddy in front of the museum site.
+#
+# `:80` means "any address, port 80". With no domain name given, Caddy serves
+# plain HTTP and does not try to obtain a certificate.
+#
+# reverse_proxy already sets X-Forwarded-For / -Proto / -Host on its own, so
+# nothing extra is needed here for the app to see the real client address --
+# but uvicorn has to be told to trust them, which compose.override.yaml does
+# with --proxy-headers. Without that the scan analytics would hash Caddy's
+# address and every visit would look like the same visitor.
+#
+# For HTTPS on the bare IP, see the block at the bottom.
+
+:80 {
+	encode zstd gzip
+
+	# `api` is the Compose service name, reached over the project's internal
+	# network. 8000 is the port inside the container, not a published one.
+	reverse_proxy api:8000
+
+	log {
+		output stdout
+		format console
+	}
+}
+
+# ---------------------------------------------------------------------------
+# HTTPS on the bare IP (no domain needed)
+#
+# Let's Encrypt issues certificates for IP addresses. They are short-lived and
+# Caddy renews them by itself. This also avoids the warning browsers now show
+# before opening a public plain-HTTP site.
+#
+# To use it: comment out the `:80` block above, uncomment this one, put the
+# server's public IP in place of PUBLIC_IP, add "443:443" to the caddy ports
+# in compose.override.yaml, and set COOKIE_SECURE=1 in .env.
+#
+# `profile shortlived` is required -- without it Caddy falls back to a
+# self-signed certificate for IP addresses and browsers reject it. Caddy
+# treats this as experimental, so check it actually serves before relying on
+# it for a demo.
+# ---------------------------------------------------------------------------
+#
+# PUBLIC_IP {
+# 	tls {
+# 		issuer acme {
+# 			profile shortlived
+# 		}
+# 	}
+# 	encode zstd gzip
+# 	reverse_proxy api:8000
+# }

@@ -1,0 +1,53 @@
+# Server-only: puts Caddy in front of the app on port 80.
+#
+# Docker Compose merges this into docker-compose.yml automatically, so Caddy
+# joins the same project network and can reach the app by its service name.
+#
+# Not committed -- it is specific to one machine. Recreate it on each server.
+
+services:
+  caddy:
+    image: caddy:2.11
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      # Uncomment for the HTTPS-on-IP variant in the Caddyfile.
+      # - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  db:
+    # The base file publishes 3307 on every interface for local development.
+    # On a public box that is MySQL exposed to the internet, guarded only by
+    # the cloud firewall. Bind it to loopback so a firewall mistake is not
+    # enough on its own.
+    ports: !override
+      - "127.0.0.1:3307:3306"
+
+  api:
+    # Compose appends to `ports` rather than replacing it, so !override is
+    # needed to stop publishing 8000 on every interface. Caddy reaches the app
+    # over the internal network; 8000 stays bound to loopback for debugging
+    # from the server itself. This holds even if the cloud firewall is
+    # misconfigured, rather than relying on it alone.
+    ports: !override
+      - "127.0.0.1:8000:8000"
+
+    # No --reload in a deployment: it watches the source tree for changes that
+    # are not going to happen, and restarts the app if they do.
+    #
+    # --proxy-headers makes uvicorn read X-Forwarded-For from Caddy, so the
+    # scan analytics hash the visitor's address instead of Caddy's. Trusting
+    # any proxy is safe here only because 8000 is no longer reachable from
+    # outside the host.
+    command: >
+      uvicorn app.main:app --host 0.0.0.0 --port 8000
+      --proxy-headers --forwarded-allow-ips=*
+
+volumes:
+  caddy_data:
+  caddy_config:
