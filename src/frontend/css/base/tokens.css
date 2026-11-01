@@ -1,0 +1,36 @@
+/* ------------------------------------------------------------------
+   Botswana National Museum — website prototype
+   Tokens: taken from the museum's logo (favicon.ico) -- blue #009BE4,
+   orange #E28E2C, white and the black outline. --deep and --ochre-ink are
+   darker shades of the two logo colours that reach WCAG AA as text on
+   white (5.3:1 and 5.8:1).
+------------------------------------------------------------------- */
+:root {
+  --ink: #121417;
+  --ink-2: #353B42;
+  --muted: #5E6770;
+  --line: #D8DEE3;
+  --line-strong: #121417;
+  --paper: #FFFFFF;
+  --mist: #F1F4F6;
+  --sky: #009BE4;          /* logo blue */
+  --sky-soft: #DCF0FB;
+  --deep: #0072AB;         /* link / action blue, AA on white */
+  --ochre: #E28E2C;        /* logo orange */
+  --ochre-ink: #8F5A1C;    /* orange as text, AA on white */
+  --ochre-soft: #FBEBD6;
+  --sand: #F4E7D4;         /* light tint of the logo orange */
+  --bark: #4A2E1D;         /* basket dye brown */
+  --ok: #2E7447;
+  --ok-soft: #E2F0E6;
+  --warn: #9A6212;
+  --warn-soft: #F7EBD3;
+  --full: #9E3527;
+  --full-soft: #F5E0DC;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --gutter: clamp(16px, 4vw, 40px);
+  --maxw: 1240px;
+  --radius: 4px;
+  color-scheme: light;
+}

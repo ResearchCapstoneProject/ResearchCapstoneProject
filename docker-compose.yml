@@ -1,0 +1,70 @@
+# Botswana National Museum -- development stack.
+#
+#   cp .env.example .env     # then fill SESSION_SECRET and the passwords
+#   docker compose up --build
+#   -> site + API on http://localhost:8000
+#
+#   docker compose --profile demo up
+#   -> :8080 serves the frontend with NO API, to show the offline fallback
+#
+# NOTE: the SQL in src/backend/sql runs only when the dbdata volume is empty.
+# After changing the schema: docker compose down -v && docker compose up.
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./src/backend/sql:/docker-entrypoint-initdb.d:ro
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d:ro
+    ports:
+      # 3307, so a MySQL already installed on the host keeps 3306.
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root",
+             "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+
+  api:
+    build:
+      context: .
+      dockerfile: src/backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}?charset=utf8mb4
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - ./src/backend:/app/src/backend
+      - ./src/frontend:/app/src/frontend:ro
+      - uploads:/data/uploads
+    ports:
+      - "8000:8000"
+    command: >
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend with no API behind it, to demonstrate the offline fallback.
+  static:
+    profiles: ["demo"]
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ./src/frontend:/usr/share/nginx/html:ro
+    ports:
+      - "8080:80"
+
+volumes:
+  dbdata:
+  uploads:

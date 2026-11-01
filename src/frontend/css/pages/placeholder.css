@@ -1,0 +1,8 @@
+/* ---------- placeholder pages ---------- */
+.placeholder { padding-block: 64px 96px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
+@media (max-width: 860px) { .placeholder { grid-template-columns: 1fr; } }
+.placeholder ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-family: var(--serif); font-size: 18px; color: var(--ink-2); }
+.hours { width: 100%; border-collapse: collapse; font-size: 16px; }
+.hours td { padding: 10px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.hours tr.today td { font-weight: 800; }
+.hours td:last-child { text-align: right; }

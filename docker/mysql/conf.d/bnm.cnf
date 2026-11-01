@@ -1,0 +1,17 @@
+[mysqld]
+# Two-letter words are unindexed at the default of 3, which would make
+# FULLTEXT search miss things a visitor would expect to find. This only takes
+# effect when a FULLTEXT index is BUILT, so it has to be in place on the very
+# first boot -- after changing it you must `docker compose down -v`.
+innodb_ft_min_token_size = 2
+
+character-set-server = utf8mb4
+collation-server     = utf8mb4_0900_ai_ci
+
+# The entrypoint invokes `mysql` with no charset flag, so without this the
+# client falls back to latin1 and the init scripts store `·` double-encoded.
+[client]
+default-character-set = utf8mb4
+
+[mysql]
+default-character-set = utf8mb4

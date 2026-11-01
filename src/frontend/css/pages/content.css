@@ -1,0 +1,170 @@
+/* ---------- content pages: Visit & About, Departments, Explore, Publications ---------- */
+
+/* image cards */
+.cgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px 24px; }
+.cgrid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cgrid.five { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px 18px; }
+@media (max-width: 1080px) { .cgrid, .cgrid.five { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .cgrid, .cgrid.three, .cgrid.five { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 16px; } }
+@media (max-width: 420px) { .cgrid, .cgrid.three, .cgrid.five { grid-template-columns: 1fr; } }
+.ccard { display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--ink); min-width: 0; }
+.ccard .pic { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: var(--sand); }
+.ccard .pic img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
+.ccard .nopic { display: block; width: 100%; height: 100%; background: linear-gradient(135deg, var(--sky-soft) 0 50%, var(--ochre-soft) 50% 100%); }
+.ccard:hover .pic img { transform: scale(1.04); }
+.ccard .eyebrow { font-size: 11px; margin-top: 4px; color: var(--ochre-ink); }
+.ccard h3 { line-height: 1.25; }
+.ccard:hover h3 { text-decoration: underline; text-underline-offset: 3px; }
+.ccard p { margin: 0; font-size: 14px; color: var(--muted); }
+
+/* banner under the page head */
+.banner { background: var(--ink); }
+.banner img { width: 100%; max-width: var(--maxw); margin-inline: auto; aspect-ratio: 950 / 300; object-fit: cover; }
+
+/* in-page navigation */
+.subnav { position: sticky; top: 77px; z-index: 30; background: var(--paper); border-bottom: 1px solid var(--line); }
+.subnav .wrap { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.subnav .wrap::-webkit-scrollbar { display: none; }
+.subnav a { flex: none; padding: 12px 10px; font-size: 14px; font-weight: 600; color: var(--ink-2); text-decoration: none; border-bottom: 3px solid transparent; }
+.subnav a:hover { border-bottom-color: var(--sky); color: var(--ink); }
+@media (max-width: 560px) { .subnav { top: 69px; } }
+[id^="sec-"] { scroll-margin-top: 130px; }
+
+/* two columns of text */
+.twocol { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+.twocol.wide-left { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+@media (max-width: 860px) { .twocol, .twocol.wide-left { grid-template-columns: 1fr; gap: 28px; } }
+.prose ul, .prose ol { margin: 0 0 1em; padding-left: 22px; display: grid; gap: 6px; }
+.prose h2, .prose h3 { font-family: var(--display); color: var(--ink); }
+
+.visitpic { margin: 0; }
+.visitpic img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+/* About: the photo column ends level with the text at any width. The museum
+   photos keep their size and the building photo takes up the rest of the
+   column height; below 1000px the section stacks instead. */
+.twocol.wide-left { align-items: stretch; }
+.aboutpics { display: grid; gap: 12px; grid-template-rows: minmax(0, 1fr) auto; }
+.aboutpics .visitpic img { height: 100%; min-height: 260px; aspect-ratio: auto; object-fit: cover; }
+.aboutpics .photos.two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; }
+@media (max-width: 1000px) {
+  .twocol.wide-left { grid-template-columns: 1fr; gap: 28px; }
+  .aboutpics { grid-template-rows: auto; }
+  .aboutpics .visitpic img { height: auto; min-height: 0; aspect-ratio: 16 / 9; }
+  .aboutpics .photos.two { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) { .aboutpics .photos.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+address.contact { font-style: normal; font-size: 18px; line-height: 1.7; }
+.statement { margin: 0; padding: 28px 0 0; border-top: 4px solid var(--ochre); }
+.statement p { margin: 12px 0 0; font-family: var(--serif); font-size: clamp(20px, 2vw, 25px); line-height: 1.45; color: var(--ink); }
+.statement:last-child { border-top-color: var(--sky); }
+.statements { display: grid; gap: 28px; margin-top: 32px; }
+.statements .statement p { font-size: clamp(19px, 1.7vw, 22px); }
+
+/* photo strips: open full size in a new tab */
+.photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 0 0 32px; }
+.photos figure { margin: 0; }
+.photos a { display: block; overflow: hidden; background: var(--sand); }
+.photos img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; transition: transform .35s; }
+.photos a:hover img { transform: scale(1.04); }
+.photos figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+/* long text with optional side picture */
+.textblocks { display: grid; gap: 36px; }
+/* flow-root contains the floated picture; text wraps around it */
+.tblock { display: flow-root; }
+.tblock.withpic .tpic { float: right; width: min(42%, 380px); margin: 6px 0 14px 28px; }
+@media (max-width: 760px) { .tblock.withpic .tpic { float: none; width: 100%; margin: 0 0 16px; } }
+.tbody { font-family: var(--serif); font-size: 18px; line-height: 1.65; color: var(--ink-2); max-width: 68ch; }
+.tbody h2 { font-family: var(--display); color: var(--ink); margin-bottom: 12px; }
+.tbody h3 { font-family: var(--display); color: var(--ink); margin-bottom: 8px; }
+.tbody p { margin: 0 0 1em; }
+/* plain blocks (not grid) so lists wrap around a floated picture too */
+.tbody ul, .tbody ol { margin: 0 0 1em; padding-left: 22px; }
+.tbody li + li { margin-top: 6px; }
+.tbody .note { font-size: 16px; padding: 12px 16px; background: var(--sky-soft); color: var(--ink); display: flow-root; }
+.tpic { margin: 0; }
+.tpic img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.tcols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.tcols ul { font-size: 16px; }
+@media (max-width: 860px) { .tcols { grid-template-columns: 1fr; } }
+
+/* site / trail pages: facts and map on the left, text on the right */
+.sitepage { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 48px; align-items: start; padding-block: 36px 80px; }
+.siteside { position: sticky; top: 100px; display: grid; gap: 14px; }
+.siteside .facts { margin: 0; grid-template-columns: 112px minmax(0, 1fr); }
+@media (max-width: 900px) { .sitepage { grid-template-columns: 1fr; gap: 32px; } .siteside { position: static; } }
+.trailpdf { display: grid; gap: 12px; justify-items: start; text-decoration: none; }
+.trailpdf img { max-height: 260px; width: auto; border: 1px solid var(--line); }
+.trailphoto { margin: 0 0 28px; }
+.trailphoto img { max-height: 420px; width: auto; }
+
+/* maps (Leaflet) */
+.mapbox { position: relative; height: 300px; background: var(--mist); border: 1px solid var(--line); z-index: 0; }
+/* beside a text column (Visit & About contact) the map fills the column height */
+.twocol > .mapbox { align-self: stretch; height: auto; min-height: 300px; }
+.mainmap { margin-top: 32px; }
+.mainmap .mapbox { height: 340px; }
+.museumtext { display: grid; gap: 36px; margin-top: 40px; }
+.mapbox.tall { height: min(520px, 70vh); }
+.mapfallback { margin: 0; padding: 14px 16px 14px 32px; font-size: 14px; display: grid; gap: 4px; max-height: 100%; overflow: auto; }
+.mapbox.offline::before { content: "Interactive map unavailable offline – places and links:"; display: block; padding: 12px 16px 0; font-size: 13px; font-weight: 700; color: var(--muted); }
+.mapnote { margin: 8px 0 0; }
+.mappin span { display: block; width: 22px; height: 22px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1.5px #0B0C0E, 0 2px 6px rgba(0, 0, 0, .35); }
+.leaflet-popup-content a { font-weight: 700; }
+.maplegend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 12px 0 0; }
+.maplegend .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: -8px; vertical-align: -1px; border: 1.5px solid #0B0C0E; }
+.maplegend .dot.blue { background: var(--sky); }
+.maplegend .dot.orange { background: var(--ochre); }
+.maplegend .dot.dark { background: var(--ink); }
+
+/* departments */
+.deptpage { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 56px; padding-block: 40px 56px; align-items: start; }
+/* the related-links column stays in view instead of ending early */
+.deptside { position: sticky; top: 100px; }
+@media (max-width: 900px) { .deptpage { grid-template-columns: 1fr; gap: 32px; } .deptside { position: static; } }
+.units { list-style: none; padding: 0 !important; gap: 0 !important; border-top: 2px solid var(--ink); }
+.units li { padding: 14px 0; border-bottom: 1px solid var(--line); }
+.units b { font-family: var(--display); color: var(--ink); }
+.linklist { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ochre); }
+.linklist li { border-bottom: 1px solid var(--line); }
+.linklist a { display: block; padding: 10px 0; font-weight: 600; text-decoration: none; }
+.linklist a:hover { text-decoration: underline; }
+.poster { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 48px; align-items: center; }
+.poster img { width: 100%; box-shadow: 0 10px 30px rgba(18, 20, 23, .15); }
+@media (max-width: 760px) { .poster { grid-template-columns: 1fr; } .poster img { max-width: 320px; } }
+
+/* publications */
+.pubgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 36px 24px; }
+.pubitem { display: grid; gap: 6px; align-content: start; }
+.pubcover { display: block; background: var(--mist); padding: 14px; border: 1px solid var(--line); }
+.pubcover img { height: 210px; width: auto; max-width: 100%; margin-inline: auto; object-fit: contain; box-shadow: 0 6px 16px rgba(18, 20, 23, .18); transition: transform .25s; }
+.pubcover:hover img { transform: translateY(-3px); }
+.pubitem p { margin: 0; }
+.callout { display: flex; gap: 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 24px 28px; background: var(--sky-soft); border-left: 6px solid var(--sky); }
+.callout p { margin: 0; max-width: 60ch; }
+.feature { padding-block: 40px; border-bottom: 1px solid var(--line); }
+.feature:last-child { border-bottom: 0; }
+.feathead { margin-bottom: 24px; }
+.feathead .eyebrow { color: var(--ochre-ink); margin-bottom: 8px; }
+/* fixed poster column, so portrait and landscape posters line up the same */
+.featbody { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: 48px; align-items: start; }
+@media (max-width: 860px) { .featbody { grid-template-columns: 1fr; gap: 24px; } .featpic { position: static; max-width: 420px; } }
+.featpic { margin: 0; }
+.featpic { position: sticky; top: 100px; }
+.featpic img { width: 100%; border: 1px solid var(--line); box-shadow: 0 8px 22px rgba(18, 20, 23, .12); }
+.featpic figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.featbody .facts { margin-top: 0; }
+
+/* past events */
+.event.past .date b { color: var(--muted); }
+.event .evtext { margin: 6px 0 0; font-size: 15px; color: var(--ink-2); max-width: 70ch; }
+
+/* vector graphics: designation badges and the Botswana locator map */
+.badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.badges img { height: 24px; width: auto; }
+.sitelocator { margin: 0; display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; align-items: center; }
+.sitelocator figcaption { margin: 0; }
+.locator { width: 100%; height: auto; display: block; }
+.ccard .pic.art { display: grid; place-items: center; background: var(--sky-soft); padding: 12%; }
+.ccard .pic.art .locator { width: auto; height: 100%; }
+.maplocator { width: 96px; margin: 14px 16px 0; }

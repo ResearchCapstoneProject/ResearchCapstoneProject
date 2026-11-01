@@ -1,0 +1,47 @@
+/* ---------- staff area ---------- */
+.staffbar { background: var(--bark); color: #F3E9DC; }
+.staffbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 10px 24px; min-height: 64px; padding-block: 10px; flex-wrap: wrap; }
+.staffbar .title { display: flex; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; }
+.staffbar b { font-stretch: 112%; font-weight: 800; font-size: 17px; }
+.staffbar .title span { font-size: 14px; opacity: .85; }
+.staffbar .who { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; font-size: 14px; }
+.staffbar .who > span { opacity: .85; }
+.staffbar .who a:not(.btn) { color: #fff; }
+.staffbar .btn.ghost.light { color: #fff; border-color: rgba(255, 255, 255, .7); min-height: 34px; }
+.staffbar .btn.ghost.light:hover { background: #fff; color: var(--bark); border-color: #fff; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 28px; overflow-x: auto; }
+.tabs a { padding: 14px 16px; text-decoration: none; color: var(--ink-2); font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.tabs a.on { color: var(--ink); border-bottom-color: var(--ink); }
+.tabs a:hover { color: var(--ink); }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 28px; }
+.kpis div { border: 1px solid var(--line); padding: 16px; }
+.kpis b { display: block; font-size: 30px; font-stretch: 118%; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.kpis span { font-size: 13px; color: var(--muted); }
+/* a tile whose value is a name, not a number: smaller, at most two lines */
+.kpis b.kpitext { font-size: 18px; font-stretch: 105%; line-height: 1.25; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+@media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tablewrap { overflow-x: auto; border-top: 2px solid var(--ink); }
+table.data { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 720px; }
+table.data th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; padding: 12px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.data td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+table.data td.inv { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink-2); }
+table.data .thumb { width: 52px; height: 52px; background: var(--sand); overflow: hidden; }
+table.data .thumb svg, table.data .thumb img { width: 100%; height: 100%; object-fit: cover; }
+table.data .thumb img { object-fit: contain; }
+table.data .actions { display: flex; gap: 12px; justify-content: flex-end; white-space: nowrap; }
+table.data tr.new td { background: #FBF6E9; }
+.capbar { display: grid; grid-template-columns: 64px minmax(0, 1fr) 90px; gap: 14px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.capbar .bar { height: 14px; background: var(--mist); border-radius: 2px; overflow: hidden; display: flex; }
+.capbar .bar i { display: block; height: 100%; background: var(--sky); }
+.capbar .bar i.online { background: var(--deep); }
+.capbar .n { text-align: right; font-variant-numeric: tabular-nums; }
+.legend { display: flex; gap: 18px; font-size: 13px; color: var(--muted); margin: 8px 0 14px; flex-wrap: wrap; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -2px; margin-right: 6px; }
+.twocol { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
+@media (max-width: 900px) { .twocol { grid-template-columns: 1fr; } }
+.addform { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 48px; align-items: start; }
+@media (max-width: 980px) { .addform { grid-template-columns: 1fr; } }
+.upload { border: 2px dashed #AEB7BF; padding: 20px; display: grid; gap: 10px; justify-items: center; text-align: center; background: var(--mist); cursor: pointer; }
+.upload:hover { border-color: var(--ink); }
+.preview { position: sticky; top: 100px; display: grid; gap: 14px; }
+.preview .card { border: 1px solid var(--line); padding: 16px; }

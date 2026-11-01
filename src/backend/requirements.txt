@@ -1,0 +1,11 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+sqlalchemy>=2.0.36,<2.1
+pymysql==1.1.1
+# Not used directly: PyMySQL needs it to speak MySQL 8's default
+# caching_sha2_password authentication.
+cryptography==44.0.0
+pydantic-settings==2.7.0
+passlib[argon2]==1.7.4
+python-multipart==0.0.20
+pillow==11.1.0

@@ -1,0 +1,17 @@
+/* ---------- object cards ---------- */
+.objgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px 24px; }
+@media (max-width: 1080px) { .objgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .objgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 16px; } }
+.objcard { display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--ink); }
+.objcard .pic { aspect-ratio: 1 / 1; background: var(--sand); overflow: hidden; max-width: 100%; position: relative; }
+.objcard .pic svg, .objcard .pic img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
+/* Photos are shown whole: many are cut-outs on a transparent background
+   (the ACB catalogue), which `cover` would crop. */
+.objcard .pic img { object-fit: contain; padding: 6%; }
+.objcard:hover .pic svg, .objcard:hover .pic img { transform: scale(1.04); }
+.objcard .pic .chip { position: absolute; left: 8px; top: 8px; }
+.objcard .eyebrow { font-size: 11px; margin-top: 4px; }
+.objcard h3 { font-size: 17px; font-stretch: 100%; font-weight: 700; line-height: 1.25; }
+.objcard:hover h3 { text-decoration: underline; text-underline-offset: 3px; }
+.objcard .inv { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+

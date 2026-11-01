@@ -1,0 +1,34 @@
+[
+  {
+    "key": "at60",
+    "art": "exAt60",
+    "kind": "Special exhibition",
+    "dates": "30 Sep 2026 – 28 Mar 2027",
+    "title": "Botswana at 60",
+    "text": "Sixty objects for sixty years of independence: from the first Independence Day flag to the design of today’s Gaborone."
+  },
+  {
+    "key": "tsodilo",
+    "art": "exTsodilo",
+    "kind": "Permanent gallery",
+    "dates": "Gallery 1",
+    "title": "Tsodilo – Mountains of the Gods",
+    "text": "Rock art, tools and stories from Botswana’s first World Heritage Site."
+  },
+  {
+    "key": "art",
+    "art": "exArt",
+    "kind": "National Art Gallery",
+    "dates": "Rooms A & B",
+    "title": "Painters of the Nation",
+    "text": "Works by Botswana artists from the 1960s to today."
+  },
+  {
+    "key": "kalahari",
+    "art": "exKalahari",
+    "kind": "Permanent gallery",
+    "dates": "Gallery 4",
+    "title": "Kalahari Life",
+    "text": "Plants and animals that thrive in the sand – and how people live with them."
+  }
+]

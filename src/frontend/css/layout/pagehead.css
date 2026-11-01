@@ -1,0 +1,5 @@
+/* ---------- page head ---------- */
+.pagehead { padding-block: 40px 32px; border-bottom: 1px solid var(--line); }
+.crumbs { font-size: 14px; color: var(--muted); margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 6px; }
+.crumbs a { color: var(--muted); }
+.pagehead .h1 { margin-bottom: 14px; }
