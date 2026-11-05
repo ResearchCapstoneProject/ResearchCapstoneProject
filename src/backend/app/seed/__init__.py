@@ -114,18 +114,14 @@ def seed_demo_activity(db: Session) -> None:
     today = date.today()
 
     if not db.scalar(select(func.count()).select_from(Booking)):
-        # Whatever admission type is active; the museum starts with one free
-        # 'Admission' and may add priced groups later.
-        admission = (db.query(TicketType)
-                     .filter(TicketType.is_active.is_(True),
-                             TicketType.is_addon.is_(False))
-                     .order_by(TicketType.sort_order).first())
+        tickets = {t.ticket_key: t for t in db.query(TicketType).all()}
+        res, intl = tickets.get("res"), tickets.get("intl")
         cap = availability.capacity(db)
         n = 0
         for offset in range(availability.window_days(db)):
             d = today + timedelta(days=offset)
-            for hour, minute in availability.slot_starts(db, d):
-                x = _fnv1a(f"{d.isoformat()}@{hour}:{minute}")
+            for hour in availability.slot_hours(db, d):
+                x = _fnv1a(f"{d.isoformat()}@{hour}")
                 weekend = d.weekday() >= 5
                 visitors = (x % 24) + (10 if weekend else 2) + (6 if hour in (11, 14) else 0)
                 if x % 17 == 0:
@@ -136,17 +132,15 @@ def seed_demo_activity(db: Session) -> None:
                 n += 1
                 b = Booking(
                     code=f"BNM-D{n:04d}"[:9], visit_date=d, visit_hour=hour,
-                    visit_minute=minute,
                     visitors=visitors, total_thebe=0,
                     visitor_name="Demo visitors", email="demo@example.invalid",
                     country="Botswana", source="demo",
                 )
                 db.add(b)
                 db.flush()
-                if admission:
-                    db.add(BookingLine(
-                        booking_id=b.id, ticket_key=admission.ticket_key,
-                        qty=visitors, unit_price_thebe=admission.price_thebe))
+                if res:
+                    db.add(BookingLine(booking_id=b.id, ticket_key=res.ticket_key,
+                                       qty=visitors, unit_price_thebe=res.price_thebe))
         db.commit()
 
     if not db.scalar(select(func.count()).select_from(ScanEvent)):
