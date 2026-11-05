@@ -65,6 +65,11 @@ def update_event(event_id: int, payload: EventPatch,
                  ) -> EventAdminOut:
     e = _get(db, event_id)
     changed = payload.model_dump(exclude_unset=True)
+    # The audit log's `detail` is a JSON column, and `changed` holds a real
+    # date object for the day of the event -- which json.dumps refuses, at
+    # commit time, as a 500 on an otherwise valid edit. mode="json" gives the
+    # same fields with the date as a string.
+    logged = payload.model_dump(exclude_unset=True, mode="json")
     fields = {"d": "event_date", "time": "time_label", "by": "by_line",
               "text": "body_text", "published": "is_published"}
     for field, value in changed.items():
@@ -72,7 +77,7 @@ def update_event(event_id: int, payload: EventPatch,
                 (value or None) if field == "text" else value)
 
     audit.record(db, user_id=user.id, action="update", entity="museum_event",
-                 entity_id=str(event_id), detail=changed)
+                 entity_id=str(event_id), detail=logged)
     db.commit()
     db.refresh(e)
     return _out(e)

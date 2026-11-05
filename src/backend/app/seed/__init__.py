@@ -82,7 +82,9 @@ def seed_content(db: Session) -> None:
                           kind=row["kind"], dates_label=row["dates"],
                           title=row["title"], body=row["text"], sort_order=i))
 
-    for row in _load("events"):
+    events = _load("events")
+    availability.put_setting(db, "seeded_events", str(len(events)))
+    for row in events:
         db.add(MuseumEvent(by_line=row.get("by", ""),
                            body_text=row.get("text") or None,
                            pdf_url=row.get("pdf", ""),
@@ -171,6 +173,50 @@ def seed_demo_activity(db: Session) -> None:
         db.commit()
 
 
+def seed_new_events(db: Session) -> None:
+    """Add events the seed file has gained since this database was created.
+
+    seed_content() runs only on an empty database, so an event added to
+    assets/seed/events.json later would never reach a server that is already
+    running -- and since the events page now reads the programme from the
+    database rather than from the frontend's own copy, "never" would mean the
+    museum's own past events quietly disappearing from the live site.
+
+    The marker is a count rather than a comparison of titles, because the
+    seed file is only ever appended to: an event the museum has deleted in
+    the staff area stays deleted, which a title match would undo on the next
+    restart.
+    """
+    rows = _load("events")
+    done = int(availability.setting(db, "seeded_events", "-1") or -1)
+
+    if done < 0:
+        # A database from before this marker existed. Work out once what it
+        # already has, by date and title, so the events it was seeded with
+        # are not added a second time. From here on the count governs.
+        have = {(e.event_date.isoformat(), e.title)
+                for e in db.query(MuseumEvent).all()}
+        missing = [r for r in rows if (r["d"], r["title"]) not in have]
+    else:
+        missing = rows[done:]
+
+    if not missing:
+        availability.put_setting(db, "seeded_events", str(len(rows)))
+        db.commit()
+        return
+
+    for row in missing:
+        db.add(MuseumEvent(by_line=row.get("by", ""),
+                           body_text=row.get("text") or None,
+                           pdf_url=row.get("pdf", ""),
+                           event_date=date.fromisoformat(row["d"]),
+                           time_label=row["time"], kind=row["kind"],
+                           title=row["title"], place=row["place"]))
+    availability.put_setting(db, "seeded_events", str(len(rows)))
+    db.commit()
+    print(f"[seed] added {len(missing)} event(s) from the seed file")
+
+
 def seed_admin(db: Session) -> None:
     if db.scalar(select(func.count()).select_from(StaffUser)):
         return
@@ -190,5 +236,6 @@ def seed_admin(db: Session) -> None:
 
 def run(db: Session) -> None:
     seed_content(db)
+    seed_new_events(db)
     seed_demo_activity(db)
     seed_admin(db)
