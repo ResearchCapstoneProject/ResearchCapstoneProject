@@ -36,6 +36,17 @@ function degrade(reason) {
   if (onDegrade) onDegrade(reason);
 }
 
+/* The same state change for use during bootstrap(), without the callback.
+   onDegraded() re-renders, and while the app is booting there is no shell to
+   render into yet: the callback would throw, the exception would escape the
+   catch block below, and the offline fallback that fills store.S would never
+   run -- leaving every view to throw on a null store.S. */
+function degradeQuietly() {
+  store.api.mode = 'offline';
+  store.api.degraded = true;
+  store.api.user = null;
+}
+
 /* Run an API call, degrading only on genuine unreachability. */
 async function call(fn) {
   try {
@@ -66,8 +77,14 @@ export async function bootstrap() {
       store.S = await loadFromApi();
       return store.api.mode;
     } catch (e) {
-      if (!(e instanceof Unreachable)) throw e;
-      degrade('config failed');
+      /* The probe said the API was up, then a call failed. api.js maps every
+         5xx to Unreachable, so this is also the path a server takes when the
+         code is new and the database has not had the migration yet: the API
+         answers 500 and the site has to come up anyway. Never rethrow here --
+         fall through to the seed plus localStorage below, so store.S is
+         always a state object. */
+      console.error('[bootstrap]', e);
+      degradeQuietly();
     }
   }
 

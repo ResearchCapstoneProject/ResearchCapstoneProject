@@ -136,6 +136,15 @@ searching a full inventory number matches the whole department. Flip it with
 DDL plus "drop the volume and re-create" is the honest workflow, and it is
 what the museum's IT department will actually read.
 
+That workflow stops at the first deployed instance, because dropping the
+volume there means losing the museum's data. So a schema change is written
+twice: into `001_schema.sql` for a fresh database, and as a dated, idempotent
+file in `doc/migrations/` for one that already exists. The server's deploy
+step applies every migration it has not seen; `README.md` has the order. The
+failure this prevents is specific: new code selecting `booking.visit_minute`
+from a database that does not have it, which MySQL answers with error 1054 on
+every booking query.
+
 ## Online and offline
 
 `data/repo.js` probes `GET /api/health` **once** per page load and latches the
@@ -146,6 +155,17 @@ A later failure calls `degrade()`: flip to offline, snapshot state to
 localStorage, one toast, re-render. It is idempotent and **never flips back
 automatically** — flapping mid-booking would corrupt the wizard. The prototype
 bar has a Reconnect button.
+
+During `bootstrap()` the same failure takes the quiet path: state flips to
+offline, but the callback does not run, because the re-render it does needs a
+shell that does not exist yet. `main.js` shows the toast once the page is up
+instead. Getting this wrong is worth knowing about, because of how it looks:
+the health probe succeeds, a later call answers 5xx, the exception escapes
+boot before the seed is loaded, `store.S` stays `null`, and every view throws
+on it. The site then serves a masthead and an empty `#app` — no hero image, no
+active navigation item, no time slots, and clicking the logo does nothing,
+because `route()` throws before it gets to any of them. That is one bad
+response looking exactly like four unrelated CSS bugs.
 
 `401`/`403` never degrade: the API is up and you are not authorised. Clear the
 user and redirect to the login. Conflating those with unreachability is the
@@ -170,7 +190,12 @@ a visitor.
 ## Things that cost an afternoon if you do not know
 
 - `/docker-entrypoint-initdb.d` runs **only when the `dbdata` volume is
-  empty**. After changing the schema: `docker compose down -v`.
+  empty**. After changing the schema: `docker compose down -v` locally, and a
+  migration from `doc/migrations/` anywhere the data has to survive.
+- The server has **no `--reload`** (`compose.override.yaml`), and the source
+  tree is a bind mount. `git pull` alone therefore ships the new frontend to
+  visitors while the API still runs the old code: restart `api` in the same
+  breath.
 - `innodb_ft_min_token_size` applies when a FULLTEXT index is *built*, so it
   must be in `docker/mysql/conf.d/bnm.cnf` on that same first boot.
 - `002_reference_data.sql` must stay **UTF-8 with no BOM**. Location labels
