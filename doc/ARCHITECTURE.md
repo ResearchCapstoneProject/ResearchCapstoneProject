@@ -99,6 +99,19 @@ takes an InnoDB row lock and is atomic and monotonic.
 Counters are **not** reset by the demo reset. That is deliberate and looks
 like a bug if you do not know.
 
+**A slot is a start time, not an hour.** `setting.slot_minutes` is set in the
+staff area, so `booking.visit_minute` is part of the slot identity and of the
+capacity lock. Slots tile the opening hours from opening time; a remainder
+shorter than one slot is dropped rather than letting the last slot overrun
+closing time. `slot_starts()` in the backend and `slotStarts()` in
+`js/data/opening.js` must stay in agreement, or the offline demo offers a slot
+the API then rejects.
+
+**Visitor groups are data, not code.** The museum starts with one free
+`Admission` group and adds priced groups in the staff area. A group that has
+been booked is deactivated, never deleted, so `booking_line.unit_price_thebe`
+keeps meaning what somebody actually paid.
+
 **Booking codes** use `ABCDEFGHJKLMNPQRSTUVWXYZ23456789` — no I, O, 0 or 1,
 because a visitor reads the code out at the front desk. Generation inserts and
 retries on the UNIQUE index rather than checking first, which would be a
@@ -123,6 +136,15 @@ searching a full inventory number matches the whole department. Flip it with
 DDL plus "drop the volume and re-create" is the honest workflow, and it is
 what the museum's IT department will actually read.
 
+That workflow stops at the first deployed instance, because dropping the
+volume there means losing the museum's data. So a schema change is written
+twice: into `001_schema.sql` for a fresh database, and as a dated, idempotent
+file in `doc/migrations/` for one that already exists. The server's deploy
+step applies every migration it has not seen; `README.md` has the order. The
+failure this prevents is specific: new code selecting `booking.visit_minute`
+from a database that does not have it, which MySQL answers with error 1054 on
+every booking query.
+
 ## Online and offline
 
 `data/repo.js` probes `GET /api/health` **once** per page load and latches the
@@ -133,6 +155,17 @@ A later failure calls `degrade()`: flip to offline, snapshot state to
 localStorage, one toast, re-render. It is idempotent and **never flips back
 automatically** — flapping mid-booking would corrupt the wizard. The prototype
 bar has a Reconnect button.
+
+During `bootstrap()` the same failure takes the quiet path: state flips to
+offline, but the callback does not run, because the re-render it does needs a
+shell that does not exist yet. `main.js` shows the toast once the page is up
+instead. Getting this wrong is worth knowing about, because of how it looks:
+the health probe succeeds, a later call answers 5xx, the exception escapes
+boot before the seed is loaded, `store.S` stays `null`, and every view throws
+on it. The site then serves a masthead and an empty `#app` — no hero image, no
+active navigation item, no time slots, and clicking the logo does nothing,
+because `route()` throws before it gets to any of them. That is one bad
+response looking exactly like four unrelated CSS bugs.
 
 `401`/`403` never degrade: the API is up and you are not authorised. Clear the
 user and redirect to the login. Conflating those with unreachability is the
@@ -157,7 +190,12 @@ a visitor.
 ## Things that cost an afternoon if you do not know
 
 - `/docker-entrypoint-initdb.d` runs **only when the `dbdata` volume is
-  empty**. After changing the schema: `docker compose down -v`.
+  empty**. After changing the schema: `docker compose down -v` locally, and a
+  migration from `doc/migrations/` anywhere the data has to survive.
+- The server has **no `--reload`** (`compose.override.yaml`), and the source
+  tree is a bind mount. `git pull` alone therefore ships the new frontend to
+  visitors while the API still runs the old code: restart `api` in the same
+  breath.
 - `innodb_ft_min_token_size` applies when a FULLTEXT index is *built*, so it
   must be in `docker/mysql/conf.d/bnm.cnf` on that same first boot.
 - `002_reference_data.sql` must stay **UTF-8 with no BOM**. Location labels

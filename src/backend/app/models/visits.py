@@ -26,6 +26,9 @@ class Booking(Base):
     code: Mapped[str] = mapped_column(CHAR(9), unique=True)  # 'BNM-K7M2P'
     visit_date: Mapped[date] = mapped_column(Date)
     visit_hour: Mapped[int] = mapped_column()
+    # Slot length is configurable, so the start minute is part of the slot
+    # identity. 0 for the hourly slots the museum starts with.
+    visit_minute: Mapped[int] = mapped_column(default=0)
     visitors: Mapped[int] = mapped_column(SmallInteger)
     total_thebe: Mapped[int] = mapped_column()
     visitor_name: Mapped[str] = mapped_column(String(128))

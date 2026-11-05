@@ -1,6 +1,6 @@
 import { fromKey, hh } from '../core/format.js';
 import { gabNow } from '../core/time.js';
-import { HOLIDAYS, HOURS } from './constants.js';
+import { HOLIDAYS, HOURS, SLOT_MINUTES } from './constants.js';
 import { DAYNAME } from '../core/time.js';
 
 /* When is the museum open? Reads the HOURS / HOLIDAYS reference data, so this
@@ -19,3 +19,21 @@ export function openStatus() {
 export const hoursFor = (k) => HOURS[fromKey(k).getDay()];
 export const holiday = (k) => HOLIDAYS[k.slice(5)];
 export function slotHours(k) { const r = hoursFor(k); if (!r) return []; const out = []; for (let h = r[0]; h < r[1]; h++) out.push(h); return out; }
+
+/* Every time a visit may start on day `k`, as { h, m }.
+
+   Slots tile the opening hours from opening time onwards; a remainder
+   shorter than one slot is dropped rather than letting the last slot run
+   past closing time. Mirrors slot_starts() in the backend -- the two must
+   agree, or the offline demo offers a slot the API then rejects. */
+export function slotStarts(k) {
+  const r = hoursFor(k);
+  if (!r) return [];
+  const step = SLOT_MINUTES;
+  const out = [];
+  for (let t = r[0] * 60; t <= r[1] * 60 - step; t += step) out.push({ h: Math.floor(t / 60), m: t % 60 });
+  return out;
+}
+/* '14:30', and the end of that slot. */
+export const slotLabel = (h, m) => `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+export function slotEnd(h, m) { const t = h * 60 + m + SLOT_MINUTES; return slotLabel(Math.floor(t / 60) % 24, t % 60); }

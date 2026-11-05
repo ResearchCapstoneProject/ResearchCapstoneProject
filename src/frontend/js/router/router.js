@@ -12,6 +12,7 @@ import { pageStaffBookings } from '../views/staff-bookings.js';
 import { bindForm, pageStaffForm } from '../views/staff-form.js';
 import { pageStaffObjects } from '../views/staff-objects.js';
 import { pageStaffStats } from '../views/staff-stats.js';
+import { bindSettings, pageStaffSettings } from '../views/staff-settings.js';
 import { pageTickets } from '../views/tickets.js';
 import { pageDepartment, pageDepartments } from '../views/departments.js';
 import { pageImprint, pagePrivacy } from '../views/legal.js';
@@ -81,6 +82,12 @@ export function route() {
       else if (b === 'edit') { html = pageStaffForm(c); after = () => bindForm(c); title = 'Edit object'; }
       else if (b === 'bookings') { html = pageStaffBookings(); title = 'Bookings'; }
       else if (b === 'stats') { html = pageStaffStats(); title = 'Scan statistics'; after = bindTips; }
+      else if (b === 'settings') {
+        html = pageStaffSettings(); title = 'Settings';
+        /* The groups and settings are fetched after the shell is on screen,
+           then the page re-renders in place -- no spinner route, no flash. */
+        after = () => bindSettings(() => { $('#app').innerHTML = pageStaffSettings(); });
+      }
       else { html = pageStaffObjects(); title = 'Staff area'; }
       break;
     case 'page': html = pagePlaceholder(b); title = (PAGES[b] || {}).t || 'Page'; break;

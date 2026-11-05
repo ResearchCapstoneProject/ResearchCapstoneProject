@@ -8,18 +8,26 @@ import { openScan } from '../ui/scanmodal.js';
 import { toast } from '../ui/toast.js';
 import { renderResults } from '../views/collection.js';
 import { pageStaffBookings } from '../views/staff-bookings.js';
+import {
+  addGroup, deleteGroup, pageStaffSettings, saveGroupPrice, saveVisitSettings,
+  toggleGroup,
+} from '../views/staff-settings.js';
 import { updatePreview } from '../views/staff-form.js';
 import { tkConfirm, tkRerender } from '../views/tickets.js';
 import { store } from '../state/store.js';
 import { viewsOf } from '../art/registry.js';
 import { $ } from '../core/dom.js';
-import { TOUR_TIMES } from '../data/constants.js';
+import { TICKETS, TOUR_TIMES } from '../data/constants.js';
 import { save } from '../data/local.js';
 import * as repo from '../data/repo.js';
-import { newT, visitorsOf } from '../state/booking.js';
+import { emptyQ, newT, visitorsOf } from '../state/booking.js';
 import { byId } from '../state/selectors.js';
 import { newQuery } from '../state/query.js';
 import { pageStaffLogin } from '../views/staff-login.js';
+
+/* The settings page refreshes itself in place after a save, so the table and
+   the form show what the server now holds rather than what was typed. */
+const rerenderSettings = () => { $('#app').innerHTML = pageStaffSettings(); };
 
 /* ---------------- events ---------------- */
 const closeMenus = () => document.querySelectorAll('.navitem.open').forEach((n) => { n.classList.remove('open'); n.querySelector('[data-act="navmenu"]').setAttribute('aria-expanded', 'false'); });
@@ -73,11 +81,21 @@ document.addEventListener('click', (e) => {
     case 'close-nav': closeModal(); break;
     case 'label': openLabel(t.dataset.id); break;
     case 'print': document.body.classList.add('printing'); window.print(); setTimeout(() => document.body.classList.remove('printing'), 500); break;
-    case 'day': store.T.date = t.dataset.k; store.T.hour = null; store.T.q.tour = 0; tkRerender(); break;
-    case 'slot': store.T.hour = Number(t.dataset.h); if (!TOUR_TIMES.includes(store.T.hour)) store.T.q.tour = 0; tkRerender(); break;
+    case 'day': store.T.date = t.dataset.k; store.T.hour = null; store.T.min = 0; store.T.q = emptyQ(); tkRerender(); break;
+    case 'slot': {
+      store.T.hour = Number(t.dataset.h); store.T.min = Number(t.dataset.m || 0);
+      /* Add-ons tied to fixed hours fall away when another slot is picked. */
+      if (TOUR_TIMES.length && !TOUR_TIMES.includes(store.T.hour)) {
+        TICKETS.filter((x) => x.addon).forEach((x) => { store.T.q[x.key] = 0; });
+      }
+      tkRerender(); break;
+    }
     case 'qty': {
-      const k = t.dataset.k; store.T.q[k] = Math.max(0, store.T.q[k] + Number(t.dataset.d));
-      if (store.T.q.tour > visitorsOf(store.T.q)) store.T.q.tour = visitorsOf(store.T.q);
+      const k = t.dataset.k; store.T.q[k] = Math.max(0, (store.T.q[k] || 0) + Number(t.dataset.d));
+      /* One add-on per visitor at most. */
+      TICKETS.filter((x) => x.addon).forEach((x) => {
+        if (store.T.q[x.key] > visitorsOf(store.T.q)) store.T.q[x.key] = visitorsOf(store.T.q);
+      });
       tkRerender(); break;
     }
     case 'tk-next': store.T.step += 1; tkRerender(true); break;
@@ -86,6 +104,9 @@ document.addEventListener('click', (e) => {
       store.T.step -= 1; store.T.err = {}; tkRerender(true); break;
     case 'tk-confirm': tkConfirm(); break;
     case 'tk-new': store.T = newT(); tkRerender(true); break;
+    case 'grp-save': saveGroupPrice(t.dataset.key, rerenderSettings); break;
+    case 'grp-toggle': toggleGroup(t.dataset.key, t.dataset.to === '1', rerenderSettings); break;
+    case 'grp-del': deleteGroup(t.dataset.key, rerenderSettings); break;
     case 'dept': store.CQ.dept = t.dataset.v; store.CQ.page = 1; renderResults(); break;
     case 'dept-link': store.CQ = newQuery({ dept: t.dataset.v }); break;
     case 'craft-clear': store.CQ.craft = ''; store.CQ.page = 1; history.replaceState(null, '', '#/collection'); renderResults(); break;
@@ -103,6 +124,8 @@ document.addEventListener('click', (e) => {
   }
 });
 document.addEventListener('submit', (e) => {
+  if (e.target.id === 'grpform') { e.preventDefault(); addGroup(rerenderSettings); return; }
+  if (e.target.id === 'setform') { e.preventDefault(); saveVisitSettings(rerenderSettings); return; }
   if (e.target.id === 'stafflogin') {
     e.preventDefault();
     const form = e.target;

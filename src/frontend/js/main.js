@@ -11,6 +11,7 @@ import { dkey } from './core/format.js';
 import { nextDays } from './core/time.js';
 import { hoursFor } from './data/opening.js';
 import * as repo from './data/repo.js';
+import { freshState } from './data/local.js';
 import { store } from './state/store.js';
 import { newQuery } from './state/query.js';
 import { newT } from './state/booking.js';
@@ -45,9 +46,18 @@ async function boot() {
     // managed to load.
     console.error('[boot]', err);
   }
+  /* Last resort. bootstrap() fills store.S on every path it can, but if even
+     the seed files failed to load, the views must still have a state object
+     to read instead of throwing and rendering nothing at all. */
+  if (!store.S) store.S = freshState({ objects: [] });
   initState();
   shell();
   route();
+  /* bootstrap() degrades without a toast, because there was no page to show
+     one on. Say it now that there is. */
+  if (store.api && store.api.degraded) {
+    toast('Working offline — your changes are saved in this browser.');
+  }
 }
 
 boot();

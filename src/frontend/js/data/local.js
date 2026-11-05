@@ -80,6 +80,9 @@ export function readLocal() {
 }
 
 export function writeLocal(state = store.S) {
+  /* Boot has not filled the state yet. Writing now would replace a good save
+     with "null" and lose the visitor's offline bookings. */
+  if (!state) return false;
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(state));
     return true;

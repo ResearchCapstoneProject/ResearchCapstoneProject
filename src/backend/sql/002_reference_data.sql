@@ -75,16 +75,20 @@ ON DUPLICATE KEY UPDATE label=VALUES(label), closed=VALUES(closed);
 
 -- ticket types (prices in thebe: 100 thebe = 1 pula) -------------------------
 INSERT INTO ticket_type (ticket_key, name, description, price_thebe, is_addon, is_active, sort_order) VALUES
-  ('res', 'Citizens & residents', 'Show your Omang or residence permit at the entrance', 0, 0, 1, 0),
-  ('child', 'Children under 16 & students', 'Student card required for students', 0, 0, 1, 1),
-  ('intl', 'International visitors', 'Adults visiting from abroad', 5000, 0, 1, 2),
-  ('tour', 'Guided tour add-on (45 min)', 'Only at 10:00 and 14:00 · one per visitor', 3000, 1, 1, 3)
+  ('gen', 'Admission', 'Free entry for all visitors', 0, 0, 1, 0)
 ON DUPLICATE KEY UPDATE name=VALUES(name), description=VALUES(description),
   price_thebe=VALUES(price_thebe), is_addon=VALUES(is_addon), sort_order=VALUES(sort_order);
 
+-- Admission is free and undifferentiated until the museum decides otherwise.
+-- Visitor groups and their prices are added in the staff area, which is why
+-- the categories the prototype invented are retired rather than seeded.
+UPDATE ticket_type SET is_active = 0
+ WHERE ticket_key IN ('res', 'child', 'intl', 'tour');
+
 -- settings --------------------------------------------------------------------
 INSERT INTO setting (setting_key, value) VALUES
-  ('capacity_per_hour', '40'),
+  ('capacity_per_hour', '40'),        -- places per time slot
+  ('slot_minutes', '60'),             -- slot length; 15/20/30/45/60/90/120
   ('tour_times', '10,14'),
   ('currency', 'BWP'),
   ('timezone', 'Africa/Gaborone'),

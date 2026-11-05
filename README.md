@@ -43,6 +43,32 @@ files, two origins — which is the honest way to demonstrate that the site stil
 the museum's connection drops during a presentation.
 
 
+### Deploying an update to the server
+The server runs the same stack with `compose.override.yaml` on top: Caddy in front on
+port 80, nothing else published. Two things differ from a local run, and both have
+cost us a broken site already.
+
+- **The database keeps its data.** `src/backend/sql/` runs only on an empty volume, so
+  a schema change reaches a server that already has data **only** as a migration from
+  `doc/migrations/`.
+- **There is no `--reload`.** The source tree is a bind mount, so `git pull` changes the
+  frontend visitors get *immediately*, while the API keeps running the old code until
+  its container is restarted. In between, a new frontend talks to an old API.
+
+Deploy in this order and the three never disagree:
+```bash
+git pull
+# every new file in doc/migrations/, oldest first; safe to run twice
+docker compose exec -T db sh -c 'mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' \
+  < doc/migrations/2026-11-05-slot-minutes.sql
+docker compose up -d --build        # restarts api on the new code
+docker compose restart api          # the startup seeder must run AFTER the migration
+docker compose logs api --tail=30   # must end in "Application startup complete"
+```
+If the site comes up but pages stay empty, check `docker compose logs api` for
+`Unknown column` — that is the migration step having been skipped.
+
+
 ## Content
 The texts and images of the museum's previous website (DNMM) are in the app:
 - `src/frontend/js/data/about.js`, `departments.js`, `explore.js`, `publications.js` hold the texts.
@@ -85,7 +111,8 @@ against the prototype.
 ## Things that will otherwise cost you an afternoon
 - **After changing anything in `src/backend/sql/`**, run `docker compose down -v`. Those
   scripts run only when the database volume is empty, so otherwise your change is silently
-  ignored.
+  ignored. A database that already holds data — the server, or a local volume you do not
+  want to lose — needs the same change as a migration in `doc/migrations/`.
 - **`002_reference_data.sql` must stay UTF-8 with no BOM.** The gallery names contain
   `·` (U+00B7) and the frontend matches on the exact string.
 - **The prototype is not the app.** `doc/prototype/` is a reference copy; nothing loads
@@ -94,13 +121,14 @@ against the prototype.
 
 ## Status
 Working: the collection database and search, timed-slot ticketing with real capacity
-limits, QR labels and scan statistics, the Departments / Explore / Publications sections with the
+limits (admission is free, slot length and visitor groups are set in the staff area), QR labels and scan statistics, the Departments / Explore / Publications sections with the
 content of the museum's previous website, the museum map, and the staff area with
 sign-in, object CRUD, image upload and booking check-in.
 
-Still simulated, and deliberately labelled as such in the interface: online payment (the
-provider is not chosen yet — Orange Money, MyZaka, Smega and card are disabled
-placeholders), e-ticket e-mail, the newsletter, the audio guide, Setswana, and the AR page. They are listed in one place, `FEATURES` in
+Payment is taken at the front desk only; the site never charges online, by
+decision rather than for lack of a provider.
+
+Still simulated, and deliberately labelled as such in the interface: e-ticket e-mail, the newsletter, the audio guide, Setswana, and the AR page. They are listed in one place, `FEATURES` in
 `src/frontend/js/core/config.js`.
 
 Open questions for the museum are in `doc/TODO.md`.

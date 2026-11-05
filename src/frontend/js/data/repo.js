@@ -15,7 +15,7 @@
        answer, shown as a form error. */
 import { getPublicBaseUrl, setPublicBaseUrl } from '../core/config.js';
 import { store } from '../state/store.js';
-import { applyServerConfig } from './constants.js';
+import { applyServerConfig, CAPACITY, SLOT_MINUTES, TICKETS } from './constants.js';
 import { ApiError, Unreachable, probeHealth, request } from './api.js';
 import {
   addNewSeedObjects, clearLocal, freshState, loadSeed, readLocal, writeLocal,
@@ -34,6 +34,17 @@ function degrade(reason) {
   store.api.user = null;
   writeLocal();
   if (onDegrade) onDegrade(reason);
+}
+
+/* The same state change for use during bootstrap(), without the callback.
+   onDegraded() re-renders, and while the app is booting there is no shell to
+   render into yet: the callback would throw, the exception would escape the
+   catch block below, and the offline fallback that fills store.S would never
+   run -- leaving every view to throw on a null store.S. */
+function degradeQuietly() {
+  store.api.mode = 'offline';
+  store.api.degraded = true;
+  store.api.user = null;
 }
 
 /* Run an API call, degrading only on genuine unreachability. */
@@ -66,8 +77,14 @@ export async function bootstrap() {
       store.S = await loadFromApi();
       return store.api.mode;
     } catch (e) {
-      if (!(e instanceof Unreachable)) throw e;
-      degrade('config failed');
+      /* The probe said the API was up, then a call failed. api.js maps every
+         5xx to Unreachable, so this is also the path a server takes when the
+         code is new and the database has not had the migration yet: the API
+         answers 500 and the site has to come up anyway. Never rethrow here --
+         fall through to the seed plus localStorage below, so store.S is
+         always a state object. */
+      console.error('[bootstrap]', e);
+      degradeQuietly();
     }
   }
 
@@ -245,6 +262,75 @@ export async function checkIn(code) {
   const b = store.S.bookings.find((x) => x.code === code);
   if (b) { b.checkedIn = true; writeLocal(); }
   return b;
+}
+
+// ------------------------------------------------- settings & visitor groups
+
+/* Re-reads GET /config after a settings change, so the price list, the
+   capacity and the slot length the visitor-facing pages hold are the ones
+   the museum just saved -- without a reload. */
+async function refreshConfig() {
+  const cfg = await call(() => request('/config'));
+  applyServerConfig(cfg);
+  return cfg;
+}
+
+function offlineOnly() {
+  throw new ApiError(503, {
+    code: 'offline',
+    message: 'Settings are stored on the server. Sign in to the live site to change them.',
+  });
+}
+
+export async function listTicketTypes() {
+  if (isOnline()) return call(() => request('/staff/ticket-types'));
+  // Offline the staff page is read-only; show what the demo is using.
+  return TICKETS.map((t) => ({
+    key: t.key, name: t.name, desc: t.desc, priceThebe: t.price,
+    addon: !!t.addon, active: true, sortOrder: 0, inUse: false,
+  }));
+}
+
+export async function createTicketType(draft) {
+  if (!isOnline()) return offlineOnly();
+  const created = await call(() =>
+    request('/staff/ticket-types', { method: 'POST', body: draft }));
+  await refreshConfig();
+  return created;
+}
+
+export async function updateTicketType(key, patch) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request(`/staff/ticket-types/${encodeURIComponent(key)}`,
+      { method: 'PATCH', body: patch }));
+  await refreshConfig();
+  return saved;
+}
+
+export async function deleteTicketType(key) {
+  if (!isOnline()) return offlineOnly();
+  const out = await call(() =>
+    request(`/staff/ticket-types/${encodeURIComponent(key)}`, { method: 'DELETE' }));
+  await refreshConfig();
+  return out;
+}
+
+export async function getVisitSettings() {
+  if (isOnline()) return call(() => request('/staff/settings'));
+  return {
+    capacityPerSlot: CAPACITY, slotMinutes: SLOT_MINUTES,
+    bookingWindowDays: 14, tourTimes: [], currency: 'BWP',
+    slotLengths: [15, 20, 30, 45, 60, 90, 120],
+  };
+}
+
+export async function updateVisitSettings(patch) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request('/staff/settings', { method: 'PATCH', body: patch }));
+  await refreshConfig();
+  return saved;
 }
 
 // -------------------------------------------------------------------- scans

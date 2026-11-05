@@ -45,6 +45,7 @@ def get_config(db: Session = Depends(get_db)) -> ConfigOut:
             .order_by(TicketType.sort_order).all()
         ],
         capacity=availability.capacity(db),
+        slot_minutes=availability.slot_minutes(db),
         tour_times=availability.tour_times(db),
         # What the client bakes into printed QR codes.
         public_base_url=settings.public_base_url,
