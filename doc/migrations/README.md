@@ -26,7 +26,14 @@ docker compose exec -T db \
 ```
 
 Then restart the API, which does not reload by itself in a deployment:
-`docker compose up -d --build`. `README.md` has the full deploy order.
+`docker compose up -d --build`, followed by `docker compose restart api`.
+
+The second command is not redundant. The startup seeder runs once per process
+and swallows its own failure (`main.py` prints `[startup] database not ready`
+and carries on), so whatever it could not do against the old schema -- create
+the first staff account, among other things -- stays undone until the API
+starts again *after* the migration. `up -d --build` only replaces a container
+when the image changed, which a database change does not. `README.md` has the full deploy order.
 
 | file | what it does |
 | --- | --- |

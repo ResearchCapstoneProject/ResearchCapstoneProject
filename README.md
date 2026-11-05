@@ -62,6 +62,7 @@ git pull
 docker compose exec -T db sh -c 'mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' \
   < doc/migrations/2026-11-05-slot-minutes.sql
 docker compose up -d --build        # restarts api on the new code
+docker compose restart api          # the startup seeder must run AFTER the migration
 docker compose logs api --tail=30   # must end in "Application startup complete"
 ```
 If the site comes up but pages stay empty, check `docker compose logs api` for
