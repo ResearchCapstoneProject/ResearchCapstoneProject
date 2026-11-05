@@ -1,7 +1,7 @@
 """Reference tables: departments, rooms, locations, hours, tickets, settings."""
 from datetime import datetime
 
-from sqlalchemy import CHAR, Enum, ForeignKey, SmallInteger, String, Text, func
+from sqlalchemy import CHAR, Enum, ForeignKey, SmallInteger, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..db import Base
@@ -72,7 +72,4 @@ class Setting(Base):
     __tablename__ = "setting"
     setting_key: Mapped[str] = mapped_column(String(64), primary_key=True)
     value: Mapped[str] = mapped_column(String(255))
-    # The DDL carries DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
-    # declaring the server default here keeps the ORM from inserting an explicit
-    # NULL, which MySQL rejects on a NOT NULL column.
-    updated_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column()

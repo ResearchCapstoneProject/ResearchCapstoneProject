@@ -23,7 +23,7 @@ export function pageVisit() {
       <table class="hours">${order.map((d) => `<tr class="${d === today ? 'today' : ''}"><td>${DAYNAME[d]}${d === today ? ' (today)' : ''}</td><td>${HOURS[d] ? `${hh(HOURS[d][0])} – ${hh(HOURS[d][1])}` : 'Closed'}</td></tr>`).join('')}</table>
       <p class="small muted">Last entry one hour before closing. Closed on selected public holidays. Opening hours and prices are placeholders to be confirmed with the museum.</p>
       <h2 class="h3" style="margin:36px 0 14px">Admission</h2>
-      <table class="hours">${TICKETS.map((t) => `<tr><td>${esc(t.name)}</td><td>${t.price ? money(t.price) : 'Free'}</td></tr>`).join('')}<tr><td>School groups (booked via the education office)</td><td>Free</td></tr></table>
+      <table class="hours">${TICKETS.map((t) => `<tr><td>${esc(t.name)}</td><td>${money(t.price)}</td></tr>`).join('')}<tr><td>School groups (booked via the education office)</td><td>Free</td></tr></table>
       <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="#/tickets">Book a time slot</a></div>
     </div>
     <div>

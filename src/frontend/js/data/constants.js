@@ -45,18 +45,15 @@ export const EVENTS = [
 /* opening hours & prices (placeholders to be confirmed with the museum) */
 export const HOURS = { 0: [9, 17], 1: null, 2: [9, 18], 3: [9, 18], 4: [9, 18], 5: [9, 18], 6: [9, 17] };
 export let CAPACITY = 40;
-/* Length of one entry slot in minutes. The museum changes this in the staff
-   area; GET /api/config carries the current value. */
-export let SLOT_MINUTES = 60;
-export const TOUR_TIMES = [];
+export const TOUR_TIMES = [10, 14];
 export const HOLIDAYS = { '09-30': 'Botswana Day', '10-01': 'Public holiday', '12-25': 'Christmas' };
 /* Prices are in THEBE (100 thebe = 1 pula), matching price_thebe in the
    database, so money() has a single unit to format. */
-/* Admission is free and the same for everyone until the museum says
-   otherwise. Visitor groups and their prices are maintained in the staff
-   area, so this is only the fallback the offline demo starts from. */
 export const TICKETS = [
-  { key: 'gen', name: 'Admission', desc: 'Free entry for all visitors', price: 0 },
+  { key: 'res', name: 'Citizens & residents', desc: 'Show your Omang or residence permit at the entrance', price: 0 },
+  { key: 'child', name: 'Children under 16 & students', desc: 'Student card required for students', price: 0 },
+  { key: 'intl', name: 'International visitors', desc: 'Adults visiting from abroad', price: 5000 },
+  { key: 'tour', name: 'Guided tour add-on (45 min)', desc: 'Only at 10:00 and 14:00 · one per visitor', price: 3000, addon: true },
 ];
 
 /* ---------- simplified floor plan of the museum ---------- */
@@ -154,6 +151,5 @@ export function applyServerConfig(cfg) {
   }
 
   if (typeof cfg.capacity === 'number') CAPACITY = cfg.capacity;
-  if (typeof cfg.slotMinutes === 'number') SLOT_MINUTES = cfg.slotMinutes;
   if (cfg.tourTimes) { TOUR_TIMES.length = 0; TOUR_TIMES.push(...cfg.tourTimes); }
 }

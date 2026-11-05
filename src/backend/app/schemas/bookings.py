@@ -8,8 +8,6 @@ from .common import CamelModel
 class BookingCreate(CamelModel):
     date: date
     hour: int = Field(ge=0, le=23)
-    # Slot start minute; 0 unless the museum runs slots shorter than an hour.
-    minute: int = Field(default=0, ge=0, le=59)
     # ticket_key -> quantity, e.g. {"res": 2, "child": 1, "intl": 0, "tour": 0}
     q: dict[str, int]
     name: str
@@ -55,7 +53,6 @@ class BookingOut(CamelModel):
     code: str
     date: str
     hour: int
-    minute: int = 0
     q: dict[str, int]
     visitors: int
     total_thebe: int
@@ -70,8 +67,6 @@ class BookingOut(CamelModel):
 
 class SlotOut(CamelModel):
     hour: int
-    minute: int = 0
-    minutes: int = 60          # length of this slot
     taken: int
     capacity: int
     past: bool

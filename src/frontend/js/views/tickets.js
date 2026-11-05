@@ -4,10 +4,11 @@ import { $, esc } from '../core/dom.js';
 import { dkey, fmtDate, fromKey, hh, money } from '../core/format.js';
 import { qrSVG } from '../core/qr.js';
 import { isPast, nextDays } from '../core/time.js';
-import { CAPACITY, SLOT_MINUTES, TICKETS, TOUR_TIMES } from '../data/constants.js';
+import { TICKETS, TOUR_TIMES } from '../data/constants.js';
 import { save } from '../data/local.js';
-import { holiday, hoursFor, slotEnd, slotLabel, slotStarts } from '../data/opening.js';
+import { holiday, hoursFor, slotHours } from '../data/opening.js';
 import { leftIn, newT, totalOf, visitorsOf } from '../state/booking.js';
+import { CAPACITY } from '../data/constants.js';
 import { taken } from '../state/booking.js';
 
 /* ---------------- tickets ---------------- */
@@ -15,7 +16,7 @@ import { taken } from '../state/booking.js';
 export function pageTickets() {
   if (store.T.step === 4 && !store.T.done) store.T = newT();
   const steps = ['Date & time', 'Tickets', 'Your details', 'Confirmation'];
-  return `${pagehead([['#/', 'Home'], ['', 'Tickets']], 'Tickets &amp; time slots', `Admission is free. Book a time slot online and skip the queue – each ${SLOT_MINUTES}-minute slot holds up to ${CAPACITY} visitors, so the galleries never get too crowded.`)}
+  return `${pagehead([['#/', 'Home'], ['', 'Tickets']], 'Tickets &amp; time slots', 'Book your visit online and skip the queue. Every hour, up to 40 visitors can enter – so the galleries never get too crowded.')}
   <div class="wrap">
     <ol class="steps" aria-label="Booking steps">${steps.map((s, i) => `<li class="${i + 1 === store.T.step ? 'on' : i + 1 < store.T.step ? 'done' : ''}" ${i + 1 === store.T.step ? 'aria-current="step"' : ''}>${s}</li>`).join('')}</ol>
     <div class="tk" id="tk">${tkBody()}${tkSummary()}</div>
@@ -23,7 +24,7 @@ export function pageTickets() {
 }
 export function tkRerender(scroll = false) {
   const a = document.activeElement; let sel = null;
-  if (a && a.dataset && a.dataset.act) sel = `[data-act="${a.dataset.act}"]` + ['k', 'h', 'm', 'd'].map((x) => (a.dataset[x] !== undefined ? `[data-${x}="${a.dataset[x]}"]` : '')).join('');
+  if (a && a.dataset && a.dataset.act) sel = `[data-act="${a.dataset.act}"]` + ['k', 'h', 'd'].map((x) => (a.dataset[x] !== undefined ? `[data-${x}="${a.dataset[x]}"]` : '')).join('');
   $('#app').innerHTML = pageTickets();
   if (scroll) { $('.steps').scrollIntoView({ behavior: 'smooth', block: 'start' }); const h = $('#tk h2'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } return; }
   if (sel) { const el = $(sel); if (el && !el.disabled) el.focus({ preventScroll: true }); }
@@ -34,21 +35,20 @@ export function tkBody() {
     const dayBtns = days.map((k) => {
       const d = fromKey(k); const closed = !hoursFor(k); const hol = holiday(k);
       const isToday = k === dkey(new Date());
-      const allPast = !closed && slotStarts(k).every(({ h, m }) => isPast(k, h, m));
+      const allPast = !closed && slotHours(k).every((h) => isPast(k, h));
       const dis = closed || allPast;
       const em = closed ? 'Closed' : allPast ? 'Closed for today' : hol ? `<span class="hol">${esc(hol)}</span>` : isToday ? 'Today' : d.toLocaleDateString('en-GB', { month: 'short' });
       return `<button type="button" class="day" data-act="day" data-k="${k}" aria-pressed="${store.T.date === k}" ${dis ? 'disabled' : ''}><small>${d.toLocaleDateString('en-GB', { weekday: 'short' })}</small><b>${d.getDate()}</b><em>${em}</em></button>`;
     }).join('');
     let slots = '<p class="muted">Choose a day to see available time slots.</p>';
     if (store.T.date) {
-      slots = `<div class="slots">${slotStarts(store.T.date).map(({ h, m }) => {
-        const past = isPast(store.T.date, h, m); const left = leftIn(store.T.date, h, m); const full = left <= 0;
-        const pct = Math.round((taken(store.T.date, h, m) / CAPACITY) * 100);
+      slots = `<div class="slots">${slotHours(store.T.date).map((h) => {
+        const past = isPast(store.T.date, h); const left = leftIn(store.T.date, h); const full = left <= 0;
+        const pct = Math.round((taken(store.T.date, h) / CAPACITY) * 100);
         const few = !full && left <= 8;
         const tour = TOUR_TIMES.includes(h);
-        return `<button type="button" class="slot ${few ? 'few' : ''}" data-act="slot" data-h="${h}" data-m="${m}" aria-pressed="${store.T.hour === h && store.T.min === m}" ${past || full ? 'disabled' : ''}>
-          <b>${slotLabel(h, m)}</b>
-          <span class="small muted">to ${slotEnd(h, m)}</span>
+        return `<button type="button" class="slot ${few ? 'few' : ''}" data-act="slot" data-h="${h}" aria-pressed="${store.T.hour === h}" ${past || full ? 'disabled' : ''}>
+          <b>${hh(h)}</b>
           <span class="cap" aria-hidden="true"><i style="width:${past ? 0 : pct}%"></i></span>
           <span class="left">${past ? 'Past' : full ? 'Fully booked' : few ? `Only ${left} left` : `${left} places left`}</span>
           ${tour ? '<span class="tour">+ Guided tour</span>' : ''}
@@ -62,15 +62,14 @@ export function tkBody() {
     </div>`;
   }
   if (store.T.step === 2) {
-    const vis = visitorsOf(store.T.q); const left = leftIn(store.T.date, store.T.hour, store.T.min); const max = Math.min(10, left);
-    /* No configured tour times means an add-on is available in every slot. */
-    const tourSlot = !TOUR_TIMES.length || TOUR_TIMES.includes(store.T.hour);
+    const vis = visitorsOf(store.T.q); const left = leftIn(store.T.date, store.T.hour); const max = Math.min(10, left);
+    const tourSlot = TOUR_TIMES.includes(store.T.hour);
     const rows = TICKETS.map((t) => {
       const v = store.T.q[t.key];
       const plusDis = t.addon ? (!tourSlot || v >= vis) : vis >= max;
       return `<div class="type">
-        <div><b>${esc(t.name)}</b><p>${esc(t.addon && !tourSlot ? `Only at ${TOUR_TIMES.map((x) => slotLabel(x, 0)).join(' and ')} – choose one of these slots` : t.desc)}</p></div>
-        <div class="price">${t.price ? money(t.price) : 'Free'}</div>
+        <div><b>${esc(t.name)}</b><p>${esc(t.addon && !tourSlot ? 'Guided tours run at 10:00 and 14:00 – choose one of these slots to add a tour' : t.desc)}</p></div>
+        <div class="price">${money(t.price)}</div>
         <div class="stepper" role="group" aria-label="${esc(t.name)}"><button type="button" data-act="qty" data-k="${t.key}" data-d="-1" aria-label="Fewer" ${v <= 0 ? 'disabled' : ''}>−</button><output aria-live="polite">${v}</output><button type="button" data-act="qty" data-k="${t.key}" data-d="1" aria-label="More" ${plusDis ? 'disabled' : ''}>+</button></div>
       </div>`;
     }).join('');
@@ -83,11 +82,11 @@ export function tkBody() {
   }
   if (store.T.step === 3) {
     const total = totalOf(store.T.q); const e = store.T.err;
-    /* The museum takes payment at the front desk only; nothing is charged
-       online. A booking therefore reserves a place, it never settles a bill. */
     const pay = total === 0
-      ? `<label><input type="radio" name="pay" checked disabled><span><b>No payment needed</b><small>Admission is free of charge.</small></span></label>`
-      : `<label><input type="radio" name="pay" value="desk" checked disabled><span><b>Pay at the museum on arrival</b><small>Cash or card at the front desk · nothing is charged online</small></span></label>`;
+      ? `<label><input type="radio" name="pay" checked disabled><span><b>No payment needed</b><small>Your visit is free of charge.</small></span></label>`
+      : `<label><input type="radio" name="pay" value="desk" ${store.T.pay === 'desk' ? 'checked' : ''}><span><b>Pay at the museum on arrival</b><small>Cash or card at the front desk</small></span></label>
+         <label class="off"><input type="radio" name="pay" disabled><span><b>Mobile money</b><small>Orange Money, MyZaka, Smega – planned integration</small></span></label>
+         <label class="off"><input type="radio" name="pay" disabled><span><b>Card online</b><small>Payment provider to be selected with the museum</small></span></label>`;
     return `<div>
       <h2>Your details</h2>
       <div class="formgrid">
@@ -112,9 +111,9 @@ export function tkBody() {
       <div class="l">
         <div class="flagrule" aria-hidden="true"></div>
         <div><div class="eyebrow">Botswana National Museum · E-ticket</div><div class="h3" style="margin-top:6px">${esc(fmtDate(b.date))}</div></div>
-        <dl><dt>Entry</dt><dd>${slotLabel(b.hour, b.min || 0)} – ${slotEnd(b.hour, b.min || 0)}</dd><dt>Visitors</dt><dd>${lines}</dd><dt>Name</dt><dd>${esc(b.name)}</dd><dt>Total</dt><dd>${b.total ? `${money(b.total)} · pay on arrival` : 'Free'}</dd></dl>
+        <dl><dt>Entry</dt><dd>${hh(b.hour)} – ${hh(b.hour + 1)}</dd><dt>Visitors</dt><dd>${lines}</dd><dt>Name</dt><dd>${esc(b.name)}</dd><dt>Total</dt><dd>${money(b.total)}${b.total ? ' · pay on arrival' : ''}</dd></dl>
       </div>
-      <div class="r">${qrSVG(`BNM-TICKET|${b.code}|${b.date}|${slotLabel(b.hour, b.min || 0)}|${b.visitors}`, 'Ticket QR code')}<span class="code">${b.code}</span></div>
+      <div class="r">${qrSVG(`BNM-TICKET|${b.code}|${b.date}|${hh(b.hour)}|${b.visitors}`, 'Ticket QR code')}<span class="code">${b.code}</span></div>
     </div>
     <div class="navrow" style="justify-content:flex-start"><button class="btn" type="button" data-act="tk-new">Book another visit</button><a class="btn ghost" href="#/staff/bookings">See this booking in the staff area</a></div>
   </div>`;
@@ -122,8 +121,8 @@ export function tkBody() {
 export function tkSummary() {
   if (store.T.step === 4) {
     return `<aside class="summary" aria-label="Before your visit"><h3>Before your visit</h3>
-      <ul class="small" style="margin:0;padding-left:18px;display:grid;gap:8px"><li>Arrive within your entry slot – you can stay until closing.</li><li>Show this code at the front desk; admission is free.</li><li>Anything that is not free is paid at the front desk.</li></ul>
-      <p class="fine">E-mail confirmations are not available yet, and nothing is charged online.</p></aside>`;
+      <ul class="small" style="margin:0;padding-left:18px;display:grid;gap:8px"><li>Arrive within your entry hour – you can stay until closing.</li><li>Bring your Omang or residence permit for free admission.</li><li>Guided tours meet at the front desk.</li></ul>
+      <p class="fine">E-mail confirmations and online payment are not available yet – please pay at the front desk.</p></aside>`;
   }
   const vis = visitorsOf(store.T.q); const total = totalOf(store.T.q);
   const lines = TICKETS.filter((t) => store.T.q[t.key]).map((t) => `<dt>${store.T.q[t.key]} × ${esc(t.name)}</dt><dd>${money(t.price * store.T.q[t.key])}</dd>`).join('');
@@ -131,12 +130,12 @@ export function tkSummary() {
     <h3>Your booking</h3>
     <dl>
       <dt>Day</dt><dd>${store.T.date ? esc(fmtDate(store.T.date, { weekday: 'short', day: 'numeric', month: 'short' })) : '–'}</dd>
-      <dt>Entry</dt><dd>${store.T.hour !== null ? `${slotLabel(store.T.hour, store.T.min || 0)} – ${slotEnd(store.T.hour, store.T.min || 0)}` : '–'}</dd>
+      <dt>Entry</dt><dd>${store.T.hour !== null ? `${hh(store.T.hour)} – ${hh(store.T.hour + 1)}` : '–'}</dd>
       <dt>Visitors</dt><dd>${vis || '–'}</dd>
       ${lines}
     </dl>
-    <div class="total"><span>Total</span><span>${vis ? (total ? money(total) : 'Free') : '–'}</span></div>
-    <p class="fine">Nothing is charged online. Anything payable is settled at the front desk.</p>
+    <div class="total"><span>Total</span><span>${vis ? money(total) : '–'}</span></div>
+    <p class="fine">Online payment is not available yet – please pay at the front desk.</p>
   </aside>`;
 }
 export function tkConfirm() {
@@ -148,7 +147,7 @@ export function tkConfirm() {
   store.T.err = err;
   if (Object.keys(err).length) { tkRerender(); const first = err.name ? '#f-name' : err.email ? '#f-email' : '#f-agree'; $(first).focus(); return; }
   const code = 'BNM-' + Array.from({ length: 5 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
-  const b = { code, date: store.T.date, hour: store.T.hour, min: store.T.min || 0, q: { ...store.T.q }, visitors: visitorsOf(store.T.q), total: totalOf(store.T.q), name: store.T.name, email: store.T.email, phone: store.T.phone, country: store.T.country, created: Date.now(), checkedIn: false };
+  const b = { code, date: store.T.date, hour: store.T.hour, q: { ...store.T.q }, visitors: visitorsOf(store.T.q), total: totalOf(store.T.q), name: store.T.name, email: store.T.email, phone: store.T.phone, country: store.T.country, created: Date.now(), checkedIn: false };
   store.S.bookings.push(b); save();
   store.T.done = b; store.T.step = 4; tkRerender(true);
 }
