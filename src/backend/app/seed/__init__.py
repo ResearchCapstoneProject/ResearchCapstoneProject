@@ -83,7 +83,10 @@ def seed_content(db: Session) -> None:
                           title=row["title"], body=row["text"], sort_order=i))
 
     for row in _load("events"):
-        db.add(MuseumEvent(event_date=date.fromisoformat(row["d"]),
+        db.add(MuseumEvent(by_line=row.get("by", ""),
+                           body_text=row.get("text") or None,
+                           pdf_url=row.get("pdf", ""),
+                           event_date=date.fromisoformat(row["d"]),
                            time_label=row["time"], kind=row["kind"],
                            title=row["title"], place=row["place"]))
 

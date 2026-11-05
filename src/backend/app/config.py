@@ -30,6 +30,9 @@ class Settings(BaseSettings):
 
     upload_dir: Path = Path("/data/uploads")
     max_upload_bytes: int = 8 * 1024 * 1024
+    # Brochures and magazines are bigger than photographs; the museum's own
+    # Zebra's Voice issues run to a few dozen megabytes.
+    max_pdf_bytes: int = 32 * 1024 * 1024
     image_max_edge: int = 1600
 
     seed_on_start: bool = True

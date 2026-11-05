@@ -25,6 +25,11 @@ export const THEME = {
   heroUrl: '',
   customFontName: '',
   customFontUrl: '',
+  footerDepartment: 'Department of National Museum and Monuments',
+  footerAddress: '331 Independence Avenue\nPrivate Bag 00114, Gaborone, Botswana',
+  footerContact: 'Tel +267 397 4616 / +267 361 0400 · Fax +267 390 2797',
+  footerNote: '© 2026 Botswana National Museum · texts and images belong to the museum',
+  footerNote2: 'Prices, bookings and inventory numbers are sample content',
 };
 
 const HEX = /^#[0-9a-f]{6}$/i;
@@ -119,6 +124,26 @@ function paintBrand() {
       if (img.getAttribute('src') !== THEME.logoUrl) img.setAttribute('src', THEME.logoUrl);
     });
   }
+
+  const dept = document.querySelector('footer.site .brand span');
+  if (dept) dept.textContent = THEME.footerDepartment;
+  const addr = document.querySelector('footer.site .faddr');
+  /* The only field with line breaks. textContent would print them as
+     spaces, so this one goes in as markup -- escaped first, because it is
+     museum-entered text. */
+  if (addr) {
+    addr.innerHTML = THEME.footerAddress
+      .split('\n')
+      .map((line) => line.replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+      }[c])))
+      .join('<br>');
+  }
+  const contact = document.querySelector('footer.site .fcontact');
+  if (contact) contact.textContent = THEME.footerContact;
+  const notes = document.querySelectorAll('footer.site .notes span');
+  if (notes[0]) notes[0].textContent = THEME.footerNote;
+  if (notes[1]) notes[1].textContent = THEME.footerNote2;
 }
 
 /* Used by the staff area to show a change before it is saved, and to put it

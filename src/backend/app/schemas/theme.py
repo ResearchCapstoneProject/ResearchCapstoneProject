@@ -29,6 +29,11 @@ class ThemeOut(CamelModel):
     hero_url: str
     custom_font_name: str
     custom_font_url: str
+    footer_department: str
+    footer_address: str
+    footer_contact: str
+    footer_note: str
+    footer_note_2: str
 
 
 class ThemeAdminOut(CamelModel):
@@ -50,6 +55,11 @@ class ThemeUpdate(CamelModel):
     accent: str | None = None
     heading_font: str | None = None
     body_font: str | None = None
+    footer_department: str | None = Field(default=None, max_length=160)
+    footer_address: str | None = Field(default=None, max_length=200)
+    footer_contact: str | None = Field(default=None, max_length=200)
+    footer_note: str | None = Field(default=None, max_length=200)
+    footer_note_2: str | None = Field(default=None, max_length=200)
 
     @field_validator("brand", "action", "accent")
     @classmethod
@@ -71,7 +81,8 @@ class ThemeUpdate(CamelModel):
             raise ValueError("Unknown font: " + ", ".join(sorted(FONT_KEYS)) + ".")
         return v
 
-    @field_validator("site_name", "site_tagline")
+    @field_validator("site_name", "site_tagline", "footer_department",
+                     "footer_contact", "footer_note", "footer_note_2")
     @classmethod
     def trimmed(cls, v: str | None) -> str | None:
         if v is None:
@@ -79,4 +90,15 @@ class ThemeUpdate(CamelModel):
         v = " ".join(v.split())
         if not v:
             raise ValueError("Please enter some text, or reset it to the default.")
+        return v
+
+    @field_validator("footer_address")
+    @classmethod
+    def address_lines(cls, v: str | None) -> str | None:
+        """The address keeps its line breaks; only trailing blanks go."""
+        if v is None:
+            return v
+        v = "\n".join(line.strip() for line in v.splitlines() if line.strip())
+        if not v:
+            raise ValueError("Please enter an address, or reset it to the default.")
         return v

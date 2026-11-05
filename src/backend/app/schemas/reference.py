@@ -49,3 +49,6 @@ class ConfigOut(CamelModel):
     currency: str
     # Colours, fonts, logo and hero picture, as the staff area set them.
     theme: ThemeOut
+    # Bundled picture path -> the upload that replaced it. core/assets.js
+    # rewrites every <img> after a render with this.
+    image_overrides: dict[str, str] = {}

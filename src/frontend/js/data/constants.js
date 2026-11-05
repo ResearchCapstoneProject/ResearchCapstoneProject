@@ -1,6 +1,7 @@
 /* Reference data. Everything here becomes a table in MySQL and is served
    by GET /api/config once the backend lands. */
 import { applyTheme } from '../core/theme.js';
+import { setImageOverrides } from '../core/assets.js';
 
 /* ------------------------------------------------------------------
    Sample content — every record here is demo data for the prototype.
@@ -115,6 +116,7 @@ export function applyServerConfig(cfg) {
   /* Colours, fonts, logo and wording. Applied first, so the shell and the
      home page render with the museum's own look rather than repainting. */
   if (cfg.theme) applyTheme(cfg.theme);
+  if (cfg.imageOverrides) setImageOverrides(cfg.imageOverrides);
 
   if (cfg.departments) {
     DEPTS.length = 0;

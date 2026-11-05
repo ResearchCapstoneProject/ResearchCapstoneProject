@@ -16,6 +16,11 @@ class EventOut(CamelModel):
     kind: str
     title: str
     place: str
+    # Who is leading it, the description under the title and the flyer. Empty
+    # for an event that has none; the events page leaves those parts out.
+    by: str = ""
+    text: str = ""
+    pdf: str = ""
 
 
 class TourOut(CamelModel):

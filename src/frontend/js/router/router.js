@@ -14,6 +14,11 @@ import { pageStaffObjects } from '../views/staff-objects.js';
 import { pageStaffStats } from '../views/staff-stats.js';
 import { bindSettings, pageStaffSettings } from '../views/staff-settings.js';
 import { bindDesign, pageStaffDesign, wireDesign } from '../views/staff-design.js';
+import { bindEvents, pageStaffEvents, wireEvents } from '../views/staff-events.js';
+import {
+  bindPublications, pageStaffPublications, wirePublications,
+} from '../views/staff-publications.js';
+import { bindImages, pageStaffImages, wireImages } from '../views/staff-images.js';
 import { pageTickets } from '../views/tickets.js';
 import { pageDepartment, pageDepartments } from '../views/departments.js';
 import { pageImprint, pagePrivacy } from '../views/legal.js';
@@ -25,6 +30,7 @@ import { store } from '../state/store.js';
 import { $ } from '../core/dom.js';
 import { PAGES } from '../data/constants.js';
 import { THEME } from '../core/theme.js';
+import { applyImageOverrides } from '../core/assets.js';
 import { newT } from '../state/booking.js';
 import { newQuery } from '../state/query.js';
 import { byId } from '../state/selectors.js';
@@ -84,6 +90,25 @@ export function route() {
       else if (b === 'edit') { html = pageStaffForm(c); after = () => bindForm(c); title = 'Edit object'; }
       else if (b === 'bookings') { html = pageStaffBookings(); title = 'Bookings'; }
       else if (b === 'stats') { html = pageStaffStats(); title = 'Scan statistics'; after = bindTips; }
+      else if (b === 'events') {
+        html = pageStaffEvents(); title = 'Events';
+        const again = () => { $('#app').innerHTML = pageStaffEvents(); wireEvents(again); };
+        after = () => bindEvents(again);
+      }
+      else if (b === 'publications') {
+        html = pageStaffPublications(); title = 'Publications';
+        const again = () => { $('#app').innerHTML = pageStaffPublications(); wirePublications(again); };
+        after = () => bindPublications(again);
+      }
+      else if (b === 'images') {
+        html = pageStaffImages(); title = 'Pictures';
+        const again = () => {
+          $('#app').innerHTML = pageStaffImages();
+          applyImageOverrides($('#app'));
+          wireImages(again);
+        };
+        after = () => bindImages(again);
+      }
       else if (b === 'design') {
         html = pageStaffDesign(); title = 'Appearance';
         /* Same shape as the settings page: render the shell, fetch the kit,
@@ -104,6 +129,8 @@ export function route() {
     default: html = pageNotFound(); title = 'Not found';
   }
   $('#app').innerHTML = html;
+  /* Pictures the museum replaced, swapped in after every render. */
+  applyImageOverrides($('#app'));
   if (after) after();
   document.title = `${title} · ${THEME.siteName}`;
   document.querySelectorAll('[data-nav]').forEach((el) => el.classList.toggle('on', el.dataset.nav === a || (a === 'object' && el.dataset.nav === 'collection') || (a === 'page' && el.dataset.nav === `page/${b}`)));

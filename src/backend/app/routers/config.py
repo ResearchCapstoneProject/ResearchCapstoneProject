@@ -4,12 +4,14 @@ from sqlalchemy.orm import Session
 
 from ..config import settings
 from ..db import get_db
-from ..models import Department, Holiday, Location, OpeningHours, Room, TicketType
+from ..models import (
+    Department, Holiday, ImageOverride, Location, OpeningHours, Room, TicketType,
+)
 from ..schemas.reference import (
     ConfigOut, DepartmentOut, LocationOut, RoomOut, TicketTypeOut,
 )
 from ..schemas.theme import ThemeOut
-from ..services import availability, theme
+from ..services import availability, images, theme
 
 router = APIRouter(prefix="/api", tags=["config"])
 
@@ -53,4 +55,6 @@ def get_config(db: Session = Depends(get_db)) -> ConfigOut:
         booking_window_days=availability.window_days(db),
         currency=availability.setting(db, "currency", "BWP"),
         theme=ThemeOut(**theme.resolved(db)),
+        image_overrides={r.asset_path: images.url_for(r.filename)
+                         for r in db.query(ImageOverride).all()},
     )

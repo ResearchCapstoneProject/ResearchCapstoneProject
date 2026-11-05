@@ -174,6 +174,30 @@ it in place. That is also what makes the staff page's live preview reach the
 header while someone is still typing in a field -- re-rendering the shell
 would take the focus out of it.
 
+## Replacing a picture
+
+The site renders photographs in a dozen templates, and some build their path
+from a constant, so a resolver each template had to call would be forgotten
+exactly once and then be wrong on one page for a year. `core/assets.js`
+therefore works on the DOM: `GET /api/config` carries a map of bundled path ->
+upload, the router calls `applyImageOverrides($('#app'))` after every render,
+and the shell does the same for the masthead and the footer. A replacement
+reaches every page that shows that file, including pages written later.
+
+Two details that are easy to get wrong: the swap also drops `srcset` and
+`sizes`, because a leftover `srcset` wins over `src` in the browser's own
+selection -- the original would then come back on exactly the wide screen
+somebody is presenting on. And the stored key is checked against
+`/assets/img/` and `/assets/publications/` on the way in: it is a lookup key
+that every visitor's browser receives, not a URL, so it is not a place to
+park a link.
+
+The gallery in the staff area is scanned out of the content modules
+(`collectAssets` walks `ABOUT`, `DEPARTMENTS`, `SECTIONS`, `PUB_TYPES` for
+strings that look like an asset path) rather than being a list somebody keeps
+up to date. Add a photo to a monument and it is offered for replacement
+without a line of code.
+
 ## Online and offline
 
 `data/repo.js` probes `GET /api/health` **once** per page load and latches the

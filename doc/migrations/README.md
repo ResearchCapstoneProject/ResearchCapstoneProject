@@ -38,3 +38,4 @@ when the image changed, which a database change does not. `README.md` has the fu
 | file | what it does |
 | --- | --- |
 | `2026-11-05-slot-minutes.sql` | `booking.visit_minute`, the `slot_minutes` setting, free admission as one visitor group |
+| `2026-11-05-site-content.sql` | event fields (speaker, text, flyer), the `publication` table, the `image_override` table |

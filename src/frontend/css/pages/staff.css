@@ -66,3 +66,13 @@ table.data tr.new td { background: #FBF6E9; }
   .dsg-colour code, .dsg-colour > span { grid-column: 1 / -1; }
   .dsg-image { grid-template-columns: 1fr; }
 }
+
+/* ---------- picture gallery (staff/images) ---------- */
+.imgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.imtile { display: grid; gap: 4px; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+.imtile.on { border-color: var(--ok); box-shadow: inset 0 0 0 1px var(--ok); }
+.impic { display: grid; place-items: center; height: 108px; background: var(--mist); overflow: hidden; }
+.impic img { max-width: 100%; max-height: 108px; object-fit: contain; }
+.imname { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.imacts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.imacts .btn.link { padding: 0; font-size: 13px; }

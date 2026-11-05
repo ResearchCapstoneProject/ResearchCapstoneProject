@@ -15,7 +15,10 @@
        answer, shown as a form error. */
 import { getPublicBaseUrl, setPublicBaseUrl } from '../core/config.js';
 import { store } from '../state/store.js';
-import { applyServerConfig, CAPACITY, SLOT_MINUTES, TICKETS } from './constants.js';
+import {
+  applyServerConfig, CAPACITY, EVENTS, SLOT_MINUTES, TICKETS,
+} from './constants.js';
+import { overrides } from '../core/assets.js';
 import { applyTheme, contrastOnWhite, THEME } from '../core/theme.js';
 import { ApiError, Unreachable, probeHealth, request } from './api.js';
 import {
@@ -96,12 +99,24 @@ export async function bootstrap() {
 }
 
 async function loadFromApi() {
-  const [objects, bookings] = await Promise.all([
+  const [objects, bookings, events, publications] = await Promise.all([
     request('/objects').then((r) => r.items),
     // Bookings are staff-only; a visitor simply has none to show.
     store.api.user ? request('/staff/bookings') : Promise.resolve([]),
+    request('/events'),
+    request('/publications'),
   ]);
-  return { objects, bookings, scans: {} };
+  return { objects, bookings, scans: {}, events, publications };
+}
+
+/* Re-reads the public programme after a change in the staff area, so the
+   events page and the publications pages show what was just saved. */
+async function refreshContent() {
+  const [events, publications] = await Promise.all([
+    call(() => request('/events')), call(() => request('/publications')),
+  ]);
+  store.S.events = events;
+  store.S.publications = publications;
 }
 
 export async function refresh() {
@@ -332,6 +347,124 @@ export async function updateVisitSettings(patch) {
     request('/staff/settings', { method: 'PATCH', body: patch }));
   await refreshConfig();
   return saved;
+}
+
+// ------------------------------------------------------- events (staff side)
+
+/* The programme lives in the database and is public through GET /events; the
+   staff list also carries the withdrawn ones. Offline the bundled programme
+   is shown read-only, like the visitor groups. */
+
+export async function listEvents() {
+  if (isOnline()) return call(() => request('/staff/events'));
+  return [...EVENTS]
+    .sort((a, b) => b.d.localeCompare(a.d))
+    .map((e, i) => ({ id: -(i + 1), ...e, published: true }));
+}
+
+export async function createEvent(draft) {
+  if (!isOnline()) return offlineOnly();
+  const created = await call(() => request('/staff/events', { method: 'POST', body: draft }));
+  await refreshContent();
+  return created;
+}
+
+export async function updateEvent(id, patch) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request(`/staff/events/${encodeURIComponent(id)}`, { method: 'PATCH', body: patch }));
+  await refreshContent();
+  return saved;
+}
+
+export async function deleteEvent(id) {
+  if (!isOnline()) return offlineOnly();
+  await call(() => request(`/staff/events/${encodeURIComponent(id)}`, { method: 'DELETE' }));
+  await refreshContent();
+}
+
+export async function uploadEventFlyer(id, file) {
+  if (!isOnline()) return offlineOnly();
+  const form = new FormData();
+  form.append('file', file);
+  const saved = await call(() =>
+    request(`/staff/events/${encodeURIComponent(id)}/flyer`, { method: 'POST', form }));
+  await refreshContent();
+  return saved;
+}
+
+export async function removeEventFlyer(id) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request(`/staff/events/${encodeURIComponent(id)}/flyer`, { method: 'DELETE' }));
+  await refreshContent();
+  return saved;
+}
+
+// ------------------------------------------------- publications (staff side)
+
+export async function listPublicationsAdmin() {
+  if (isOnline()) return call(() => request('/staff/publications'));
+  return [];      // offline there is nothing but the bundled catalogue
+}
+
+export async function createPublication(draft) {
+  if (!isOnline()) return offlineOnly();
+  const created = await call(() =>
+    request('/staff/publications', { method: 'POST', body: draft }));
+  await refreshContent();
+  return created;
+}
+
+export async function updatePublication(id, patch) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request(`/staff/publications/${encodeURIComponent(id)}`, { method: 'PATCH', body: patch }));
+  await refreshContent();
+  return saved;
+}
+
+export async function deletePublication(id) {
+  if (!isOnline()) return offlineOnly();
+  await call(() =>
+    request(`/staff/publications/${encodeURIComponent(id)}`, { method: 'DELETE' }));
+  await refreshContent();
+}
+
+/* `what` is 'cover' or 'pdf'. */
+export async function uploadPublicationFile(id, what, file) {
+  if (!isOnline()) return offlineOnly();
+  const form = new FormData();
+  form.append('file', file);
+  const saved = await call(() =>
+    request(`/staff/publications/${encodeURIComponent(id)}/${what}`, { method: 'POST', form }));
+  await refreshContent();
+  return saved;
+}
+
+// ------------------------------------------------------------ replaced images
+
+export async function listImageOverrides() {
+  if (isOnline()) return call(() => request('/staff/image-overrides'));
+  return Object.entries(overrides()).map(([path, url]) => ({ path, url, updated: 0 }));
+}
+
+export async function setImageOverride(path, file) {
+  if (!isOnline()) return offlineOnly();
+  const form = new FormData();
+  form.append('path', path);
+  form.append('file', file);
+  const saved = await call(() =>
+    request('/staff/image-overrides', { method: 'POST', form }));
+  await refreshConfig();          // re-applies the map for every open page
+  return saved;
+}
+
+export async function clearImageOverride(path) {
+  if (!isOnline()) return offlineOnly();
+  await call(() =>
+    request(`/staff/image-overrides?path=${encodeURIComponent(path)}`, { method: 'DELETE' }));
+  await refreshConfig();
 }
 
 // ------------------------------------------------------------ appearance kit

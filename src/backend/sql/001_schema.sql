@@ -210,8 +210,41 @@ CREATE TABLE museum_event (
   kind         VARCHAR(64)  NOT NULL,
   title        VARCHAR(255) NOT NULL,
   place        VARCHAR(128) NOT NULL,
+  -- Who is speaking or leading, the description shown under the title, and
+  -- the flyer: all three were in the museum's own event material, so the
+  -- staff area can enter them rather than only a title and a time.
+  by_line      VARCHAR(128) NOT NULL DEFAULT '',
+  body_text    TEXT         NULL,
+  pdf_url      VARCHAR(255) NOT NULL DEFAULT '',
   is_published TINYINT(1)   NOT NULL DEFAULT 1,
   KEY idx_event_date (event_date)
+) ENGINE=InnoDB;
+
+-- A publication the museum adds through the staff area. The bundled
+-- catalogue (brochures, Zebra's Voice, the Plant/Insect of the Month posters)
+-- ships with the frontend; rows here are shown alongside it, under the same
+-- section key.
+CREATE TABLE publication (
+  id           INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  type_key     VARCHAR(32)  NOT NULL,     -- brochures, zebras-voice, ...
+  title        VARCHAR(255) NOT NULL,
+  date_label   VARCHAR(64)  NOT NULL DEFAULT '',   -- free text: 'Nov 2026'
+  thumb_url    VARCHAR(255) NOT NULL DEFAULT '',   -- cover image
+  pdf_url      VARCHAR(255) NOT NULL DEFAULT '',
+  href         VARCHAR(255) NOT NULL DEFAULT '',   -- optional page to open
+  is_published TINYINT(1)   NOT NULL DEFAULT 1,
+  sort_order   SMALLINT     NOT NULL DEFAULT 0,
+  created_at   DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  KEY idx_publication_type (type_key, sort_order)
+) ENGINE=InnoDB;
+
+-- One replaced picture. The key is the path the site ships with, so a reset
+-- is a deleted row and no view needs to know whether a picture was replaced.
+CREATE TABLE image_override (
+  asset_path VARCHAR(191) NOT NULL PRIMARY KEY,   -- '/assets/img/.../x.jpg'
+  filename   VARCHAR(190) NOT NULL,              -- the upload in /uploads
+  updated_at DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+                            ON UPDATE CURRENT_TIMESTAMP(3)
 ) ENGINE=InnoDB;
 
 CREATE TABLE tour (

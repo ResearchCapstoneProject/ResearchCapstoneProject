@@ -51,6 +51,11 @@ export const freshState = (seed) => ({
   seedIds: seed.objects.map((o) => o.id),
   bookings: [],
   scans: {},
+  /* null means "no server list here": the events page then shows the bundled
+     programme, and the publications page the bundled catalogue. An empty
+     array is different -- it means the museum has withdrawn everything. */
+  events: null,
+  publications: null,
 });
 
 /* Saved data from before the storage key was renamed moves to the new key
