@@ -45,6 +45,14 @@ DEFAULTS: dict[str, str] = {
     "hero_url": "",              # empty: the bundled museum photograph
     "custom_font_name": "",
     "custom_font_url": "",
+    # The footer. The address keeps its line breaks; everything else is one
+    # line. The department line is separate from the tagline in the masthead
+    # because the museum uses different wording in the two places.
+    "footer_department": "Department of National Museum and Monuments",
+    "footer_address": "331 Independence Avenue\nPrivate Bag 00114, Gaborone, Botswana",
+    "footer_contact": "Tel +267 397 4616 / +267 361 0400 · Fax +267 390 2797",
+    "footer_note": "© 2026 Botswana National Museum · texts and images belong to the museum",
+    "footer_note_2": "Prices, bookings and inventory numbers are sample content",
 }
 
 # `stack` is what lands in CSS. The two bundled faces are declared in
@@ -68,7 +76,9 @@ FONTS: list[dict[str, str]] = [
 FONT_KEYS = {f["key"] for f in FONTS}
 
 COLOUR_FIELDS = ("brand", "action", "accent")
-TEXT_FIELDS = ("site_name", "site_tagline")
+TEXT_FIELDS = ("site_name", "site_tagline", "footer_department",
+               "footer_address", "footer_contact", "footer_note",
+               "footer_note_2")
 FONT_FIELDS = ("heading_font", "body_font")
 IMAGE_SLOTS = {"logo": "logo_url", "hero": "hero_url"}
 

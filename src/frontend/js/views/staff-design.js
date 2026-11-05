@@ -23,6 +23,8 @@ const FIELDS = {
   siteName: '#d-name', siteTagline: '#d-tag',
   brand: '#d-brand', action: '#d-action', accent: '#d-accent',
   headingFont: '#d-hfont', bodyFont: '#d-bfont',
+  footerDepartment: '#d-fdept', footerAddress: '#d-faddr',
+  footerContact: '#d-fcontact', footerNote: '#d-fnote', footerNote2: '#d-fnote2',
 };
 
 /* What the form currently says, whether or not it has been saved. */
@@ -155,6 +157,25 @@ export function pageStaffDesign() {
       ${imageBlock('hero', 'Picture on the home page', t.heroUrl, 'The museum building', 'Wide, at least 1600 pixels across. Large files are resized on upload.')}
     </section>
 
+    <section class="dsg-section">
+      <h3 class="h4">Footer</h3>
+      <p class="small muted" style="margin:0 0 14px;max-width:70ch">The address block at the bottom of every page, and
+        the two notes in the last line. The link columns beside them follow the site's own sections, so they stay in
+        step by themselves.</p>
+      <div class="formgrid" style="max-width:760px">
+        <div class="field"><label for="d-fdept">Department line</label>
+          <input id="d-fdept" type="text" maxlength="160" value="${esc(t.footerDepartment)}" data-dsg="text" ${isOnline() ? '' : 'disabled'}></div>
+        <div class="field"><label for="d-faddr">Address (one line per line)</label>
+          <textarea id="d-faddr" rows="2" maxlength="200" data-dsg="text" ${isOnline() ? '' : 'disabled'}>${esc(t.footerAddress)}</textarea></div>
+        <div class="field"><label for="d-fcontact">Telephone and fax</label>
+          <input id="d-fcontact" type="text" maxlength="200" value="${esc(t.footerContact)}" data-dsg="text" ${isOnline() ? '' : 'disabled'}></div>
+        <div class="field"><label for="d-fnote">Note, first line</label>
+          <input id="d-fnote" type="text" maxlength="200" value="${esc(t.footerNote)}" data-dsg="text" ${isOnline() ? '' : 'disabled'}></div>
+        <div class="field"><label for="d-fnote2">Note, second line</label>
+          <input id="d-fnote2" type="text" maxlength="200" value="${esc(t.footerNote2)}" data-dsg="text" ${isOnline() ? '' : 'disabled'}></div>
+      </div>
+    </section>
+
     <div class="dsg-actions">
       <button class="btn primary" type="button" data-act="dsg-save" ${isOnline() ? '' : 'disabled'}>Save appearance</button>
       <button class="btn ghost" type="button" data-act="dsg-discard">Discard changes</button>
@@ -212,8 +233,7 @@ export function preview() {
   const v = formValues();
   /* applyTheme writes the name and tagline into the masthead for us. */
   previewTheme({
-    brand: v.brand, action: v.action, accent: v.accent,
-    siteName: v.siteName, siteTagline: v.siteTagline,
+    ...v,
     headingStack: fontStack(v.headingFont), bodyStack: fontStack(v.bodyFont),
   });
 
@@ -232,11 +252,7 @@ export function preview() {
 export async function saveDesign(rerender) {
   const v = formValues();
   try {
-    state.kit = await repo.updateTheme({
-      siteName: v.siteName, siteTagline: v.siteTagline,
-      brand: v.brand, action: v.action, accent: v.accent,
-      headingFont: v.headingFont, bodyFont: v.bodyFont,
-    });
+    state.kit = await repo.updateTheme(v);
     toast('Saved. Visitors see this on their next page load.');
   } catch (e) {
     toast(e.message || 'Could not save the appearance.');

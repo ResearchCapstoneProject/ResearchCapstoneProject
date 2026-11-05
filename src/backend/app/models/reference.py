@@ -76,3 +76,28 @@ class Setting(Base):
     # declaring the server default here keeps the ORM from inserting an explicit
     # NULL, which MySQL rejects on a NOT NULL column.
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class Publication(Base):
+    """A publication added in the staff area, shown with the bundled ones."""
+
+    __tablename__ = "publication"
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    type_key: Mapped[str] = mapped_column(String(32))
+    title: Mapped[str] = mapped_column(String(255))
+    date_label: Mapped[str] = mapped_column(String(64), default="")
+    thumb_url: Mapped[str] = mapped_column(String(255), default="")
+    pdf_url: Mapped[str] = mapped_column(String(255), default="")
+    href: Mapped[str] = mapped_column(String(255), default="")
+    is_published: Mapped[bool] = mapped_column(default=True)
+    sort_order: Mapped[int] = mapped_column(SmallInteger, default=0)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class ImageOverride(Base):
+    """A picture the museum replaced: bundled path -> uploaded file."""
+
+    __tablename__ = "image_override"
+    asset_path: Mapped[str] = mapped_column(String(191), primary_key=True)
+    filename: Mapped[str] = mapped_column(String(190))
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now())

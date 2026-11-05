@@ -105,10 +105,29 @@ Staff → **Appearance** (admin only) is where the museum changes how the site l
 - the logo and the photograph on the home page, uploaded through the same pipeline as object
   photographs, with "back to the original" for both.
 
+It also holds the **footer**: the department line, the address, the telephone line and the two
+notes in the last row. The link columns next to them follow the site's own sections, so they stay
+in step by themselves.
+
 Every control previews on the page as you change it; only *Save* writes it. It is stored as
 `theme.*` rows in the `setting` table — no schema change, and "reset" is a deleted row rather than
 a remembered original. `GET /api/config` carries the result to every page load, so visitors see it
 on their next load without a deployment.
+
+### What else the staff area owns
+- **Events** (`#/staff/events`, curators): add, edit, withdraw and delete events, with the
+  speaker, a description and a flyer PDF. The events page splits on today's date by itself, so a
+  past event needs no tidying up. The programme comes from `museum_event` through `GET /api/events`;
+  offline the bundled programme is shown read-only.
+- **Publications** (`#/staff/publications`, curators): add a publication to one of the existing
+  sections with a title, a date, a cover picture and a PDF. It appears above the bundled items of
+  that section. The bundled catalogue itself — the brochures, the Zebra's Voice issues and the
+  Plant and Insect of the Month posters with their transcribed texts — stays as published and is
+  deliberately not editable here.
+- **Pictures** (`#/staff/images`, curators): replace any photograph the content pages show, and put
+  the museum's own file back at any time. The list is scanned out of the content modules rather than
+  hand-kept, so a photo added to a monument next year appears here by itself. Object photographs
+  stay with the object; the logo and the home-page picture are in Appearance.
 
 ## Layout
 ```

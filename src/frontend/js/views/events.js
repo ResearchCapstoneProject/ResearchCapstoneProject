@@ -1,11 +1,11 @@
 import { eventRow, pagehead } from '../ui/cards.js';
-import { EVENTS } from '../data/constants.js';
+import { eventsAll } from '../state/selectors.js';
 import { dkey } from '../core/format.js';
 
 /* Split on today's date, so an event moves to "Past events" by itself. */
 export function splitEvents() {
   const today = dkey(new Date());
-  const sorted = [...EVENTS].sort((a, b) => a.d.localeCompare(b.d));
+  const sorted = [...eventsAll()].sort((a, b) => a.d.localeCompare(b.d));
   return { upcoming: sorted.filter((e) => e.d >= today), past: sorted.filter((e) => e.d < today).reverse() };
 }
 

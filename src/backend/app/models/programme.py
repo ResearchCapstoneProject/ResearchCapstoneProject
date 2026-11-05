@@ -25,6 +25,9 @@ class MuseumEvent(Base):
     kind: Mapped[str] = mapped_column(String(64))
     title: Mapped[str] = mapped_column(String(255))
     place: Mapped[str] = mapped_column(String(128))
+    by_line: Mapped[str] = mapped_column(String(128), default="")
+    body_text: Mapped[str | None] = mapped_column(Text, nullable=True, default=None)
+    pdf_url: Mapped[str] = mapped_column(String(255), default="")
     is_published: Mapped[bool] = mapped_column(default=True)
 
 

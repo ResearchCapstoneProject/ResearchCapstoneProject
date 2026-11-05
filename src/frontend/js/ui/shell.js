@@ -7,9 +7,14 @@ import { PUB_TYPES } from '../data/publications.js';
 import { openStatus } from '../data/opening.js';
 import { esc } from '../core/dom.js';
 import { THEME } from '../core/theme.js';
+import { applyImageOverrides } from '../core/assets.js';
 
 /* The museum's own logo once one is uploaded in the staff area, otherwise
    the emblem drawn in art/objects.js. */
+/* The address is the one footer field with line breaks; they survive as <br>
+   and nothing else in it is markup. */
+const lines = (text) => esc(text).replace(/\n/g, '<br>');
+
 const mark = () => (THEME.logoUrl
   ? `<img class="brandmark" src="${esc(THEME.logoUrl)}" alt="" width="44" height="44">`
   : emblem());
@@ -64,9 +69,9 @@ export function shell() {
     <div class="wrap">
       <div class="cols">
         <div>
-          <a class="brand" href="#/" style="color:#fff">${mark()}<div><b style="color:#fff">${esc(THEME.siteName)}</b><span style="color:#9AA3AB">Department of National Museum and Monuments</span></div></a>
-          <p style="margin:18px 0 4px">331 Independence Avenue<br>Private Bag 00114, Gaborone, Botswana</p>
-          <p class="small" style="margin:0;color:#9AA3AB">Tel +267 397 4616 / +267 361 0400 · Fax +267 390 2797</p>
+          <a class="brand" href="#/" style="color:#fff">${mark()}<div><b style="color:#fff">${esc(THEME.siteName)}</b><span style="color:#9AA3AB">${esc(THEME.footerDepartment)}</span></div></a>
+          <p class="faddr" style="margin:18px 0 4px">${lines(THEME.footerAddress)}</p>
+          <p class="small fcontact" style="margin:0;color:#9AA3AB">${esc(THEME.footerContact)}</p>
           <form class="newsletter" data-act-submit="newsletter"><label class="sr-only" for="nl">E-mail for newsletter</label><input id="nl" type="email" placeholder="Newsletter: your e-mail"><button class="btn sky" type="submit">Subscribe</button></form>
         </div>
         <div><h4>Visit</h4><ul><li><a href="#/visit">Visit &amp; About</a></li><li><a href="#/tickets">Tickets &amp; time slots</a></li><li><a href="#/page/groups">Groups &amp; schools</a></li><li><a href="#/page/accessibility">Accessibility</a></li></ul></div>
@@ -74,7 +79,7 @@ export function shell() {
         <div><h4>Explore</h4><ul>${SECTIONS.map((s) => `<li><a href="#/explore/${s.key}">${esc(s.title)}</a></li>`).join('')}</ul></div>
       </div>
       <div class="legal">
-        <div class="notes"><span>© 2026 Botswana National Museum · texts and images belong to the museum</span><span>Prices, bookings and inventory numbers are sample content</span></div>
+        <div class="notes"><span>${esc(THEME.footerNote)}</span><span>${esc(THEME.footerNote2)}</span></div>
         <nav aria-label="Legal"><a href="#/visit/about">About us</a><a href="#/imprint">Imprint</a><a href="#/privacy">Privacy</a><a href="#/staff">Staff area</a></nav>
       </div>
     </div>
@@ -82,4 +87,6 @@ export function shell() {
   /* See the router: a menu closed by navigation may open again on hover only
      once the pointer has left it. */
   document.querySelectorAll('.navitem').forEach((n) => n.addEventListener('mouseleave', () => n.classList.remove('shut')));
+  /* The masthead and footer render once, outside the router's reach. */
+  applyImageOverrides(document.body);
 }

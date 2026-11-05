@@ -5,5 +5,24 @@
     "kind": "School holiday workshop",
     "title": "Rock art of Tsodilo: paint like the ancestors",
     "place": "Courtyard"
+  },
+  {
+    "d": "2025-08-15",
+    "time": "11:00",
+    "kind": "Museum staff talk",
+    "title": "Sustainable Tourism Initiatives in Botswana",
+    "place": "Little Theatre",
+    "by": "Matlhogonolo Tswiio",
+    "pdf": "/assets/publications/events/sustainable-tourism-initiatives-in-botswana.pdf",
+    "text": "Background on tourism in Botswana · Key issues for sustainable tourism · Community based natural resources management · Eco tourism strategy · Policy framework"
+  },
+  {
+    "d": "2017-03-04",
+    "time": "05:00",
+    "kind": "Heritage Marathon",
+    "title": "Heritage Marathon – Malaka Village",
+    "place": "Malaka Village Kgotla, 15 min drive from Palapye",
+    "pdf": "/assets/publications/events/20170304_MalakaMarathon.pdf",
+    "text": "21 km, 10 km and 5 km fun run. “To enliven Botswana’s yesterday and tomorrow.”"
   }
 ]

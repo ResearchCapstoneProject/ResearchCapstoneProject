@@ -4,7 +4,9 @@ import { esc } from '../core/dom.js';
 import { logout, mode } from '../data/repo.js';
 /* ---------------- staff area ---------------- */
 export function staffShell(tab, inner) {
-  const tabs = [['staff', 'Objects', `(${store.S.objects.length})`], ['staff/add', 'Add object', ''], ['staff/bookings', 'Bookings & time slots', `(${store.S.bookings.length})`], ['staff/stats', 'Scan statistics', ''], ['staff/settings', 'Settings', ''], ['staff/design', 'Appearance', '']];
+  const tabs = [['staff', 'Objects', `(${store.S.objects.length})`], ['staff/add', 'Add object', ''], ['staff/bookings', 'Bookings & time slots', `(${store.S.bookings.length})`], ['staff/stats', 'Scan statistics', ''], ['staff/events', 'Events', ''], ['staff/publications', 'Publications', ''],
+    ['staff/images', 'Pictures', ''], ['staff/design', 'Appearance', ''],
+    ['staff/settings', 'Settings', '']];
   const who = store.api.user ? `Signed in as ${esc(store.api.user.displayName)} (${esc(store.api.user.role)})` : 'Demo mode · not signed in';
   return `<div class="staffbar"><div class="wrap">
     <div class="title"><b>Staff area</b><span>Collection &amp; visitor management</span></div>

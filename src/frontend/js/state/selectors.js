@@ -2,6 +2,13 @@
 import { DEPTS, LOC_ROOM, ROOMS } from '../data/constants.js';
 import { getPublicBaseUrl } from '../core/config.js';
 import { store } from './store.js';
+import { EVENTS } from '../data/constants.js';
+
+/* The programme: the server's list when there is one, the bundled programme
+   otherwise. An empty array from the server is respected -- it means the
+   museum has withdrawn everything, not that the server said nothing. */
+export const eventsAll = () => (Array.isArray(store.S && store.S.events)
+  ? store.S.events : EVENTS);
 
 export function roomOf(location) { return LOC_ROOM[location] || null; }
 export function roomById(id) { return ROOMS.find((r) => r.id === id) || null; }

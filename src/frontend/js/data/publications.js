@@ -7,6 +7,7 @@
    are published by the museum too, but they live only in Explore, next to
    the places they describe. */
 import { IMG, PUB } from './about.js';
+import { store } from '../state/store.js';
 
 const THUMB = `${IMG}/publications`;
 const BRO = `${PUB}/brochures`;
@@ -116,4 +117,24 @@ export const PUB_TYPES = [
   },
 ];
 
-export const pubTypeByKey = (k) => PUB_TYPES.find((t) => t.key === k) || null;
+/* The bundled catalogue with what the museum added through the staff area.
+
+   Added items come first inside their section, because they are the new
+   ones; the bundled items keep their order. Nothing bundled is replaced --
+   the Plant and Insect of the Month texts are transcribed from the museum's
+   posters and are not ours to overwrite. */
+export function pubTypes() {
+  const added = (store.S && store.S.publications) || null;
+  if (!added || !added.length) return PUB_TYPES;
+  return PUB_TYPES.map((t) => {
+    const mine = added
+      .filter((p) => p.typeKey === t.key)
+      .map((p) => ({
+        title: p.title, date: p.date, thumb: p.thumb, pdf: p.pdf,
+        href: p.href, added: true,
+      }));
+    return mine.length ? { ...t, items: [...mine, ...t.items] } : t;
+  });
+}
+
+export const pubTypeByKey = (k) => pubTypes().find((t) => t.key === k) || null;
