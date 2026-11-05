@@ -12,4 +12,4 @@ export function gabNow() {
   } catch (e) { const d = new Date(); return { dow: d.getDay(), h: d.getHours(), m: d.getMinutes() }; }
 }
 export function nextDays(n = 14) { const out = []; const d = new Date(); d.setHours(0, 0, 0, 0); for (let i = 0; i < n; i++) { out.push(dkey(d)); d.setDate(d.getDate() + 1); } return out; }
-export function isPast(k, h) { const now = new Date(); return k === dkey(now) && h <= now.getHours(); }
+export function isPast(k, h, m = 0) { const now = new Date(); return k === dkey(now) && h * 60 + m <= now.getHours() * 60 + now.getMinutes(); }

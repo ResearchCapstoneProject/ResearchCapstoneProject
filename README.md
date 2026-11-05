@@ -94,13 +94,14 @@ against the prototype.
 
 ## Status
 Working: the collection database and search, timed-slot ticketing with real capacity
-limits, QR labels and scan statistics, the Departments / Explore / Publications sections with the
+limits (admission is free, slot length and visitor groups are set in the staff area), QR labels and scan statistics, the Departments / Explore / Publications sections with the
 content of the museum's previous website, the museum map, and the staff area with
 sign-in, object CRUD, image upload and booking check-in.
 
-Still simulated, and deliberately labelled as such in the interface: online payment (the
-provider is not chosen yet — Orange Money, MyZaka, Smega and card are disabled
-placeholders), e-ticket e-mail, the newsletter, the audio guide, Setswana, and the AR page. They are listed in one place, `FEATURES` in
+Payment is taken at the front desk only; the site never charges online, by
+decision rather than for lack of a provider.
+
+Still simulated, and deliberately labelled as such in the interface: e-ticket e-mail, the newsletter, the audio guide, Setswana, and the AR page. They are listed in one place, `FEATURES` in
 `src/frontend/js/core/config.js`.
 
 Open questions for the museum are in `doc/TODO.md`.
