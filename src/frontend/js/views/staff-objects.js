@@ -1,7 +1,7 @@
 import { staffShell } from './staff-shell.js';
 import { store } from '../state/store.js';
 import { dkey } from '../core/format.js';
-import { slotHours } from '../data/opening.js';
+import { slotStarts } from '../data/opening.js';
 import { taken } from '../state/booking.js';
 import { published } from '../state/selectors.js';
 import { pic } from '../art/registry.js';
@@ -10,7 +10,7 @@ import { $, esc } from '../core/dom.js';
 export function pageStaffObjects() {
   const list = [...store.S.objects].sort((a, b) => b.added - a.added);
   const today = dkey(new Date());
-  const todayVis = slotHours(today).reduce((a, h) => a + taken(today, h), 0);
+  const todayVis = slotStarts(today).reduce((a, { h, m }) => a + taken(today, h, m), 0);
   const inner = `
     <div class="kpis">
       <div><b>${store.S.objects.length}</b><span>objects in the database</span></div>

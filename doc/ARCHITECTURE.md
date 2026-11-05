@@ -99,6 +99,19 @@ takes an InnoDB row lock and is atomic and monotonic.
 Counters are **not** reset by the demo reset. That is deliberate and looks
 like a bug if you do not know.
 
+**A slot is a start time, not an hour.** `setting.slot_minutes` is set in the
+staff area, so `booking.visit_minute` is part of the slot identity and of the
+capacity lock. Slots tile the opening hours from opening time; a remainder
+shorter than one slot is dropped rather than letting the last slot overrun
+closing time. `slot_starts()` in the backend and `slotStarts()` in
+`js/data/opening.js` must stay in agreement, or the offline demo offers a slot
+the API then rejects.
+
+**Visitor groups are data, not code.** The museum starts with one free
+`Admission` group and adds priced groups in the staff area. A group that has
+been booked is deactivated, never deleted, so `booking_line.unit_price_thebe`
+keeps meaning what somebody actually paid.
+
 **Booking codes** use `ABCDEFGHJKLMNPQRSTUVWXYZ23456789` — no I, O, 0 or 1,
 because a visitor reads the code out at the front desk. Generation inserts and
 retries on the UNIQUE index rather than checking first, which would be a

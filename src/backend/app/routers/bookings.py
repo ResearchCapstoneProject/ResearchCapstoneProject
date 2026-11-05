@@ -18,6 +18,7 @@ router = APIRouter(prefix="/api", tags=["visits"])
 def booking_out(b: Booking) -> BookingOut:
     return BookingOut(
         code=b.code, date=b.visit_date.isoformat(), hour=b.visit_hour,
+        minute=b.visit_minute,
         q={l.ticket_key: l.qty for l in b.lines},
         visitors=b.visitors, total_thebe=b.total_thebe,
         name=b.visitor_name, email=b.email, phone=b.phone, country=b.country,
@@ -35,19 +36,22 @@ def get_availability(
     start = start or date.today()
     days = days or availability.window_days(db)
     cap = availability.capacity(db)
+    length = availability.slot_minutes(db)
     taken = availability.taken_map(db, start, days)
     holidays = availability.holidays_map(db)
 
     out = []
     for i in range(days):
         d = start + timedelta(days=i)
-        hours = availability.slot_hours(db, d)
+        starts = availability.slot_starts(db, d)
         out.append(DayAvailability(
             date=d.isoformat(),
-            closed=not hours,
+            closed=not starts,
             holiday=holidays.get(d.isoformat()[5:]),
-            slots=[SlotOut(hour=h, taken=taken.get((d, h), 0), capacity=cap,
-                           past=availability.is_past(d, h)) for h in hours],
+            slots=[SlotOut(hour=h, minute=m, minutes=length,
+                           taken=taken.get((d, h, m), 0), capacity=cap,
+                           past=availability.is_past(d, h, m))
+                   for h, m in starts],
         ))
     return out
 
@@ -60,13 +64,15 @@ def create_booking(payload: BookingCreate, db: Session = Depends(get_db)) -> Boo
     if unknown:
         raise bad_request("unknown_ticket", f"Unknown ticket type: {', '.join(sorted(unknown))}")
 
-    # The museum is closed, or that hour is outside opening time.
-    hours = availability.slot_hours(db, payload.date)
-    if not hours:
+    # The museum is closed, or that time is not the start of a slot. Checking
+    # against the generated starts rather than a range also rejects a booking
+    # that would begin mid-slot after the museum changed the slot length.
+    starts = availability.slot_starts(db, payload.date)
+    if not starts:
         raise bad_request("closed", "The museum is closed on that day.")
-    if payload.hour not in hours:
+    if (payload.hour, payload.minute) not in starts:
         raise bad_request("closed", "The museum is not open at that time.")
-    if availability.is_past(payload.date, payload.hour):
+    if availability.is_past(payload.date, payload.hour, payload.minute):
         raise bad_request("past_slot", "That time slot has already started.")
 
     visitors = sum(q for k, q in payload.q.items() if not tickets[k].is_addon)
@@ -75,7 +81,9 @@ def create_booking(payload: BookingCreate, db: Session = Depends(get_db)) -> Boo
 
     tour_qty = sum(q for k, q in payload.q.items() if tickets[k].is_addon)
     if tour_qty:
-        if payload.hour not in availability.tour_times(db):
+        # An empty tour_times list means the add-on is not tied to fixed hours.
+        tour_hours = availability.tour_times(db)
+        if tour_hours and payload.hour not in tour_hours:
             raise bad_request("tour_time",
                               "Guided tours run only at "
                               + " and ".join(f"{h:02d}:00" for h in availability.tour_times(db)) + ".")
@@ -84,7 +92,8 @@ def create_booking(payload: BookingCreate, db: Session = Depends(get_db)) -> Boo
 
     # Re-check capacity under a row lock, not just a plain read: two requests
     # that both see "5 left" would otherwise both insert and oversell.
-    left = availability.remaining_for_update(db, payload.date, payload.hour)
+    left = availability.remaining_for_update(db, payload.date, payload.hour,
+                                             payload.minute)
     if visitors > left:
         raise conflict("slot_full",
                        "That time slot does not have enough places left.",
@@ -96,6 +105,7 @@ def create_booking(payload: BookingCreate, db: Session = Depends(get_db)) -> Boo
 
     booking = booking_codes.insert_with_unique_code(db, lambda code: Booking(
         code=code, visit_date=payload.date, visit_hour=payload.hour,
+        visit_minute=payload.minute,
         visitors=visitors, total_thebe=total,
         visitor_name=payload.name, email=payload.email,
         phone=payload.phone, country=payload.country, source="online",
