@@ -1,4 +1,5 @@
 from .common import CamelModel
+from .theme import ThemeOut
 
 
 class DepartmentOut(CamelModel):
@@ -46,3 +47,5 @@ class ConfigOut(CamelModel):
     public_base_url: str
     booking_window_days: int
     currency: str
+    # Colours, fonts, logo and hero picture, as the staff area set them.
+    theme: ThemeOut

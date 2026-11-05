@@ -15,6 +15,9 @@
 .masthead .wrap { display: flex; align-items: center; gap: 16px; min-height: 76px; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); flex: none; }
 .brand svg { width: 44px; height: 44px; }
+/* An uploaded logo takes the emblem's place; object-fit keeps a wide or tall
+   file inside the square instead of stretching it. */
+.brand .brandmark { width: 44px; height: 44px; object-fit: contain; flex: none; }
 .brand b { display: block; font-size: 17px; font-stretch: 125%; font-weight: 800; line-height: 1.05; letter-spacing: -.01em; }
 .brand span { display: block; font-size: 12px; color: var(--muted); letter-spacing: .02em; }
 .mainnav { display: flex; align-items: center; gap: 2px; margin-left: auto; }
@@ -62,7 +65,7 @@
   .utility .hide-s { display: none; }
   .masthead .wrap { gap: 12px; min-height: 68px; }
   .brand { gap: 10px; }
-  .brand svg { width: 36px; height: 36px; }
+  .brand svg, .brand .brandmark { width: 36px; height: 36px; }
   .brand span { display: none; }
   .brand b { font-size: 14px; max-width: 150px; }
   .headactions { gap: 6px; }

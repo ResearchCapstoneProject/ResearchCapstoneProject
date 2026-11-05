@@ -1,5 +1,6 @@
 /* Reference data. Everything here becomes a table in MySQL and is served
    by GET /api/config once the backend lands. */
+import { applyTheme } from '../core/theme.js';
 
 /* ------------------------------------------------------------------
    Sample content — every record here is demo data for the prototype.
@@ -110,6 +111,10 @@ export const PAGES = {
    without a re-import. CAPACITY is a scalar, so it is a `let`. */
 export function applyServerConfig(cfg) {
   if (!cfg) return;
+
+  /* Colours, fonts, logo and wording. Applied first, so the shell and the
+     home page render with the museum's own look rather than repainting. */
+  if (cfg.theme) applyTheme(cfg.theme);
 
   if (cfg.departments) {
     DEPTS.length = 0;

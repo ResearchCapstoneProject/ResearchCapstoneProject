@@ -7,11 +7,12 @@ That is the single most important line in this package.
 from fastapi import APIRouter, Depends
 
 from ...deps import require_staff
-from . import bookings, demo, objects, settings, stats
+from . import bookings, demo, objects, settings, stats, theme
 
 router = APIRouter(prefix="/api/staff", dependencies=[Depends(require_staff)])
 router.include_router(objects.router)
 router.include_router(bookings.router)
 router.include_router(stats.router)
 router.include_router(settings.router)
+router.include_router(theme.router)
 router.include_router(demo.router)

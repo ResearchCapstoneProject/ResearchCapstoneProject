@@ -6,6 +6,13 @@ import { SECTIONS } from '../data/explore.js';
 import { PUB_TYPES } from '../data/publications.js';
 import { openStatus } from '../data/opening.js';
 import { esc } from '../core/dom.js';
+import { THEME } from '../core/theme.js';
+
+/* The museum's own logo once one is uploaded in the staff area, otherwise
+   the emblem drawn in art/objects.js. */
+const mark = () => (THEME.logoUrl
+  ? `<img class="brandmark" src="${esc(THEME.logoUrl)}" alt="" width="44" height="44">`
+  : emblem());
 /* Masthead, utility bar, footer and the #app outlet the router renders into. */
 
 /* Dropdown entries for the main navigation: [href, label]. */
@@ -39,7 +46,7 @@ export function shell() {
   </div>
   <header class="masthead">
     <div class="wrap">
-      <a class="brand" href="#/" aria-label="Botswana National Museum – home">${emblem()}<div><b>Botswana National Museum</b><span>National Museum and Monuments · Gaborone</span></div></a>
+      <a class="brand" href="#/" aria-label="${esc(THEME.siteName)} – home">${mark()}<div><b>${esc(THEME.siteName)}</b><span>${esc(THEME.siteTagline)}</span></div></a>
       <nav class="mainnav" id="mainnav" aria-label="Main">${NAV.map(navItem).join('')}<a href="#/collection" class="mobile-only">Search the collection</a><a href="#/staff" class="mobile-only">Staff area</a></nav>
       <div class="headactions">
         <button class="iconbtn searchbtn" type="button" data-act="search-toggle" aria-label="Search the collection">${ICON.search}</button>
@@ -57,7 +64,7 @@ export function shell() {
     <div class="wrap">
       <div class="cols">
         <div>
-          <a class="brand" href="#/" style="color:#fff">${emblem()}<div><b style="color:#fff">Botswana National Museum</b><span style="color:#9AA3AB">Department of National Museum and Monuments</span></div></a>
+          <a class="brand" href="#/" style="color:#fff">${mark()}<div><b style="color:#fff">${esc(THEME.siteName)}</b><span style="color:#9AA3AB">Department of National Museum and Monuments</span></div></a>
           <p style="margin:18px 0 4px">331 Independence Avenue<br>Private Bag 00114, Gaborone, Botswana</p>
           <p class="small" style="margin:0;color:#9AA3AB">Tel +267 397 4616 / +267 361 0400 · Fax +267 390 2797</p>
           <form class="newsletter" data-act-submit="newsletter"><label class="sr-only" for="nl">E-mail for newsletter</label><input id="nl" type="email" placeholder="Newsletter: your e-mail"><button class="btn sky" type="submit">Subscribe</button></form>

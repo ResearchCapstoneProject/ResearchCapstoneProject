@@ -12,6 +12,10 @@ import {
   addGroup, deleteGroup, pageStaffSettings, saveGroupPrice, saveVisitSettings,
   toggleGroup,
 } from '../views/staff-settings.js';
+import {
+  discardDesign, pageStaffDesign, resetDesign, resetDesignFont,
+  resetDesignImage, saveDesign, wireDesign,
+} from '../views/staff-design.js';
 import { updatePreview } from '../views/staff-form.js';
 import { tkConfirm, tkRerender } from '../views/tickets.js';
 import { store } from '../state/store.js';
@@ -28,6 +32,12 @@ import { pageStaffLogin } from '../views/staff-login.js';
 /* The settings page refreshes itself in place after a save, so the table and
    the form show what the server now holds rather than what was typed. */
 const rerenderSettings = () => { $('#app').innerHTML = pageStaffSettings(); };
+
+/* The appearance page does the same, and re-attaches its own handlers. */
+const rerenderDesign = () => {
+  $('#app').innerHTML = pageStaffDesign();
+  wireDesign(rerenderDesign);
+};
 
 /* ---------------- events ---------------- */
 const closeMenus = () => document.querySelectorAll('.navitem.open').forEach((n) => { n.classList.remove('open'); n.querySelector('[data-act="navmenu"]').setAttribute('aria-expanded', 'false'); });
@@ -104,6 +114,11 @@ document.addEventListener('click', (e) => {
       store.T.step -= 1; store.T.err = {}; tkRerender(true); break;
     case 'tk-confirm': tkConfirm(); break;
     case 'tk-new': store.T = newT(); tkRerender(true); break;
+    case 'dsg-save': saveDesign(rerenderDesign); break;
+    case 'dsg-discard': discardDesign(rerenderDesign); break;
+    case 'dsg-reset': resetDesign(rerenderDesign); break;
+    case 'dsg-img-reset': resetDesignImage(t.dataset.slot, rerenderDesign); break;
+    case 'dsg-font-reset': resetDesignFont(rerenderDesign); break;
     case 'grp-save': saveGroupPrice(t.dataset.key, rerenderSettings); break;
     case 'grp-toggle': toggleGroup(t.dataset.key, t.dataset.to === '1', rerenderSettings); break;
     case 'grp-del': deleteGroup(t.dataset.key, rerenderSettings); break;

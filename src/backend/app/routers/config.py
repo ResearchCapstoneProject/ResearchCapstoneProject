@@ -8,7 +8,8 @@ from ..models import Department, Holiday, Location, OpeningHours, Room, TicketTy
 from ..schemas.reference import (
     ConfigOut, DepartmentOut, LocationOut, RoomOut, TicketTypeOut,
 )
-from ..services import availability
+from ..schemas.theme import ThemeOut
+from ..services import availability, theme
 
 router = APIRouter(prefix="/api", tags=["config"])
 
@@ -51,4 +52,5 @@ def get_config(db: Session = Depends(get_db)) -> ConfigOut:
         public_base_url=settings.public_base_url,
         booking_window_days=availability.window_days(db),
         currency=availability.setting(db, "currency", "BWP"),
+        theme=ThemeOut(**theme.resolved(db)),
     )
