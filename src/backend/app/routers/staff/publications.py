@@ -68,12 +68,14 @@ def update_publication(pub_id: int, payload: PublicationPatch,
                        ) -> PublicationOut:
     p = _get(db, pub_id)
     changed = payload.model_dump(exclude_unset=True)
+    # See the note in events.py: the audit detail goes into a JSON column.
+    logged = payload.model_dump(exclude_unset=True, mode="json")
     fields = {"date": "date_label", "published": "is_published"}
     for field, value in changed.items():
         setattr(p, fields.get(field, field), value)
 
     audit.record(db, user_id=user.id, action="update", entity="publication",
-                 entity_id=str(pub_id), detail=changed)
+                 entity_id=str(pub_id), detail=logged)
     db.commit()
     db.refresh(p)
     return _out(p)
