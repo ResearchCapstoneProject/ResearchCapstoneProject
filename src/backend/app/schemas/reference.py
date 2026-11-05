@@ -41,6 +41,7 @@ class ConfigOut(CamelModel):
     holidays: dict[str, str]             # 'MM-DD' -> label
     tickets: list[TicketTypeOut]
     capacity: int
+    slot_minutes: int = 60
     tour_times: list[int]
     public_base_url: str
     booking_window_days: int

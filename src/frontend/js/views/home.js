@@ -59,7 +59,7 @@ export function pageHome() {
   <section class="visitstrip" aria-label="Visit information">
     <div class="wrap">
       <div class="cell"><div class="eyebrow">Today</div><b>${st.text}</b><span>Tue–Fri 09–18 · Sat–Sun 09–17 · Mon closed</span></div>
-      <div class="cell"><div class="eyebrow">Admission</div><b>Free for citizens &amp; residents</b><span>International visitors P 50 · sample prices</span></div>
+      <div class="cell"><div class="eyebrow">Admission</div><b>Free for everyone</b><span>No ticket needed to enter · book a time slot to skip the queue</span></div>
       <div class="cell"><div class="eyebrow">Address</div><b>331 Independence Avenue</b><span>Gaborone, Botswana</span></div>
       <div class="cta"><a class="btn arrow" href="#/tickets">Book a time slot </a></div>
     </div>

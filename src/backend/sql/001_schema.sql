@@ -246,6 +246,9 @@ CREATE TABLE booking (
   code          CHAR(9)      NOT NULL,
   visit_date    DATE         NOT NULL,
   visit_hour    TINYINT      NOT NULL,
+  -- Slot length is configurable (setting `slot_minutes`), so a slot is
+  -- identified by its start time, not by the hour alone. 0 for hourly slots.
+  visit_minute  TINYINT      NOT NULL DEFAULT 0,
   visitors      SMALLINT UNSIGNED NOT NULL,
   total_thebe   INT UNSIGNED NOT NULL,
   visitor_name  VARCHAR(128) NOT NULL,
@@ -257,9 +260,10 @@ CREATE TABLE booking (
   created_at    DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   checked_in_at DATETIME(3)  NULL,
   UNIQUE KEY uq_booking_code (code),
-  KEY idx_booking_slot (visit_date, visit_hour, status),
+  KEY idx_booking_slot (visit_date, visit_hour, visit_minute, status),
   KEY idx_booking_email (email),
-  CONSTRAINT ck_visit_hour CHECK (visit_hour BETWEEN 0 AND 23)
+  CONSTRAINT ck_visit_hour   CHECK (visit_hour BETWEEN 0 AND 23),
+  CONSTRAINT ck_visit_minute CHECK (visit_minute BETWEEN 0 AND 59)
 ) ENGINE=InnoDB;
 
 CREATE TABLE booking_line (
