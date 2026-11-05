@@ -13,6 +13,7 @@ import { bindForm, pageStaffForm } from '../views/staff-form.js';
 import { pageStaffObjects } from '../views/staff-objects.js';
 import { pageStaffStats } from '../views/staff-stats.js';
 import { bindSettings, pageStaffSettings } from '../views/staff-settings.js';
+import { bindDesign, pageStaffDesign, wireDesign } from '../views/staff-design.js';
 import { pageTickets } from '../views/tickets.js';
 import { pageDepartment, pageDepartments } from '../views/departments.js';
 import { pageImprint, pagePrivacy } from '../views/legal.js';
@@ -23,6 +24,7 @@ import { pageVisit } from '../views/visit.js';
 import { store } from '../state/store.js';
 import { $ } from '../core/dom.js';
 import { PAGES } from '../data/constants.js';
+import { THEME } from '../core/theme.js';
 import { newT } from '../state/booking.js';
 import { newQuery } from '../state/query.js';
 import { byId } from '../state/selectors.js';
@@ -82,6 +84,14 @@ export function route() {
       else if (b === 'edit') { html = pageStaffForm(c); after = () => bindForm(c); title = 'Edit object'; }
       else if (b === 'bookings') { html = pageStaffBookings(); title = 'Bookings'; }
       else if (b === 'stats') { html = pageStaffStats(); title = 'Scan statistics'; after = bindTips; }
+      else if (b === 'design') {
+        html = pageStaffDesign(); title = 'Appearance';
+        /* Same shape as the settings page: render the shell, fetch the kit,
+           then re-render in place. wireDesign re-attaches the file inputs and
+           the live preview, which do not go through the delegated listeners. */
+        const again = () => { $('#app').innerHTML = pageStaffDesign(); wireDesign(again); };
+        after = () => bindDesign(again);
+      }
       else if (b === 'settings') {
         html = pageStaffSettings(); title = 'Settings';
         /* The groups and settings are fetched after the shell is on screen,
@@ -95,7 +105,7 @@ export function route() {
   }
   $('#app').innerHTML = html;
   if (after) after();
-  document.title = `${title} · Botswana National Museum`;
+  document.title = `${title} · ${THEME.siteName}`;
   document.querySelectorAll('[data-nav]').forEach((el) => el.classList.toggle('on', el.dataset.nav === a || (a === 'object' && el.dataset.nav === 'collection') || (a === 'page' && el.dataset.nav === `page/${b}`)));
   window.scrollTo(0, 0);
   if (anchor) { const el = document.getElementById(anchor); if (el) el.scrollIntoView(); }

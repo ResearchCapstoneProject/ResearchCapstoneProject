@@ -64,7 +64,7 @@ and text lengths must match per route.
 ```js
 const ROUTES = ['', 'visit', 'events', 'tickets', 'collection', 'explore',
   'explore/trails', 'departments', 'publications', 'object/BNM-ETH-0302', 'staff', 'staff/add', 'staff/edit/BNM-ETH-0302',
-  'staff/bookings', 'staff/stats', 'page/about', 'nonsense'];
+  'staff/bookings', 'staff/stats', 'staff/design', 'page/about', 'nonsense'];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const out = {};
 for (const r of ROUTES) {

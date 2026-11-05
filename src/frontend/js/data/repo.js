@@ -16,6 +16,7 @@
 import { getPublicBaseUrl, setPublicBaseUrl } from '../core/config.js';
 import { store } from '../state/store.js';
 import { applyServerConfig, CAPACITY, SLOT_MINUTES, TICKETS } from './constants.js';
+import { applyTheme, contrastOnWhite, THEME } from '../core/theme.js';
 import { ApiError, Unreachable, probeHealth, request } from './api.js';
 import {
   addNewSeedObjects, clearLocal, freshState, loadSeed, readLocal, writeLocal,
@@ -330,6 +331,81 @@ export async function updateVisitSettings(patch) {
   const saved = await call(() =>
     request('/staff/settings', { method: 'PATCH', body: patch }));
   await refreshConfig();
+  return saved;
+}
+
+// ------------------------------------------------------------ appearance kit
+
+/* Colours, fonts, logo, hero picture and the wording in the masthead. The
+   kit writes settings on the server, so offline it is read-only like the
+   visitor groups -- with the difference that the current look is already in
+   THEME, having come down with GET /config. */
+
+export async function getTheme() {
+  if (isOnline()) return call(() => request('/staff/theme'));
+  return {
+    theme: { ...THEME },
+    defaults: { ...THEME },
+    fonts: [{ key: THEME.headingFont, name: 'Current font', stack: THEME.headingStack, note: '' }],
+    contrast: {
+      brand: contrastOnWhite(THEME.brand),
+      action: contrastOnWhite(THEME.action),
+      accent: contrastOnWhite(THEME.accent),
+    },
+  };
+}
+
+export async function updateTheme(patch) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request('/staff/theme', { method: 'PATCH', body: patch }));
+  applyTheme(saved.theme);
+  return saved;
+}
+
+/* `slot` is 'logo' or 'hero'. The file goes up as multipart, like an object
+   photograph, so the server decides the format from what Pillow decodes. */
+export async function uploadThemeImage(slot, file) {
+  if (!isOnline()) return offlineOnly();
+  const form = new FormData();
+  form.append('file', file);
+  const saved = await call(() =>
+    request(`/staff/theme/image/${encodeURIComponent(slot)}`,
+      { method: 'POST', form }));
+  applyTheme(saved.theme);
+  return saved;
+}
+
+export async function resetThemeImage(slot) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request(`/staff/theme/image/${encodeURIComponent(slot)}`, { method: 'DELETE' }));
+  applyTheme(saved.theme);
+  return saved;
+}
+
+export async function uploadThemeFont(file, family) {
+  if (!isOnline()) return offlineOnly();
+  const form = new FormData();
+  form.append('file', file);
+  form.append('family', family || '');
+  const saved = await call(() =>
+    request('/staff/theme/font', { method: 'POST', form }));
+  applyTheme(saved.theme);
+  return saved;
+}
+
+export async function resetThemeFont() {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() => request('/staff/theme/font', { method: 'DELETE' }));
+  applyTheme(saved.theme);
+  return saved;
+}
+
+export async function resetTheme() {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() => request('/staff/theme', { method: 'DELETE' }));
+  applyTheme(saved.theme);
   return saved;
 }
 

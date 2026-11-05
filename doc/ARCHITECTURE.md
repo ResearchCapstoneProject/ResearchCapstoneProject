@@ -145,6 +145,35 @@ failure this prevents is specific: new code selecting `booking.visit_minute`
 from a database that does not have it, which MySQL answers with error 1054 on
 every booking query.
 
+## The appearance kit
+
+`css/base/tokens.css` already expressed every colour and face as a custom
+property, which is what makes the staff area's Appearance page cheap: it sets
+eight variables on `:root` and the whole site restyles, with no re-render and
+no second stylesheet. `core/theme.js` owns that, `services/theme.py` owns the
+server half, and the values live in `setting` rows under a `theme.` prefix --
+so the kit needed no migration, and a missing row means "the shipped design".
+
+Two rules are deliberate and worth keeping:
+
+**Three colours, not eleven.** Staff pick the museum colour, the action
+colour and an accent. `--sky-soft`, `--ochre-soft`, `--sand` and `--ochre-ink`
+are derived from them in the browser, and anything that carries text is
+darkened in a loop until it reaches 4.5:1 against white. A museum should not
+be able to produce unreadable text by choosing a nice pastel for its logo.
+
+**Fonts are either bundled or uploaded, never fetched.** The catalogue holds
+the two faces in `assets/fonts/`, two device stacks that download nothing,
+and whatever `.woff2` the museum uploads -- which is validated by its `wOF2`
+magic bytes, not by the file name. No Google Fonts: the galleries have no
+reliable connection, and an exhibition label should not wait on a CDN.
+
+The masthead is the one piece that is markup rather than a variable, so
+`applyTheme()` writes the name, the tagline and an uploaded logo's `src` into
+it in place. That is also what makes the staff page's live preview reach the
+header while someone is still typing in a field -- re-rendering the shell
+would take the focus out of it.
+
 ## Online and offline
 
 `data/repo.js` probes `GET /api/health` **once** per page load and latches the

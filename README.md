@@ -91,6 +91,25 @@ The texts and images of the museum's previous website (DNMM) are in the app:
 - Maps use Leaflet (loaded from cdnjs) with OpenStreetMap tiles; positions are approximate unless
   the text gives coordinates (see the header of `explore.js`).
 
+### The appearance kit
+Staff → **Appearance** (admin only) is where the museum changes how the site looks, without us:
+
+- the name and the line under it in the header;
+- three colours — the museum colour, the colour of links and buttons, and an accent. Every tint,
+  border and hover shade is derived from those three in `core/theme.js`, and a colour that carries
+  text is darkened until it reaches WCAG AA on white, so a pale accent cannot turn into unreadable
+  body text. The page shows each colour's contrast ratio while you pick it;
+- the two typefaces (headings and interface, running text), either one of the faces the site
+  carries or a `.woff2` the museum has a licence for. Nothing is ever loaded from a font service:
+  the galleries have no reliable connection, and the site must not depend on a third party;
+- the logo and the photograph on the home page, uploaded through the same pipeline as object
+  photographs, with "back to the original" for both.
+
+Every control previews on the page as you change it; only *Save* writes it. It is stored as
+`theme.*` rows in the `setting` table — no schema change, and "reset" is a deleted row rather than
+a remembered original. `GET /api/config` carries the result to every page load, so visitors see it
+on their next load without a deployment.
+
 ## Layout
 ```
 doc/            README, TODO, ARCHITECTURE, SMOKE-TEST, THIRD-PARTY

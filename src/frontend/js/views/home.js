@@ -10,11 +10,17 @@ import { openStatus } from '../data/opening.js';
 import { published } from '../state/selectors.js';
 import { craftOf } from '../state/query.js';
 import { esc } from '../core/dom.js';
+import { THEME } from '../core/theme.js';
 
 /* The museum building, in several widths so every screen gets a sharp copy
    without downloading the 6000px original. */
 const HERO = `${IMG}/web/natural-history/pix/museum-picture`;
-const heroImg = `<img src="${HERO}-1600.jpg" srcset="${[960, 1600, 2400, 3200].map((w) => `${HERO}-${w}.jpg ${w}w`).join(', ')}" sizes="100vw" alt="The Botswana National Museum building" fetchpriority="high">`;
+/* A function, not a constant: a picture uploaded in the staff area arrives
+   with GET /api/config, after this module has been evaluated. The bundled
+   photograph keeps its srcset; an uploaded one is served in one size. */
+const heroImg = () => (THEME.heroUrl
+  ? `<img src="${esc(THEME.heroUrl)}" alt="${esc(THEME.siteName)}" fetchpriority="high">`
+  : `<img src="${HERO}-1600.jpg" srcset="${[960, 1600, 2400, 3200].map((w) => `${HERO}-${w}.jpg ${w}w`).join(', ')}" sizes="100vw" alt="The Botswana National Museum building" fetchpriority="high">`);
 
 /* The six crafts of the "Art and Crafts of Botswana" catalogue; each card
    opens the collection filtered to that craft. `pick` is the record whose
@@ -45,7 +51,7 @@ export function pageHome() {
   const { upcoming } = splitEvents();
   return `
   <section class="phero" aria-label="Welcome">
-    ${heroImg}
+    ${heroImg()}
     <div class="wrap">
       <div class="pcopy">
         <div class="eyebrow">Department of National Museum and Monuments · Gaborone</div>
