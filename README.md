@@ -6,30 +6,86 @@ database, QR-coded gallery labels, the museum's departments, publications and he
 (Explore, with maps and heritage trails) and a staff area for curators and the
 front desk.
 
+**Contents** — [Quick start](#quick-start) · [Local vs. server](#local-vs-server) ·
+[Running locally](#running-locally) · [Running on the server](#running-on-the-server) ·
+[Content](#content) · [Layout](#layout) · [Pitfalls](#things-that-will-otherwise-cost-you-an-afternoon) ·
+[Status](#status)
 
-## Run it
+
+## Quick start
 You need Docker. Nothing else — no Node, no local Python, no MySQL install.
+
 ```bash
 cp .env.example .env
 ```
-Then fill in two things in `.env`:
-- `SESSION_SECRET` — `openssl rand -hex 32`
-- `ADMIN_BOOTSTRAP_PASSWORD` — the first staff account's password
-(and change the two MySQL passwords from their placeholders).
+
+Then fill in two secrets in `.env`:
+
+| key | value |
+| --- | --- |
+| `SESSION_SECRET` | the **output** of `openssl rand -hex 32` — not the command itself |
+| `ADMIN_BOOTSTRAP_PASSWORD` | the first staff account's password |
+
+Change the two MySQL passwords from their placeholders too. Leave `COMPOSE_FILE`
+commented out — that line is for the server only, see below.
+
 ```bash
 docker compose up --build
 ```
-The site is at **http://localhost:8000**. The API docs are at
-http://localhost:8000/docs. Sign in to the staff area at `#/staff` with
-`ADMIN_BOOTSTRAP_USER` and the password you set.
+
+The site is at **http://localhost:8000**, the API docs at http://localhost:8000/docs.
+Sign in to the staff area at `#/staff` with `ADMIN_BOOTSTRAP_USER` and the password you
+set.
+
+
+## Local vs. server
+Both run the same stack from the same `docker-compose.yml`. The server adds
+`compose.prod.yaml` on top, and that one file is every difference between them:
+
+| | local | server |
+| --- | --- | --- |
+| compose files | `docker-compose.yml` alone | `+ compose.prod.yaml` |
+| in front of the app | nothing | Caddy on port 80 |
+| port 8000 (API) | published on every interface | `127.0.0.1` only |
+| port 3307 (MySQL) | published on every interface | `127.0.0.1` only |
+| uvicorn | `--reload` | no reload, `--proxy-headers` |
+| a schema change arrives by | `docker compose down -v` | a migration from `doc/migrations/` |
+| `COOKIE_SECURE` in `.env` | `0` | `1` once served over HTTPS |
+
+`compose.prod.yaml` is **not** applied automatically. The server opts in with one line in
+its own `.env`, which is machine-specific and never committed:
+
+```bash
+COMPOSE_FILE=docker-compose.yml:compose.prod.yaml
+```
+
+Compose reads `COMPOSE_FILE` from `.env`, so every plain `docker compose …` command on
+that machine picks it up with no `-f` flags — and a machine without the line gets the
+development stack. Nothing has to be remembered at the command line, which is the point.
+
+> The file used to be called `compose.override.yaml`, a name Compose *does* apply on its
+> own. Committed by mistake, it quietly gave every development machine the server's
+> settings: no `--reload`, Caddy on port 80, and 8000 bound to loopback only. The name is
+> now in `.gitignore` so it cannot come back.
+
+
+## Running locally
+
+### The full stack
+`docker compose up --build`, as in [Quick start](#quick-start). The backend source is a
+bind mount and uvicorn runs with `--reload`, so a change to a `.py` file restarts the API
+by itself. Frontend files are served straight off disk — a reload in the browser is
+enough.
 
 ### Frontend on its own
 The frontend is plain ES modules with no build step, so a static server is enough — but it
 must be **served over HTTP**, not opened as a file. `<script type="module">` is subject to
 CORS and `file://` is an opaque origin, so double-clicking `index.html` will not work.
+
 ```bash
 python3 tools/devserver.py 5173    # then open http://localhost:5173/html/
 ```
+
 With no API reachable the site runs from `src/frontend/assets/seed/*.json` and keeps
 changes in the browser's localStorage. Everything works except the things that need a
 server: real sign-in, uploads and shared data.
@@ -38,35 +94,102 @@ server: real sign-in, uploads and shared data.
 ```bash
 docker compose --profile demo up
 ```
+
 `:8080` serves the frontend with **no API behind it**; `:8000` is the live site. Same
 files, two origins — which is the honest way to demonstrate that the site still works if
 the museum's connection drops during a presentation.
 
+### After a schema change
+`src/backend/sql/` runs **only when the database volume is empty**, so editing it does
+nothing to a volume you already have. Two ways out, depending on whether you want your
+local data back:
 
-### Deploying an update to the server
-The server runs the same stack with `compose.override.yaml` on top: Caddy in front on
-port 80, nothing else published. Two things differ from a local run, and both have
-cost us a broken site already.
+```bash
+# throw the database away and rebuild it from src/backend/sql/
+docker compose down -v && docker compose up --build
+```
 
-- **The database keeps its data.** `src/backend/sql/` runs only on an empty volume, so
-  a schema change reaches a server that already has data **only** as a migration from
+```bash
+# or keep your objects, bookings and uploads: apply the migrations instead,
+# oldest first, then restart the API (see the server section for why)
+docker compose exec -T db sh -c 'mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' \
+  < doc/migrations/2026-11-05-site-content.sql
+docker compose restart api
+```
+
+`doc/migrations/README.md` lists every file and what it does.
+
+
+## Running on the server
+
+### One-time setup
+```bash
+git clone <repo> && cd ResearchCapstoneProject
+cp .env.example .env
+```
+
+In `.env`:
+
+1. fill `SESSION_SECRET` and `ADMIN_BOOTSTRAP_PASSWORD`, and change the MySQL passwords;
+2. **uncomment** `COMPOSE_FILE=docker-compose.yml:compose.prod.yaml`;
+3. set `PUBLIC_BASE_URL` to the address printed QR labels should carry — every new label
+   follows it, with no code change;
+4. set `COOKIE_SECURE=1` if you serve over HTTPS (see the bottom of `Caddyfile` for
+   certificates on a bare IP, no domain needed).
+
+```bash
+docker compose up -d --build
+docker compose logs api --tail=30     # must end in "Application startup complete"
+```
+
+A first boot runs `src/backend/sql/` against the empty volume, so the schema is correct
+from the start and **no migrations are needed**.
+
+### Deploying an update
+Two things differ from a local run, and both have cost us a broken site already.
+
+- **The database keeps its data.** `src/backend/sql/` runs only on an empty volume, so a
+  schema change reaches a server that already has data **only** as a migration from
   `doc/migrations/`.
 - **There is no `--reload`.** The source tree is a bind mount, so `git pull` changes the
-  frontend visitors get *immediately*, while the API keeps running the old code until
-  its container is restarted. In between, a new frontend talks to an old API.
+  frontend visitors get *immediately*, while the API keeps running the old code until its
+  container is restarted. In between, a new frontend talks to an old API.
 
 Deploy in this order and the three never disagree:
+
 ```bash
 git pull
-# every new file in doc/migrations/, oldest first; safe to run twice
+
+# every migration new since the last deploy, in the order doc/migrations/README.md
+# lists them -- NOT a *.sql glob: they share a date, so alphabetical is a different
+# order. Each one is safe to run twice.
 docker compose exec -T db sh -c 'mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' \
   < doc/migrations/2026-11-05-slot-minutes.sql
+# ... then site-content, booking-event, text-overrides
+
 docker compose up -d --build        # restarts api on the new code
 docker compose restart api          # the startup seeder must run AFTER the migration
 docker compose logs api --tail=30   # must end in "Application startup complete"
 ```
-If the site comes up but pages stay empty, check `docker compose logs api` for
-`Unknown column` — that is the migration step having been skipped.
+
+The second restart is not redundant. The startup seeder runs once per process and
+swallows its own failure — `main.py` prints `[startup] database not ready` and carries on
+— so whatever it could not do against the old schema, such as creating the first staff
+account, stays undone until the API starts again *after* the migration. `up -d --build`
+only replaces a container when the image changed, which a database change does not.
+
+### When the site comes up but pages stay empty
+This is the signature of a skipped migration, and it is not obvious from the browser:
+`GET /api/health` returns a static dict, so the frontend's probe reports "online", but the
+next call fails. Every 5xx is mapped to "unreachable", so the site silently drops into
+offline mode on every load.
+
+```bash
+docker compose logs api | grep -E "Unknown column|doesn't exist|\[startup\]"
+```
+
+Anything there means the database is behind the code. Apply the missing migrations, then
+`docker compose restart api`.
 
 
 ## Content
@@ -84,7 +207,8 @@ The texts and images of the museum's previous website (DNMM) are in the app:
   (`BNM-ETH-0301`–`0357`, `BNM-ARC-0501`–`0503` in `assets/seed/objects.json`, photos in
   `assets/img/collection/acb/`). The catalogue gives no accession numbers, sizes or gallery
   locations, so those are placeholders to replace with the museum's register. Each record names
-  its catalogue page (`catalogue`, a new column — run `docker compose down -v` after pulling).
+  its catalogue page (`catalogue`, a column added after the first release — see
+  [After a schema change](#after-a-schema-change) when pulling onto an existing database).
 - `assets/img/svg/` holds vector redraws of the old site's drawn graphics (the Cultural/Natural
   Heritage badges and the Botswana locator outline). Photos stay raster: converting a photo to SVG
   cannot add resolution — sharper photos have to come from the museum's originals.
@@ -143,21 +267,33 @@ instead of silently preselecting nothing. The visitor booking goes to `POST /api
 code, the total and the capacity check come from the server — offline it still stays in the
 browser, which is what the demo profile shows.
 
+
 ## Layout
 ```
-doc/            README, TODO, ARCHITECTURE, SMOKE-TEST, THIRD-PARTY
-doc/prototype/  the original single-file prototype, kept for reference
-src/frontend/   html/ css/ js/ assets/   (no build step)
-src/backend/    FastAPI app + sql/
-docker/         MySQL configuration
-tools/          dev server (devserver.py) and one-off scripts
+README.md          this file
+TODO.md            open questions for the museum
+docker-compose.yml the stack: db + api (+ static, under the demo profile)
+compose.prod.yaml  what the server adds on top; opted into via COMPOSE_FILE in .env
+Caddyfile          the reverse proxy, server only
+doc/               ARCHITECTURE, SMOKE-TEST, THIRD-PARTY
+doc/migrations/    one dated .sql per schema change, for databases with data
+doc/prototype/     the original single-file prototype, kept for reference
+src/frontend/      html/ css/ js/ assets/   (no build step)
+src/backend/       FastAPI app + sql/
+docker/            MySQL configuration
+tools/             dev server (devserver.py) and one-off scripts
 ```
+
 `doc/ARCHITECTURE.md` explains how it fits together and, more usefully, why the
 non-obvious decisions were made that way. Read it before changing the data layer, the
 inventory numbering or the auth.
+
 `doc/SMOKE-TEST.md` is the checklist to run after touching the frontend — 17 routes and 29
 interactions, with a console snippet that fingerprints every page so you can diff a change
 against the prototype.
+
+`doc/migrations/README.md` has the rules for writing a migration, and a table of the ones
+that exist.
 
 
 ## Things that will otherwise cost you an afternoon
@@ -165,6 +301,16 @@ against the prototype.
   scripts run only when the database volume is empty, so otherwise your change is silently
   ignored. A database that already holds data — the server, or a local volume you do not
   want to lose — needs the same change as a migration in `doc/migrations/`.
+- **A blank or empty-looking page usually means the database is behind the code**, not a
+  frontend bug. See [when the site comes up but pages stay
+  empty](#when-the-site-comes-up-but-pages-stay-empty).
+- **Do not apply migrations with a `*.sql` glob.** They share a date, so alphabetical order
+  is not the intended order. Follow `doc/migrations/README.md`.
+- **`SESSION_SECRET` must be the output of `openssl rand -hex 32`**, not the string
+  `openssl rand -hex 32`. Nothing fails loudly if you paste the command.
+- **Never name a compose file `compose.override.yaml`.** Compose applies that name
+  automatically on every machine; the server's configuration belongs in `compose.prod.yaml`
+  behind `COMPOSE_FILE`. The name is in `.gitignore`.
 - **`002_reference_data.sql` must stay UTF-8 with no BOM.** The gallery names contain
   `·` (U+00B7) and the frontend matches on the exact string.
 - **The prototype is not the app.** `doc/prototype/` is a reference copy; nothing loads
@@ -183,4 +329,4 @@ decision rather than for lack of a provider.
 Still simulated, and deliberately labelled as such in the interface: e-ticket e-mail, the newsletter, the audio guide, Setswana, and the AR page. They are listed in one place, `FEATURES` in
 `src/frontend/js/core/config.js`.
 
-Open questions for the museum are in `doc/TODO.md`.
+Open questions for the museum are in `TODO.md`.

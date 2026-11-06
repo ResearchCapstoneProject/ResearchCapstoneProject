@@ -1,9 +1,21 @@
 # Server-only: puts Caddy in front of the app on port 80.
 #
-# Docker Compose merges this into docker-compose.yml automatically, so Caddy
-# joins the same project network and can reach the app by its service name.
+# Compose merges this on top of docker-compose.yml, so Caddy joins the same
+# project network and can reach the app by its service name.
 #
-# Not committed -- it is specific to one machine. Recreate it on each server.
+# It is NOT applied automatically. A file named compose.override.yaml is, which
+# is why this one is not called that: it used to be, it was committed by
+# mistake, and every laptop then silently ran the server's configuration --
+# no --reload, Caddy on port 80, and 8000 bound to loopback only.
+#
+# The server opts in through its own .env, which is machine-specific and never
+# committed:
+#
+#   COMPOSE_FILE=docker-compose.yml:compose.prod.yaml
+#
+# Compose reads COMPOSE_FILE from .env, so every plain `docker compose ...`
+# command on that machine picks this up with no -f flags. Anywhere without
+# that line -- every development machine -- gets the base stack alone.
 
 services:
   caddy:

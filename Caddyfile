@@ -5,7 +5,7 @@
 #
 # reverse_proxy already sets X-Forwarded-For / -Proto / -Host on its own, so
 # nothing extra is needed here for the app to see the real client address --
-# but uvicorn has to be told to trust them, which compose.override.yaml does
+# but uvicorn has to be told to trust them, which compose.prod.yaml does
 # with --proxy-headers. Without that the scan analytics would hash Caddy's
 # address and every visit would look like the same visitor.
 #
@@ -33,7 +33,7 @@
 #
 # To use it: comment out the `:80` block above, uncomment this one, put the
 # server's public IP in place of PUBLIC_IP, add "443:443" to the caddy ports
-# in compose.override.yaml, and set COOKIE_SECURE=1 in .env.
+# in compose.prod.yaml, and set COOKIE_SECURE=1 in .env.
 #
 # `profile shortlived` is required -- without it Caddy falls back to a
 # self-signed certificate for IP addresses and browsers reject it. Caddy
