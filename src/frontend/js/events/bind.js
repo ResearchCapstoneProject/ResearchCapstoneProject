@@ -9,8 +9,8 @@ import { toast } from '../ui/toast.js';
 import { renderResults } from '../views/collection.js';
 import { pageStaffBookings } from '../views/staff-bookings.js';
 import {
-  addGroup, deleteGroup, goLive, pageStaffSettings, purgeBookings,
-  saveGroupPrice, saveVisitSettings, sendTestMail, setDemoNotes, toggleGroup,
+  addGroup, deleteGroup, pageStaffSettings, purgeBookings, saveGroupPrice,
+  saveVisitSettings, sendTestMail, toggleGroup,
 } from '../views/staff-settings.js';
 import {
   discardDesign, pageStaffDesign, resetDesign, resetDesignFont,
@@ -91,14 +91,6 @@ document.addEventListener('click', (e) => {
   if (!t) { if (e.target.id === 'modal') closeModal(); return; }
   const act = t.dataset.act;
   switch (act) {
-    case 'reset':
-      if (confirm('Reset the demo data? Added objects, demo bookings and demo scans will be removed.')) {
-        repo.resetDemo().then(() => {
-          store.T = newT(); store.CQ = newQuery(); route();
-          toast('Demo data reset.');
-        }).catch(() => toast('Could not reset the demo data.'));
-      }
-      break;
     case 'logout':
       e.preventDefault();
       repo.logout().then(() => { location.hash = '#/'; route(); toast('Signed out.'); });
@@ -156,9 +148,7 @@ document.addEventListener('click', (e) => {
     case 'pub-del': deletePublication(t.dataset.id, rerenderPublications); break;
     case 'im-reset': resetImage(t.dataset.path, rerenderImages); break;
     case 'set-purge': purgeBookings(rerenderSettings); break;
-    case 'set-golive': goLive(rerenderSettings); break;
     case 'set-mailtest': sendTestMail(rerenderSettings); break;
-    case 'set-demo-on': setDemoNotes(true, rerenderSettings); break;
     case 'bk-del':
       if (confirm('Delete this booking? The visitor\'s name, e-mail address and phone number are removed with it.')) {
         repo.deleteBooking(t.dataset.code)

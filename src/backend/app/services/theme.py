@@ -52,7 +52,8 @@ DEFAULTS: dict[str, str] = {
     "footer_address": "331 Independence Avenue\nPrivate Bag 00114, Gaborone, Botswana",
     "footer_contact": "Tel +267 397 4616 / +267 361 0400 · Fax +267 390 2797",
     "footer_note": "© 2026 Botswana National Museum · texts and images belong to the museum",
-    "footer_note_2": "Prices, bookings and inventory numbers are sample content",
+    # A second footer line, empty until the museum writes one.
+    "footer_note_2": "",
 }
 
 # `stack` is what lands in CSS. The two bundled faces are declared in

@@ -3,9 +3,9 @@ import { store } from '../state/store.js';
 import { $, esc } from '../core/dom.js';
 import { dkey, fmtDate, hh } from '../core/format.js';
 import { nextDays } from '../core/time.js';
-import { CAPACITY, DEMO_MODE } from '../data/constants.js';
+import { CAPACITY } from '../data/constants.js';
 import { holiday, slotEnd, slotLabel, slotStarts } from '../data/opening.js';
-import { addonsOf, onlineOcc, sampleOcc, taken } from '../state/booking.js';
+import { addonsOf, taken } from '../state/booking.js';
 import { fromKey } from '../core/format.js';
 import { hoursFor } from '../data/opening.js';
 
@@ -18,11 +18,13 @@ export function pageStaffBookings() {
   const k = store.SB.date;
   const starts = slotStarts(k);
   const sum = (fn) => starts.reduce((a, { h, m }) => a + fn(h, m), 0);
-  const cap = starts.length * CAPACITY; const tot = sum((h, m) => taken(k, h, m)); const onl = sum((h, m) => onlineOcc(k, h, m));
-  const tours = store.S.bookings.filter((b) => b.date === k).reduce((a, b) => a + addonsOf(b.q), 0);
+  const cap = starts.length * CAPACITY; const tot = sum((h, m) => taken(k, h, m));
+  const onDay = store.S.bookings.filter((b) => b.date === k);
+  const inHouse = onDay.filter((b) => b.checkedIn).reduce((a, b) => a + b.visitors, 0);
+  const tours = onDay.reduce((a, b) => a + addonsOf(b.q), 0);
   const bars = starts.length ? starts.map(({ h, m }) => {
-    const s = sampleOcc(k, h, m); const o = onlineOcc(k, h, m); const sw = Math.min(100, (s / CAPACITY) * 100); const ow = Math.min(100 - sw, (o / CAPACITY) * 100);
-    return `<div class="capbar"><b class="tnum">${slotLabel(h, m)}</b><div class="bar" role="img" aria-label="${s + o} of ${CAPACITY} places booked"><i style="width:${sw}%"></i><i class="online" style="width:${ow}%"></i></div><span class="n">${Math.min(CAPACITY, s + o)} / ${CAPACITY}</span></div>`;
+    const o = taken(k, h, m); const ow = Math.min(100, (o / CAPACITY) * 100);
+    return `<div class="capbar"><b class="tnum">${slotLabel(h, m)}</b><div class="bar" role="img" aria-label="${o} of ${CAPACITY} places booked"><i class="online" style="width:${ow}%"></i></div><span class="n">${o} / ${CAPACITY}</span></div>`;
   }).join('') : '<p class="muted">The museum is closed on this day.</p>';
   const rows = [...store.S.bookings].sort((a, b) => b.created - a.created);
   const inner = `
@@ -30,15 +32,13 @@ export function pageStaffBookings() {
     <div class="kpis">
       <div><b>${tot}</b><span>visitors booked on ${esc(fmtDate(k, { weekday: 'short', day: 'numeric', month: 'short' }))}</span></div>
       <div><b>${cap ? Math.round((tot / cap) * 100) : 0}%</b><span>of ${cap} places filled</span></div>
-      <div><b>${onl}</b><span>${DEMO_MODE ? 'from your demo bookings' : 'booked online'}</span></div>
+      <div><b>${inHouse}</b><span>checked in so far</span></div>
       <div><b>${tours}</b><span>guided-tour participants</span></div>
     </div>
     <div class="twocol">
       <div>
         <h2 class="h3">Time slots <span class="muted small" style="font-weight:400">· <a href="#/staff/settings">change length</a></span></h2>
-        <div class="legend">${DEMO_MODE
-    ? '<span><i style="background:var(--sky)"></i>Sample bookings</span><span><i style="background:var(--deep)"></i>Booked in this demo</span>'
-    : '<span><i style="background:var(--deep)"></i>Booked places</span>'}</div>
+        <div class="legend"><span><i style="background:var(--deep)"></i>Booked places</span></div>
         ${bars}
       </div>
       <div>

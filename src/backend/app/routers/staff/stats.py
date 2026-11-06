@@ -1,9 +1,9 @@
 """Scan statistics, aggregated from scan_event rows.
 
 The prototype generated these numbers from a hash of the object id at render
-time. They are real rows now; the seeded demo history carries source='seed'
-and the staff simulate button carries source='staff_demo', so a chart can
-separate "what visitors did" from "what we generated for the demo".
+time. They are real rows now; the staff "Simulate visitor scan" button carries
+source='staff_demo', so a chart can separate what visitors did from what was
+tried out at a desk.
 """
 from datetime import date, datetime, timedelta
 
@@ -53,7 +53,7 @@ def scan_stats(days: int = 14, db: Session = Depends(get_db)) -> ScanStats:
         select(MuseumObject).where(MuseumObject.status == "published")
     ).unique().all()
 
-    top = sorted(
+    counted = sorted(
         (NamedCount(key=o.id, label=o.title, total=by_object.get(o.id, (0, 0))[0],
                     demo=by_object.get(o.id, (0, 0))[1]) for o in objects),
         key=lambda n: n.total, reverse=True,
@@ -73,9 +73,9 @@ def scan_stats(days: int = 14, db: Session = Depends(get_db)) -> ScanStats:
     return ScanStats(
         days=day_rows,
         by_room=sorted(rooms.values(), key=lambda n: n.total, reverse=True),
-        top_objects=top[:8],
+        objects=counted,
         total=total,
         labelled_objects=len(objects),
         average_per_day=round(total / days, 1) if days else 0.0,
-        most_scanned=top[0].label if top and top[0].total else None,
+        most_scanned=counted[0].label if counted and counted[0].total else None,
     )

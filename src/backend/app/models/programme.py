@@ -1,20 +1,8 @@
-"""Exhibitions, events and themed tours."""
-from sqlalchemy import Date, ForeignKey, SmallInteger, String, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+"""The museum's events."""
+from sqlalchemy import Date, String, Text
+from sqlalchemy.orm import Mapped, mapped_column
 
 from ..db import Base
-
-
-class Exhibition(Base):
-    __tablename__ = "exhibition"
-    exhibition_key: Mapped[str] = mapped_column(String(32), primary_key=True)
-    art_key: Mapped[str] = mapped_column(String(32))
-    kind: Mapped[str] = mapped_column(String(64))
-    dates_label: Mapped[str] = mapped_column(String(128))
-    title: Mapped[str] = mapped_column(String(255))
-    body: Mapped[str] = mapped_column(Text)
-    is_published: Mapped[bool] = mapped_column(default=True)
-    sort_order: Mapped[int] = mapped_column(SmallInteger, default=0)
 
 
 class MuseumEvent(Base):
@@ -30,30 +18,3 @@ class MuseumEvent(Base):
     pdf_url: Mapped[str] = mapped_column(String(255), default="")
     is_published: Mapped[bool] = mapped_column(default=True)
 
-
-class TourStop(Base):
-    __tablename__ = "tour_stop"
-    tour_id: Mapped[str] = mapped_column(
-        String(32), ForeignKey("tour.id", ondelete="CASCADE"), primary_key=True
-    )
-    position: Mapped[int] = mapped_column(SmallInteger, primary_key=True)
-    object_id: Mapped[str] = mapped_column(
-        String(20), ForeignKey("museum_object.id", ondelete="CASCADE")
-    )
-
-
-class Tour(Base):
-    __tablename__ = "tour"
-    id: Mapped[str] = mapped_column(String(32), primary_key=True)
-    title: Mapped[str] = mapped_column(String(255))
-    minutes: Mapped[int] = mapped_column(SmallInteger)
-    start_label: Mapped[str] = mapped_column(String(128))
-    audience: Mapped[str] = mapped_column(String(128))
-    subtitle: Mapped[str] = mapped_column(String(255), default="")
-    intro: Mapped[str] = mapped_column(Text)
-    is_published: Mapped[bool] = mapped_column(default=True)
-    sort_order: Mapped[int] = mapped_column(SmallInteger, default=0)
-
-    stops: Mapped[list[TourStop]] = relationship(
-        lazy="selectin", order_by=TourStop.position, cascade="all, delete-orphan"
-    )

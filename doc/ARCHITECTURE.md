@@ -53,8 +53,8 @@ breaks every cycle between the data, view and event layers.
 Two rules, both silent-breakage traps:
 
 1. **Never `const { S } = store;` at module scope.** That captures the
-   reference and goes stale the moment "Reset demo" or "New booking" replaces
-   it. Inside a function body is fine.
+   reference and goes stale the moment "New booking" replaces it. Inside a
+   function body is fine.
 2. `state/store.js` imports nothing, so values needing other modules
    (`store.SB`) are set by `initState()` in `main.js`.
 
@@ -96,16 +96,16 @@ object wearing a retired one, which is the thing an accession register exists
 to prevent. `UPDATE inventory_counter SET next_seq = LAST_INSERT_ID(next_seq+1)`
 takes an InnoDB row lock and is atomic and monotonic.
 
-Counters are **not** reset by the demo reset. That is deliberate and looks
-like a bug if you do not know.
+Counters are **never** reset, not even when rows are deleted. That is
+deliberate and looks like a bug if you do not know.
 
 **A slot is a start time, not an hour.** `setting.slot_minutes` is set in the
 staff area, so `booking.visit_minute` is part of the slot identity and of the
 capacity lock. Slots tile the opening hours from opening time; a remainder
 shorter than one slot is dropped rather than letting the last slot overrun
 closing time. `slot_starts()` in the backend and `slotStarts()` in
-`js/data/opening.js` must stay in agreement, or the offline demo offers a slot
-the API then rejects.
+`js/data/opening.js` must stay in agreement, or the offline fallback offers a
+slot the API then rejects.
 
 **Visitor groups are data, not code.** The museum starts with one free
 `Admission` group and adds priced groups in the staff area. A group that has
@@ -126,7 +126,7 @@ types "Storeroom B".
 
 **Search ships as `LIKE`.** It reproduces the prototype's `matches()` exactly:
 split on whitespace, every word must appear. `FULLTEXT` is indexed and ready,
-but is not the default because it surprises people in a demo — the default
+but is not the default because it surprises people — the default
 `innodb_ft_min_token_size` of 3 drops two-letter words, the stopword list
 drops common English, and `BNM-ETH-0142` tokenises to `BNM`/`ETH`/`0142`, so
 searching a full inventory number matches the whole department. Flip it with
@@ -200,11 +200,6 @@ deletion. Scan statistics never hold a person in the first place -- see
 `services/privacy.py`, where the IP and user agent become a hash with a
 daily-rotating salt.
 
-What is deliberately not here: the demo reset. It deletes everything that is
-*not* demo data, which is right for a presentation and catastrophic on a
-server with the museum's records on it, so `DEMO_RESET_ENABLED=0` turns it
-off and `GET /api/config` tells the staff area to stop offering the button.
-
 ## E-mail
 
 `services/mail.py` has three modes, and the middle one is why the wording in
@@ -231,26 +226,31 @@ e-mail address, no phone number, no country. The name stays because it is on
 the ticket the visitor is holding, and the code is random enough to be the
 only key, the same arrangement as a flight reference.
 
-## Going live
+## The demonstration, and where it went
 
-`services/golive.py` is the other direction, and the module's docstring is
-the authoritative list: every row in the database is either the museum's own
-record, a record the project invented so the site could be shown, or real
-traffic -- and going live deletes exactly the middle group. The distinction
-that matters is the collection: all 60 objects carry a catalogue page from
-*Art and Crafts of Botswana*, so there is no such thing as a sample object to
-delete, and the code never touches `museum_object` at all.
+Until November 2026 the site carried a second tier of data: records the
+project invented so the thing could be shown before the museum had entered
+anything. Sample bookings (`source='demo'`), a generated scan history
+(`source='seed'`), the prototype's exhibitions and themed tours, and a note on
+the legal pages, in the footer and in the staff area saying so -- all of it
+switched on by a `demo_mode` setting, and all of it removable in one press of
+a **Going live** button in Staff -> Settings.
 
-The notes that say "this is a demonstration" hang off a single setting,
-`demo_mode`, which `GET /api/config` carries: the draft banner on the legal
-pages, the footer's sample-content line, the staff area's wording and the
-reset button all read it. One switch, no scattered flags -- and because it is
-a setting rather than a schema change, going live needs no migration.
+That button has been applied and removed. The seeder creates none of those
+records, the `exhibition`, `tour` and `tour_stop` tables are gone, the
+`demo_mode` setting is gone, and `doc/migrations/2026-11-06-remove-demonstration.sql`
+brings a database that already holds data to the same place.
 
-Both this and the demo reset delete booking lines explicitly instead of
-leaving them to the foreign key, for the reason given under Personal data: the
-cascade exists in MySQL and not in SQLite, and an orphaned line is a row
-nobody ever looks at again.
+The distinction that made the button safe is still worth knowing, because it
+is what the migration deletes and what it does not: all 60 objects carry a
+catalogue page from *Art and Crafts of Botswana*, so there was never such a
+thing as a sample object, and nothing has ever touched `museum_object`.
+Bookings a visitor made and `source='qr'` scans are real traffic and stay.
+
+The migration deletes booking lines explicitly instead of leaving them to the
+foreign key, for the reason given under Personal data: the cascade exists in
+MySQL and not in SQLite, and an orphaned line is a row nobody ever looks at
+again.
 
 ## Rewriting a text
 
@@ -332,7 +332,9 @@ classic bug in this pattern. Other 4xx do not degrade either — a `409` on a
 full slot is a business answer, rendered as a form error.
 
 To see it: `docker compose --profile demo up`, then `:8080` (no API) versus
-`:8000` (live). Same files, two origins.
+`:8000` (live). Same files, two origins. The profile is named `demo` because
+it demonstrates the fallback; it has nothing to do with the demonstration
+data that used to ship with the site.
 
 ## What is still simulated
 
@@ -341,10 +343,16 @@ e-mail, the newsletter, the audio guide, Setswana and AR.
 `core/config.js` has a `FEATURES` object listing them in one place — that list
 is also the answer to several questions in `doc/TODO.md`.
 
-Scan statistics are **real rows** now, but the seeded history carries
-`source='seed'` and the staff simulate button carries `source='staff_demo'`,
-so nobody mistakes generated demo data for measurement. Only `source='qr'` is
-a visitor.
+Scan statistics and slot occupancy are **measured**, not generated. The
+staff statistics page reads `GET /api/staff/stats/scans` and the ticket page
+reads `GET /api/availability`; the prototype hashed the date for both, and
+nothing does any more. The staff "Simulate visitor scan" button still exists
+-- it is how a label is tested in a gallery -- but it writes
+`source='staff_demo'` and the chart counts it separately, so only
+`source='qr'` is a visitor.
+
+Offline there is no server to count anything, so both pages fall back to what
+this browser itself did and say so.
 
 ## Things that cost an afternoon if you do not know
 

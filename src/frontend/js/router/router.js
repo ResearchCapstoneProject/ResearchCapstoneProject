@@ -11,7 +11,7 @@ import { pagePlaceholder } from '../views/placeholder.js';
 import { pageStaffBookings } from '../views/staff-bookings.js';
 import { bindForm, pageStaffForm } from '../views/staff-form.js';
 import { pageStaffObjects } from '../views/staff-objects.js';
-import { pageStaffStats } from '../views/staff-stats.js';
+import { bindStats, pageStaffStats } from '../views/staff-stats.js';
 import { bindSettings, pageStaffSettings } from '../views/staff-settings.js';
 import { bindDesign, pageStaffDesign, wireDesign } from '../views/staff-design.js';
 import { bindEvents, pageStaffEvents, wireEvents } from '../views/staff-events.js';
@@ -44,13 +44,14 @@ import { SECTIONS, siteById } from '../data/explore.js';
 
 /* Old addresses that moved: the themed tours were replaced by the heritage
    trails in Explore, About merged into Visit, Tsodilo is an Explore page, and
-   the sample exhibitions, the museum floor-plan map and the virtual-tour
-   placeholder were removed. */
+   the exhibitions, the museum floor-plan map, the virtual-tour placeholder and
+   the two phase-2 placeholders the home page used to link were removed. */
 const MOVED = {
   tours: '#/explore/trails', tour: '#/explore/trails',
   exhibitions: '#/collection', map: '#/visit', 'page/virtual-tour': '#/',
   'publications/heritage-trails': '#/explore/trails',
   'page/about': '#/visit/about', 'page/tsodilo': '#/explore/monuments/tsodilo',
+  'page/ar': '#/', 'page/displays': '#/',
 };
 
 /* ---------------- router ---------------- */
@@ -98,13 +99,19 @@ export function route() {
       /* Guard. Online, the staff area needs a session -- the API enforces
          this too, so this only saves a pointless round trip and a flash of
          an empty table. Offline there is no server to sign in to, so the
-         area stays open for demos, with the banner saying so. */
+         area stays open, with the banner saying so. */
       if (b === 'login') { html = pageStaffLogin(); title = 'Staff sign-in'; break; }
       if (isOnline() && !store.api.user) { location.hash = '#/staff/login'; return; }
       if (b === 'add') { html = pageStaffForm(null); after = () => bindForm(null); title = 'Add object'; }
       else if (b === 'edit') { html = pageStaffForm(c); after = () => bindForm(c); title = 'Edit object'; }
       else if (b === 'bookings') { html = pageStaffBookings(); title = 'Bookings'; }
-      else if (b === 'stats') { html = pageStaffStats(); title = 'Scan statistics'; after = bindTips; }
+      else if (b === 'stats') {
+        html = pageStaffStats(); title = 'Scan statistics';
+        /* Same shape as the settings page: the shell goes up first, the
+           counts are fetched, then the page re-renders in place. */
+        const again = () => { $('#app').innerHTML = pageStaffStats(); bindTips(); };
+        after = () => { bindTips(); bindStats(again); };
+      }
       else if (b === 'events') {
         html = pageStaffEvents(); title = 'Events';
         const again = () => { $('#app').innerHTML = pageStaffEvents(); wireEvents(again); };

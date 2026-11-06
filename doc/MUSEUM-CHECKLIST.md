@@ -94,11 +94,13 @@ without us:
 - how many visitors one time slot holds (today 40),
 - how long a slot is (today 60 minutes; 15 to 120 are possible),
 - how far ahead visitors may book (today 14 days),
-- the retention period from section 1,
-- and, when the museum is ready, **Going live**: one action that removes the
-  records the project invented for the demonstration and switches off every
-  note that calls the site a demonstration. It keeps all museum content. The
-  deleted records cannot be brought back.
+- and the retention period from section 1.
+
+The records the project invented so the site could be shown before the museum
+had entered anything — sample bookings, a generated scan history, and the
+notes saying that none of it was real — have been removed. Nothing on the
+site is sample content any more; every number it shows is one the museum's
+own records produced.
 
 ## 4. Two practical warnings
 

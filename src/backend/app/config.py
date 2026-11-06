@@ -55,7 +55,6 @@ class Settings(BaseSettings):
     smtp_timeout: int = 10
 
     seed_on_start: bool = True
-    demo_reset_enabled: bool = True
 
     # 'like' reproduces the prototype's substring search exactly.
     # 'fulltext' uses the ft_object index -- read doc/ARCHITECTURE.md first.

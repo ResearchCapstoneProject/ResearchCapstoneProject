@@ -1,15 +1,16 @@
 import { openModal } from './modal.js';
-import { store } from '../state/store.js';
 import { emblem } from '../art/objects.js';
 import { viewsOf } from '../art/registry.js';
 import { $, esc } from '../core/dom.js';
 import { qrSVG } from '../core/qr.js';
-import { save } from '../data/local.js';
+import { recordScan } from '../data/repo.js';
 import { byId, objectURL } from '../state/selectors.js';
 
 export function openScan(id) {
   const o = byId(id); if (!o) return; const url = objectURL(o.id);
-  store.S.scans[id] = (store.S.scans[id] || 0) + 1; save();
+  /* Logged as 'staff_demo', never as a visitor: the statistics page counts
+     the two apart, so trying a label out at a desk cannot look like a visit. */
+  recordScan(id, 'staff_demo');
   openModal(`<div class="phonewrap">
     <div class="explain">
       <div class="eyebrow" style="color:var(--sky-soft)">In the gallery</div>

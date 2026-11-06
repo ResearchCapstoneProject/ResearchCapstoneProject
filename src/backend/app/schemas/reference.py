@@ -54,16 +54,9 @@ class ConfigOut(CamelModel):
     image_overrides: dict[str, str] = {}
     # Path into the content modules -> the text the museum put there instead.
     texts: dict[str, str] = {}
-    # False on a real deployment, where "Reset demo data" would delete the
-    # museum's own bookings, scans and objects. The staff area then does not
-    # offer the button at all.
-    demo_reset_enabled: bool = True
     # Days after a visit before a booking is deleted; 0 while the museum has
     # not set a period. The privacy notice says which of the two it is.
     booking_retention_days: int = 0
-    # False once the museum has gone live: the draft banner, the footer's
-    # sample-content line and the staff area's demo wording disappear.
-    demo_mode: bool = True
     # Whether a confirmation can actually be sent. The ticket page promises an
     # e-mail only where there is a mail account behind it.
     email_enabled: bool = False

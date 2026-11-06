@@ -1,16 +1,80 @@
-/* Scan counts. Deterministic hashes, not measurements -- the real numbers
-   come from the scan_event table once the backend lands. */
-import { fromKey } from '../core/format.js';
-import { h32 } from '../core/hash.js';
-import { hoursFor } from '../data/opening.js';
-import { store } from './store.js';
+/* Scan statistics.
 
-/* ---------------- scan statistics (staff) -------------------------- */
-export const scanBase = (id) => 16 + (h32('scan-' + id) % 150);
-export const scanTotal = (o) => scanBase(o.id) + (store.S.scans[o.id] || 0);
-export const demoScans = () => Object.values(store.S.scans || {}).reduce((a, b) => a + b, 0);
-export function scansOnDay(k) {
-  const d = fromKey(k); if (!hoursFor(k)) return 0;
-  const x = h32('day-' + k);
-  return 24 + (x % 46) + (d.getDay() === 0 || d.getDay() === 6 ? 26 : 0);
+   The prototype derived these numbers from a hash of the object id, so the
+   chart looked plausible during a presentation. They are measured now:
+   GET /staff/stats/scans aggregates the scan_event table, separating a real
+   visitor at a gallery label (source='qr') from the staff area's "Simulate
+   visitor scan" button (source='staff_demo').
+
+   Offline there is no server to count anything. The only scans that exist
+   are the ones made in this browser, and localStats() shapes those like the
+   server's answer so the page has one thing to render. */
+import { dkey } from '../core/format.js';
+import { store } from './store.js';
+import { published, roomById, roomOf } from './selectors.js';
+import * as repo from '../data/repo.js';
+
+const DAYS = 14;
+
+/* Filled by loadScanStats(); null until the first answer arrives, which is
+   what the page renders its "Loading…" state from. */
+const state = { stats: null, loading: false };
+
+export const scanStats = () => state.stats;
+
+function lastDays(n) {
+  const out = []; const d = new Date(); d.setHours(0, 0, 0, 0);
+  for (let i = n - 1; i >= 0; i--) {
+    const x = new Date(d); x.setDate(x.getDate() - i); out.push(dkey(x));
+  }
+  return out;
+}
+
+function localStats() {
+  const scans = store.S.scans || {};
+  const today = dkey(new Date());
+  const total = Object.values(scans).reduce((a, b) => a + b, 0);
+  const objects = published();
+  const counted = objects
+    .map((o) => ({ key: o.id, label: o.title, total: scans[o.id] || 0,
+                   demo: scans[o.id] || 0 }))
+    .sort((a, b) => b.total - a.total);
+
+  const rooms = {};
+  objects.forEach((o) => {
+    const id = roomOf(o.location);
+    const label = id ? (roomById(id) || {}).name : 'Not on display';
+    const row = rooms[label] || (rooms[label] = { key: label, label, total: 0, demo: 0 });
+    row.total += scans[o.id] || 0;
+    row.demo += scans[o.id] || 0;
+  });
+
+  return {
+    days: lastDays(DAYS).map((k) => ({
+      date: k, total: k === today ? total : 0, demo: k === today ? total : 0,
+    })),
+    byRoom: Object.values(rooms).sort((a, b) => b.total - a.total),
+    objects: counted,
+    total,
+    labelledObjects: objects.length,
+    averagePerDay: Math.round((total / DAYS) * 10) / 10,
+    mostScanned: counted.length && counted[0].total ? counted[0].label : null,
+    offline: true,
+  };
+}
+
+/* Fetches the statistics once the page is on screen, then re-renders it in
+   place -- the same shape as the settings and appearance pages. */
+export async function loadScanStats(rerender) {
+  if (state.loading) return;
+  state.loading = true;
+  try {
+    const out = await repo.scanStats(DAYS);
+    state.stats = out ? { ...out, offline: false } : localStats();
+  } catch (e) {
+    state.stats = localStats();
+  } finally {
+    state.loading = false;
+  }
+  if (rerender) rerender();
 }

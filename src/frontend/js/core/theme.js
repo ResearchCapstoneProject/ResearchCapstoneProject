@@ -29,7 +29,7 @@ export const THEME = {
   footerAddress: '331 Independence Avenue\nPrivate Bag 00114, Gaborone, Botswana',
   footerContact: 'Tel +267 397 4616 / +267 361 0400 · Fax +267 390 2797',
   footerNote: '© 2026 Botswana National Museum · texts and images belong to the museum',
-  footerNote2: 'Prices, bookings and inventory numbers are sample content',
+  footerNote2: '',
 };
 
 const HEX = /^#[0-9a-f]{6}$/i;
