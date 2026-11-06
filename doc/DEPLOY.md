@@ -10,7 +10,29 @@ That second file is **not** applied on its own; the server opts in with
 `docker compose …` below therefore needs no `-f` flags, and a machine without
 that line gets the development stack instead. `.env` is not committed, so a
 `git pull` never restores it: `docker compose config | grep -c caddy` says
-whether this machine is actually running the server's configuration.
+whether this machine is actually running the server's configuration. Run that
+without `2>/dev/null`: a config that fails to resolve also prints `0`, and the
+reason is on stderr.
+
+**A server set up before November 2026 has to add that line by hand.** The
+file used to be called `compose.override.yaml`, which Compose loads on its own
+with no `.env` entry at all. The commit that renamed it to `compose.prod.yaml`
+therefore takes the whole production configuration away at the moment you
+`git pull` — Caddy, the loopback binding and the missing `--reload` all go
+back to their development defaults, and the running containers keep the old
+setup only until the next `docker compose up -d`. Check for the line before
+that command, not after:
+
+```bash
+grep -c '^COMPOSE_FILE=' .env          # 0 means it is missing
+printf '\nCOMPOSE_FILE=docker-compose.yml:compose.prod.yaml\n' >> .env
+docker compose config | grep -c caddy  # now > 0
+```
+
+Keep any copy you take of `.env` **outside** the project folder (`~/`, next to
+the dumps). `.gitignore` covers `.env` itself, so a `.env.bak-…` beside it is
+an untracked file full of passwords sitting in a repository — one `git add -A`
+from being published.
 
 Two things about it are easy to get wrong and both have cost us a broken site
 already:
@@ -36,11 +58,17 @@ docker compose exec -T db sh -c \
 ls -lh ~/backups | tail -3
 ```
 
-Uploaded pictures and PDFs live in a volume, not in the dump:
+Uploaded pictures and PDFs live in a volume, not in the dump. Compose names
+the volume after the project, which is the **folder name**, not the
+repository's: on a server that holds the project in `/opt/website` it is
+`website_uploads`. Ask rather than assume, or the `tar` silently archives an
+empty directory it created itself:
 
 ```bash
-docker run --rm -v researchcapstoneproject_uploads:/data -v ~/backups:/out \
+docker volume ls | grep uploads          # e.g. website_uploads
+docker run --rm -v website_uploads:/data -v ~/backups:/out \
   alpine tar czf /out/uploads-$(date +%F).tar.gz -C /data .
+ls -lh ~/backups/uploads-$(date +%F).tar.gz   # ~90 bytes means it caught nothing
 ```
 
 ## 1. Bring the code over
