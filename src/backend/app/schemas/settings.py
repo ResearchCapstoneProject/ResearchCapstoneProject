@@ -75,10 +75,6 @@ class VisitSettingsOut(CamelModel):
     # Days after a visit before the booking is deleted. 0 keeps them, which
     # is the default until the museum decides.
     booking_retention_days: int
-    # Whether the site still says it is a demonstration: the draft banner on
-    # the legal pages, the sample-content line in the footer, the wording in
-    # the staff area.
-    demo_mode: bool
     # Whether a confirmation can be sent at all; set in the server's .env,
     # not from this page.
     email_enabled: bool = False
@@ -94,7 +90,6 @@ class VisitSettingsUpdate(CamelModel):
     slot_minutes: int | None = None
     booking_window_days: int | None = Field(default=None, ge=1, le=365)
     booking_retention_days: int | None = Field(default=None, ge=0, le=3650)
-    demo_mode: bool | None = None
     tour_times: list[int] | None = None
 
     @field_validator("tour_times")

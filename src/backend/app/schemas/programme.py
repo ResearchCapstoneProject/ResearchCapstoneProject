@@ -1,15 +1,6 @@
 from .common import CamelModel
 
 
-class ExhibitionOut(CamelModel):
-    key: str
-    art: str
-    kind: str
-    dates: str
-    title: str
-    text: str
-
-
 class EventOut(CamelModel):
     # The id the "Book" button carries into the ticket flow.
     id: int
@@ -24,13 +15,3 @@ class EventOut(CamelModel):
     text: str = ""
     pdf: str = ""
 
-
-class TourOut(CamelModel):
-    id: str
-    title: str
-    mins: int
-    start: str
-    who: str
-    sub: str = ""
-    intro: str = ""
-    stops: list[str] = []

@@ -237,19 +237,17 @@ Three things worth knowing before you ask the museum for an account:
 
 In this order:
 
-1. **Staff → Settings → Going live** (admin). Deletes the records the project
-   invented and switches off every note that calls the site a demonstration.
-   `doc/ARCHITECTURE.md` lists what goes and what stays; the page itself says
-   it too, before you press anything.
-2. **Set a retention period** for booking data on the same page. 0 means keep;
-   the privacy notice states whichever is set.
-3. **`DEMO_RESET_ENABLED=0`** in `.env`, then `docker compose up -d`. "Reset
-   demo data" is the mirror image of going live — it deletes the real rows and
-   keeps the invented ones.
-4. **`SEED_ON_START=0`**, so nothing is topped up behind the museum.
+1. **Apply `doc/migrations/2026-11-06-remove-demonstration.sql`** if this
+   database was created before November 2026. It deletes the records the
+   project invented for the demonstration and drops what held them;
+   `doc/ARCHITECTURE.md` lists what goes and what stays. A database created
+   from `001_schema.sql` after that date never had them and needs nothing.
+2. **Set a retention period** for booking data in Staff → Settings. 0 means
+   keep; the privacy notice states whichever is set.
+3. **`SEED_ON_START=0`**, so nothing is topped up behind the museum.
 
-Steps 3 and 4 are the ones to do *after* the last presentation on this server,
-not before it.
+Step 3 is the one to do *after* the last presentation on this server, not
+before it.
 
 ## 7. If something is wrong
 

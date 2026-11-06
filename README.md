@@ -251,28 +251,23 @@ for; with a domain name that block can go. `COOKIE_SECURE=1` without HTTPS would
 of their own sign-in, so the two belong together.
 
 ### Going live
-Staff → Settings has a **Going live** section (admin only) that takes the demonstration out of the
-site in one step. It deletes the records the project invented — the sample bookings
-(`source='demo'`), the generated scan history (`source='seed'`) and what the staff area's simulate
-button produced (`source='staff_demo'`), plus the prototype's exhibitions and themed tours, which no
-page has rendered since Explore replaced them — and switches off every note that calls the site a
-demonstration: the draft banner on the imprint and privacy pages, the sample-content line in the
-footer, the wording in the staff area.
+There is nothing left to switch. The site carried a demonstration until November 2026 — invented
+bookings, a generated scan history, the prototype's exhibitions and themed tours, and a note on
+several pages saying that none of it was real — and a **Going live** button in Staff → Settings
+that deleted all of it in one step. That step has been applied to the code itself: the seeder no
+longer creates any of those records, the notes are gone, and the button with them. A database that
+was already running catches up with `doc/migrations/2026-11-06-remove-demonstration.sql`.
 
-It keeps everything that is the museum's: all 60 objects of the *Art and Crafts of Botswana*
-catalogue (every one carries its catalogue page, so none of them is sample content), the events from
-the museum's own material, publications, rewritten texts, replaced pictures, colours and fonts,
-visitor groups, settings, staff accounts, and every booking a visitor actually made. The deleted
-records cannot be brought back; the notes can, for a presentation, with one click in the same place.
+Everything that is the museum's was never part of it and is untouched: all 60 objects of the
+*Art and Crafts of Botswana* catalogue (every one carries its catalogue page), the events from the
+museum's own material, publications, texts, pictures, colours and fonts, visitor groups, settings,
+staff accounts, and every booking a visitor actually made.
 
-Two environment settings belong to the same step, because they are not the app's to change:
+What still belongs to the step, because it is not the app's to change:
 
-- **`DEMO_RESET_ENABLED=0`.** "Reset demo data" is the mirror image of going live: it deletes the
-  real rows and keeps the invented ones, which is what makes it useful for a presentation and
-  catastrophic afterwards. At 0 the API refuses it and the button is gone.
 - **`SEED_ON_START=0`** once the museum's own content is in, so nothing is topped up behind them.
 
-And set a **retention period** for booking data in the same page. It is 0 (keep) by default, because
+And set a **retention period** for booking data in Staff → Settings. It is 0 (keep) by default, because
 no deployment should start deleting records on a number a developer picked; the privacy notice states
 whichever is set.
 

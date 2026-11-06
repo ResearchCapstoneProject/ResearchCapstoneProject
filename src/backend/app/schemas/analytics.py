@@ -22,7 +22,9 @@ class NamedCount(CamelModel):
 class ScanStats(CamelModel):
     days: list[DayCount]
     by_room: list[NamedCount]
-    top_objects: list[NamedCount]
+    # Every published object, most scanned first. The chart shows the first
+    # few; the table under it shows all of them, so one list serves both.
+    objects: list[NamedCount]
     total: int
     labelled_objects: int
     average_per_day: float

@@ -88,11 +88,7 @@ table.data tr.new td { background: #FBF6E9; }
 .txtitem details { margin-top: 8px; color: var(--muted); }
 .txtitem details summary { cursor: pointer; }
 
-/* ---------- going live ---------- */
-.golive { margin: 0 0 28px; padding: 16px 18px; border: 1px solid var(--ochre); border-left-width: 3px; border-radius: var(--radius); background: var(--ochre-soft); }
-.golive.done { border-color: var(--ok); background: var(--ok-soft); }
-.golive-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 26px; margin-bottom: 14px; }
-.golive-cols ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 4px; color: var(--ink-2); }
-.golive .btn { margin-right: 10px; }
-.golive.mail { border-color: var(--sky); background: var(--sky-soft); }
-.golive.mail code { font-size: 13px; background: rgba(255,255,255,.6); padding: 1px 4px; border-radius: 3px; }
+/* ---------- a called-out block on the settings page ---------- */
+.setbox { margin: 0 0 28px; padding: 16px 18px; border: 1px solid var(--sky); border-left-width: 3px; border-radius: var(--radius); background: var(--sky-soft); }
+.setbox .btn { margin-right: 10px; }
+.setbox code { font-size: 13px; background: rgba(255,255,255,.6); padding: 1px 4px; border-radius: 3px; }

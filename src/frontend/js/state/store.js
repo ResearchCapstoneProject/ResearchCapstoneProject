@@ -9,14 +9,18 @@
 
    Two rules:
      1. Never `const { S } = store;` at module scope. That snapshots the
-        reference and goes stale the moment "Reset demo" or "tk-new"
-        replaces it. Destructuring inside a function body is fine.
+        reference and goes stale the moment "tk-new" replaces it.
+        Destructuring inside a function body is fine.
      2. This module imports nothing. It is what breaks the cycles between
         the data, view and event layers.
 ------------------------------------------------------------------- */
 export const store = {
   // --- persisted: { objects, bookings, scans } ---
   S: null,
+
+  // --- slot occupancy as the server counts it, 'YYYY-MM-DD@h:m' -> visitors.
+  //     Empty offline, where only this browser's own bookings are known.
+  AV: {},
 
   // --- ticket booking wizard ---
   T: null,

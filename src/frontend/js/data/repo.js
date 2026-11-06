@@ -34,7 +34,7 @@ function applyConfig(cfg) {
 import { applyTheme, contrastOnWhite, THEME } from '../core/theme.js';
 import { ApiError, Unreachable, probeHealth, request } from './api.js';
 import {
-  addNewSeedObjects, clearLocal, freshState, loadSeed, readLocal, writeLocal,
+  addNewSeedObjects, freshState, loadSeed, readLocal, writeLocal,
 } from './local.js';
 
 export const mode = () => store.api.mode;
@@ -90,6 +90,7 @@ export async function bootstrap() {
       setPublicBaseUrl(cfg.publicBaseUrl);
       store.api.user = await currentUser();
       store.S = await loadFromApi();
+      await refreshAvailability();
       return store.api.mode;
     } catch (e) {
       /* The probe said the API was up, then a call failed. api.js maps every
@@ -265,14 +266,23 @@ function fileToDataUrl(file) {
 
 // ----------------------------------------------------------------- bookings
 
-export async function availability(startKey, days) {
-  if (isOnline()) {
-    const qs = new URLSearchParams();
-    if (startKey) qs.set('start', startKey);
-    if (days) qs.set('days', String(days));
-    return call(() => request(`/availability?${qs}`));
-  }
-  return null;    // offline callers fall back to the local sampleOcc path
+/* How full every bookable slot is, as the server counts it, into store.AV
+   keyed 'YYYY-MM-DD@h:m'. The ticket page and the staff bookings page read
+   that map through state/booking.js rather than counting store.S.bookings,
+   which holds only what this browser knows about. Offline there is no count
+   to fetch and the map stays empty. */
+export async function refreshAvailability() {
+  if (!isOnline()) { store.AV = {}; return store.AV; }
+  // The pages show a fortnight, whatever the museum's booking window is, so
+  // ask for a fortnight: a slot the server has no count for would read as
+  // empty rather than as closed.
+  const days = await call(() => request('/availability?days=14'));
+  const map = {};
+  days.forEach((d) => d.slots.forEach((s) => {
+    map[`${d.date}@${s.hour}:${s.minute || 0}`] = s.taken;
+  }));
+  store.AV = map;
+  return map;
 }
 
 /* The ticket behind a code, for the link in the confirmation e-mail. Public,
@@ -294,6 +304,7 @@ export async function createBooking(payload) {
     const b = fromApi(await call(() =>
       request('/bookings', { method: 'POST', body: payload })));
     store.S.bookings.push(b);
+    await refreshAvailability();
     return b;
   }
   const code = 'BNM-' + Array.from({ length: 5 }, () =>
@@ -311,6 +322,7 @@ export async function deleteBooking(code) {
     request(`/staff/bookings/${encodeURIComponent(code)}`, { method: 'DELETE' }));
   const i = store.S.bookings.findIndex((b) => b.code === code);
   if (i >= 0) store.S.bookings.splice(i, 1);
+  await refreshAvailability();
 }
 
 /* Applies the retention period now instead of at the next restart. */
@@ -318,6 +330,7 @@ export async function purgeBookings() {
   if (!isOnline()) return offlineOnly();
   const out = await call(() => request('/staff/bookings/purge', { method: 'POST' }));
   store.S.bookings = await call(() => request('/staff/bookings'));
+  await refreshAvailability();
   return out;
 }
 
@@ -341,7 +354,11 @@ export async function checkIn(code) {
    capacity and the slot length the visitor-facing pages hold are the ones
    the museum just saved -- without a reload. */
 async function refreshConfig() {
-  return applyConfig(await call(() => request('/config')));
+  const cfg = applyConfig(await call(() => request('/config')));
+  // Capacity and slot length change what the slots are, so the counts the
+  // ticket page holds are about to be keyed on hours that no longer exist.
+  await refreshAvailability();
+  return cfg;
 }
 
 function offlineOnly() {
@@ -353,7 +370,7 @@ function offlineOnly() {
 
 export async function listTicketTypes() {
   if (isOnline()) return call(() => request('/staff/ticket-types'));
-  // Offline the staff page is read-only; show what the demo is using.
+  // Offline the staff page is read-only; show what the browser is using.
   return TICKETS.map((t) => ({
     key: t.key, name: t.name, desc: t.desc, priceThebe: t.price,
     addon: !!t.addon, active: true, sortOrder: 0, inUse: false,
@@ -382,17 +399,6 @@ export async function deleteTicketType(key) {
   const out = await call(() =>
     request(`/staff/ticket-types/${encodeURIComponent(key)}`, { method: 'DELETE' }));
   await refreshConfig();
-  return out;
-}
-
-/* Takes the demonstration out of the site: deletes the invented records and
-   switches the demo notes off. One way for the data, by design. */
-export async function goLive() {
-  if (!isOnline()) return offlineOnly();
-  const out = await call(() => request('/staff/go-live', { method: 'POST' }));
-  await refreshConfig();
-  const left = await call(() => request('/staff/bookings'));
-  store.S = { ...store.S, bookings: left.map(fromApi) };
   return out;
 }
 
@@ -662,19 +668,6 @@ export async function currentUser() {
     if (e instanceof Unreachable) throw e;
     return null;
   }
-}
-
-// --------------------------------------------------------------- demo reset
-
-export async function resetDemo() {
-  if (isOnline()) {
-    await call(() => request('/staff/demo/reset', { method: 'POST' }));
-    return bootstrap();
-  }
-  clearLocal();
-  store.S = freshState(await loadSeed());
-  writeLocal();
-  return 'offline';
 }
 
 export { getPublicBaseUrl };

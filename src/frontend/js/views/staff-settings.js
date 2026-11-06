@@ -3,14 +3,13 @@
    Everything the museum asked to be able to change without a developer:
    which admission groups exist and what they cost, how many places a slot
    holds, and how long a slot is. Reads and writes go through repo.js, so the
-   page is read-only in the offline demo, where there is no server to save to. */
+   page is read-only offline, where there is no server to save to. */
 import { staffShell } from './staff-shell.js';
 import { toast } from '../ui/toast.js';
 import { store } from '../state/store.js';
 import { $, esc } from '../core/dom.js';
 import { money } from '../core/format.js';
 import { CAPACITY, SLOT_MINUTES } from '../data/constants.js';
-import { DEMO_MODE } from '../data/constants.js';
 import { isOnline } from '../data/repo.js';
 import * as repo from '../data/repo.js';
 
@@ -49,7 +48,7 @@ function mailSection() {
   if (!admin || !isOnline()) return '';
   const on = !!(state.settings && state.settings.emailEnabled);
 
-  return `<section class="golive mail">
+  return `<section class="setbox">
     <h2 class="h3" style="margin:0 0 4px">E-mail</h2>
     <p class="small" style="margin:0 0 12px;max-width:72ch">${on
     ? 'Confirmations are being sent. A visitor who books gets their code and a link to their ticket.'
@@ -62,47 +61,6 @@ function mailSection() {
     </div>
     <button class="btn ghost" type="button" data-act="set-mailtest">Send the test message</button>
     <span class="small muted">· it says plainly whether it went, and why not</span>
-  </section>`;
-}
-
-/* Going live is an administrator's decision and it deletes records, so the
-   section says plainly what goes and -- the part people actually worry about
-   -- what stays. */
-function goLiveSection() {
-  const admin = !!(store.api.user && store.api.user.role === 'admin');
-  if (!admin || !isOnline()) return '';
-
-  if (!DEMO_MODE) {
-    return `<section class="golive done">
-      <h2 class="h3" style="margin:0 0 4px">This site is live</h2>
-      <p class="small muted" style="margin:0 0 10px;max-width:70ch">The demonstration records are gone and the notes
-        that called this a demonstration are switched off.</p>
-      <button class="btn link" type="button" data-act="set-demo-on">Show the demonstration notes again</button>
-      <span class="small muted">· for a presentation; it brings back the notes, not the deleted records.</span>
-    </section>`;
-  }
-
-  return `<section class="golive">
-    <h2 class="h3" style="margin:0 0 4px">Going live</h2>
-    <p class="small muted" style="margin:0 0 12px;max-width:70ch">While the site is a demonstration it carries invented
-      records and says so in several places. This removes both, in one step, when the museum is ready.</p>
-    <div class="golive-cols">
-      <div><b class="small">Deleted</b><ul class="small">
-        <li>the sample bookings the demonstration started with</li>
-        <li>the generated scan history and anything the “simulate scans” button produced</li>
-        <li>the prototype’s exhibitions and themed tours, which no page shows any more</li>
-        <li>the draft banner on the imprint and privacy pages, the “sample content” line in the footer, and the
-          demonstration wording on this page</li>
-      </ul></div>
-      <div><b class="small">Kept</b><ul class="small">
-        <li>all 60 objects of the <i>Art and Crafts of Botswana</i> catalogue — museum records, not samples</li>
-        <li>the events from the museum’s own material, and every event you added</li>
-        <li>publications, rewritten texts, replaced pictures, colours and fonts</li>
-        <li>visitor groups, settings, staff accounts, and every booking a visitor actually made</li>
-      </ul></div>
-    </div>
-    <button class="btn primary" type="button" data-act="set-golive">Take the demonstration out of the site</button>
-    <span class="small muted">· the deleted records cannot be brought back</span>
   </section>`;
 }
 
@@ -149,7 +107,6 @@ export function pageStaffSettings() {
       Slots start at opening time; a remainder shorter than one slot is left out so no slot runs past closing time.</p>
 
     ${mailSection()}
-    ${goLiveSection()}
 
     <form id="setform" class="formgrid" style="max-width:760px" novalidate>
       <div class="field"><label for="s-len">Slot length</label>
@@ -217,28 +174,6 @@ export async function sendTestMail(rerender) {
     }
   } catch (e) { toast(e.message || 'Could not send the test message.'); }
   if (rerender) rerender();
-}
-
-export async function goLive(rerender) {
-  if (!confirm('Remove the demonstration records? The sample bookings, the generated scan '
-    + 'history and the prototype’s exhibitions and tours are deleted. Objects, events, '
-    + 'publications, texts and real bookings stay. This cannot be undone.')) return;
-  try {
-    const out = await repo.goLive();
-    toast(`Done: ${out.bookings} sample booking(s), ${out.scans} scan record(s), `
-      + `${out.exhibitions} exhibition(s) and ${out.tours} tour(s) deleted.`);
-  } catch (e) { toast(e.message || 'Could not finish going live.'); }
-  invalidateSettings();
-  await bindSettings(rerender);
-}
-
-export async function setDemoNotes(on, rerender) {
-  try {
-    await repo.updateVisitSettings({ demoMode: on });
-    toast(on ? 'The demonstration notes are back.' : 'Demonstration notes switched off.');
-  } catch (e) { toast(e.message || 'Could not change that.'); }
-  invalidateSettings();
-  await bindSettings(rerender);
 }
 
 export async function purgeBookings(rerender) {

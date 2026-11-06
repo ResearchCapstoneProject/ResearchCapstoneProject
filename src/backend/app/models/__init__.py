@@ -2,7 +2,7 @@
 from .analytics import ScanEvent
 from .auth import AuditLog, StaffSession, StaffUser
 from .collection import DEPT_NAMES, InventoryCounter, MuseumObject, ObjectImage
-from .programme import Exhibition, MuseumEvent, Tour, TourStop
+from .programme import MuseumEvent
 from .reference import (
     Department,
     Holiday,
@@ -18,9 +18,9 @@ from .reference import (
 from .visits import Booking, BookingLine
 
 __all__ = [
-    "AuditLog", "Booking", "BookingLine", "DEPT_NAMES", "Department", "Exhibition",
+    "AuditLog", "Booking", "BookingLine", "DEPT_NAMES", "Department",
     "Holiday", "ImageOverride", "InventoryCounter", "Location", "MuseumEvent",
     "MuseumObject", "ObjectImage", "OpeningHours", "Publication", "Room",
     "ScanEvent", "Setting", "StaffSession", "StaffUser", "TextOverride",
-    "TicketType", "Tour", "TourStop",
+    "TicketType",
 ]

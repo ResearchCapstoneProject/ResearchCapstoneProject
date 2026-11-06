@@ -38,6 +38,17 @@ repo.onDegraded(() => {
   route();
 });
 
+/* A fresh page load that lands straight on an object page is a visitor who
+   scanned the QR code on its label -- `#/object/<id>` is the address the
+   printed labels carry. Navigating to the same page from inside the app does
+   not come through here, so browsing the collection is not counted as a scan.
+   The server stores no IP, only a hash that changes daily; see
+   services/privacy.py. */
+function countQrScan() {
+  const m = /^#\/object\/([^/?]+)/.exec(location.hash);
+  if (m) repo.recordScan(decodeURIComponent(m[1]), 'qr');
+}
+
 async function boot() {
   try {
     await repo.bootstrap();
@@ -53,6 +64,7 @@ async function boot() {
   initState();
   shell();
   route();
+  countQrScan();
   /* bootstrap() degrades without a toast, because there was no page to show
      one on. Say it now that there is. */
   if (store.api && store.api.degraded) {

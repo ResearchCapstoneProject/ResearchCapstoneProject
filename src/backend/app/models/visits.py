@@ -43,7 +43,7 @@ class Booking(Base):
     phone: Mapped[str] = mapped_column(String(32), default="")
     country: Mapped[str] = mapped_column(String(64), default="")
     source: Mapped[str] = mapped_column(
-        Enum("online", "desk", "demo", name="booking_source"), default="online"
+        Enum("online", "desk", name="booking_source"), default="online"
     )
     status: Mapped[str] = mapped_column(
         Enum("confirmed", "cancelled", name="booking_status"), default="confirmed"
