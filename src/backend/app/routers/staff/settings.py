@@ -14,10 +14,11 @@ from ...deps import require_role
 from ...errors import bad_request, conflict, not_found
 from ...models import BookingLine, StaffUser, TicketType
 from ...schemas.settings import (
-    TicketTypeAdminOut, TicketTypeCreate, TicketTypeUpdate,
+    MailTest, TicketTypeAdminOut, TicketTypeCreate, TicketTypeUpdate,
     VisitSettingsOut, VisitSettingsUpdate,
 )
-from ...services import audit, availability, golive, retention
+from ...config import settings as app_settings
+from ...services import audit, availability, golive, mail, retention
 
 router = APIRouter(tags=["staff:settings"])
 
@@ -140,6 +141,30 @@ def remove_ticket_type(key: str, db: Session = Depends(get_db),
 
 # ----------------------------------------------------------- visit settings
 
+@router.post("/mail-test")
+def mail_test(payload: MailTest, db: Session = Depends(get_db),
+              user: StaffUser = Depends(require_role("admin"))) -> dict:
+    """Send one message, so the museum can see whether its mail account works.
+
+    Reports what happened rather than raising: "nothing was sent" is the
+    answer the person at the screen needs, and the reason is in the API log.
+    """
+    sent = mail.send(
+        payload.to,
+        "Test message from the museum website",
+        "This is a test message from the Botswana National Museum website.\n\n"
+        "If you are reading it, the website can send e-mail: visitors will\n"
+        "receive their booking confirmation, with their code and a link to\n"
+        "their ticket.\n",
+        ref="mail-test",
+    )
+    audit.record(db, user_id=user.id, action="mail-test", entity="setting",
+                 entity_id="mail", detail={"sent": sent})
+    db.commit()
+    return {"sent": sent, "mode": app_settings.mail_mode,
+            "enabled": mail.enabled()}
+
+
 @router.post("/go-live")
 def go_live(db: Session = Depends(get_db),
             user: StaffUser = Depends(require_role("admin"))) -> dict:
@@ -160,6 +185,7 @@ def get_settings(db: Session = Depends(get_db)) -> VisitSettingsOut:
         booking_window_days=availability.window_days(db),
         booking_retention_days=retention.retention_days(db),
         demo_mode=golive.demo_mode(db),
+        email_enabled=mail.enabled(),
         tour_times=availability.tour_times(db),
         currency=availability.setting(db, "currency", "BWP"),
         slot_lengths=list(availability.SLOT_LENGTHS),

@@ -64,3 +64,6 @@ class ConfigOut(CamelModel):
     # False once the museum has gone live: the draft banner, the footer's
     # sample-content line and the staff area's demo wording disappear.
     demo_mode: bool = True
+    # Whether a confirmation can actually be sent. The ticket page promises an
+    # e-mail only where there is a mail account behind it.
+    email_enabled: bool = False

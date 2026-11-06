@@ -53,6 +53,21 @@ class TicketTypeUpdate(CamelModel):
         return v
 
 
+class MailTest(CamelModel):
+    to: str
+
+    @field_validator("to")
+    @classmethod
+    def looks_like_an_address(cls, v: str) -> str:
+        v = v.strip()
+        # The same rule as a visitor's address in schemas/bookings.py, so
+        # that nothing reaches the header builder which it would refuse.
+        if ("@" not in v or "." not in v.split("@")[-1]
+                or any(c.isspace() or not c.isprintable() for c in v)):
+            raise ValueError("Please enter a valid e-mail address.")
+        return v
+
+
 class VisitSettingsOut(CamelModel):
     capacity_per_slot: int
     slot_minutes: int
@@ -64,6 +79,9 @@ class VisitSettingsOut(CamelModel):
     # the legal pages, the sample-content line in the footer, the wording in
     # the staff area.
     demo_mode: bool
+    # Whether a confirmation can be sent at all; set in the server's .env,
+    # not from this page.
+    email_enabled: bool = False
     tour_times: list[int]
     currency: str
     # The lengths the UI may offer; anything else would leave slots that do
