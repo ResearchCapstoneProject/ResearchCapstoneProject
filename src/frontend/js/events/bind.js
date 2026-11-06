@@ -25,8 +25,11 @@ import {
   togglePublication, wirePublications,
 } from '../views/staff-publications.js';
 import { pageStaffImages, resetImage, wireImages } from '../views/staff-images.js';
+import {
+  pageStaffTexts, resetText, saveText, wireTexts,
+} from '../views/staff-texts.js';
 import { updatePreview } from '../views/staff-form.js';
-import { tkConfirm, tkRerender } from '../views/tickets.js';
+import { tkConfirm, tkNext, tkRerender } from '../views/tickets.js';
 import { store } from '../state/store.js';
 import { viewsOf } from '../art/registry.js';
 import { $ } from '../core/dom.js';
@@ -61,6 +64,11 @@ const rerenderPublications = () => {
 const rerenderImages = () => {
   $('#app').innerHTML = pageStaffImages();
   wireImages(rerenderImages);
+};
+
+const rerenderTexts = () => {
+  $('#app').innerHTML = pageStaffTexts();
+  wireTexts(rerenderTexts);
 };
 
 /* ---------------- events ---------------- */
@@ -132,12 +140,13 @@ document.addEventListener('click', (e) => {
       });
       tkRerender(); break;
     }
-    case 'tk-next': store.T.step += 1; tkRerender(true); break;
+    case 'tk-next': tkNext(); break;
     case 'tk-back':
       if (store.T.step === 3) { store.T.name = $('#f-name').value; store.T.email = $('#f-email').value; store.T.phone = $('#f-phone').value; store.T.country = $('#f-country').value; store.T.agree = $('#f-agree').checked; }
       store.T.step -= 1; store.T.err = {}; tkRerender(true); break;
     case 'tk-confirm': tkConfirm(); break;
     case 'tk-new': store.T = newT(); tkRerender(true); break;
+    case 'tk-noevent': store.T.eventId = null; tkRerender(); break;
     case 'ev-edit': editEvent(t.dataset.id, rerenderEvents); break;
     case 'ev-cancel': cancelEdit(rerenderEvents); break;
     case 'ev-toggle': toggleEvent(t.dataset.id, t.dataset.to === '1', rerenderEvents); break;
@@ -146,6 +155,8 @@ document.addEventListener('click', (e) => {
     case 'pub-toggle': togglePublication(t.dataset.id, t.dataset.to === '1', rerenderPublications); break;
     case 'pub-del': deletePublication(t.dataset.id, rerenderPublications); break;
     case 'im-reset': resetImage(t.dataset.path, rerenderImages); break;
+    case 'txt-save': saveText(t.dataset.key, rerenderTexts); break;
+    case 'txt-reset': resetText(t.dataset.key, rerenderTexts); break;
     case 'dsg-save': saveDesign(rerenderDesign); break;
     case 'dsg-discard': discardDesign(rerenderDesign); break;
     case 'dsg-reset': resetDesign(rerenderDesign); break;

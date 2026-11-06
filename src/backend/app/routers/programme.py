@@ -30,7 +30,7 @@ def exhibitions(db: Session = Depends(get_db)) -> list[ExhibitionOut]:
 def events(db: Session = Depends(get_db)) -> list[EventOut]:
     rows = (db.query(MuseumEvent).filter(MuseumEvent.is_published.is_(True))
             .order_by(MuseumEvent.event_date).all())
-    return [EventOut(d=e.event_date.isoformat(), time=e.time_label, kind=e.kind,
+    return [EventOut(id=e.id, d=e.event_date.isoformat(), time=e.time_label, kind=e.kind,
                      title=e.title, place=e.place, by=e.by_line,
                      text=e.body_text or "", pdf=e.pdf_url) for e in rows]
 

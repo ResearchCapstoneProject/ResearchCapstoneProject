@@ -174,6 +174,34 @@ it in place. That is also what makes the staff page's live preview reach the
 header while someone is still typing in a field -- re-rendering the shell
 would take the focus out of it.
 
+## Rewriting a text
+
+The museum can change any text the site carries as content, and the mechanism
+is the same idea as the picture swaps: an override keyed by where the thing
+lives, applied over the bundled original.
+
+The key is the **path into the content modules** -- `pagecopy.events.lede`,
+`explore.SITES.2.blocks.1.p.0`. `core/text.js` walks the modules once at load,
+which gives every string a key and remembers the original, then writes the
+museum's version over it before the first render. A named key per sentence was
+the alternative and is worse: somebody has to invent and maintain it, and the
+first text added without one is a text nobody can edit.
+
+Three consequences worth knowing. A text goes back to the original by
+deleting a row, with no second copy of the original anywhere. A key that has
+moved on (a text renamed in a later version) is ignored rather than applied
+somewhere random, because `assign()` only ever replaces a string that is
+already there. And the walk skips fields that are an address rather than
+prose -- `key`, `id`, `href`, `cover`, `pdf` and friends -- so the editor
+cannot break a lookup or a link; `SKIP_FIELDS` in `core/text.js` is that
+list, and it is the thing to extend when a new content field appears.
+
+What this does not cover, deliberately: the words the interface is made of.
+Those live in the templates, and an editor for them buys a half-rewritten
+screen for no museum benefit. It is also why `data/pagecopy.js` exists -- the
+page headings and introductions moved out of the templates and into a data
+module, which is what made them editable at all.
+
 ## Replacing a picture
 
 The site renders photographs in a dozen templates, and some build their path

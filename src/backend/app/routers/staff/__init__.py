@@ -8,7 +8,8 @@ from fastapi import APIRouter, Depends
 
 from ...deps import require_staff
 from . import (
-    bookings, demo, events, images, objects, publications, settings, stats, theme,
+    bookings, demo, events, images, objects, publications, settings, stats,
+    texts, theme,
 )
 
 router = APIRouter(prefix="/api/staff", dependencies=[Depends(require_staff)])
@@ -20,4 +21,5 @@ router.include_router(theme.router)
 router.include_router(events.router)
 router.include_router(publications.router)
 router.include_router(images.router)
+router.include_router(texts.router)
 router.include_router(demo.router)

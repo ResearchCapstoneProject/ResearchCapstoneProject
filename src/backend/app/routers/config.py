@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 from ..config import settings
 from ..db import get_db
 from ..models import (
-    Department, Holiday, ImageOverride, Location, OpeningHours, Room, TicketType,
+    Department, Holiday, ImageOverride, Location, OpeningHours, Room,
+    TextOverride, TicketType,
 )
 from ..schemas.reference import (
     ConfigOut, DepartmentOut, LocationOut, RoomOut, TicketTypeOut,
@@ -57,4 +58,5 @@ def get_config(db: Session = Depends(get_db)) -> ConfigOut:
         theme=ThemeOut(**theme.resolved(db)),
         image_overrides={r.asset_path: images.url_for(r.filename)
                          for r in db.query(ImageOverride).all()},
+        texts={r.text_key: r.value for r in db.query(TextOverride).all()},
     )

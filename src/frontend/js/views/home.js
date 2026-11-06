@@ -11,6 +11,7 @@ import { published } from '../state/selectors.js';
 import { craftOf } from '../state/query.js';
 import { esc } from '../core/dom.js';
 import { THEME } from '../core/theme.js';
+import { PAGE_COPY } from '../data/pagecopy.js';
 
 /* The museum building, in several widths so every screen gets a sharp copy
    without downloading the 6000px original. */
@@ -54,8 +55,8 @@ export function pageHome() {
     ${heroImg()}
     <div class="wrap">
       <div class="pcopy">
-        <div class="eyebrow">Department of National Museum and Monuments · Gaborone</div>
-        <h1>Botswana National Museum</h1>
+        <div class="eyebrow">${esc(PAGE_COPY.home.eyebrow)}</div>
+        <h1>${esc(PAGE_COPY.home.headline)}</h1>
         <p>${esc(ABOUT[0])}</p>
         <div class="ctas"><a class="btn sky" href="#/visit">Plan your visit</a><a class="btn ghost light" href="#/collection">Explore the collection</a></div>
       </div>

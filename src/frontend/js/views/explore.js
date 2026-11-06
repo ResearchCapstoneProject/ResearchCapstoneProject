@@ -6,6 +6,7 @@ import { esc } from '../core/dom.js';
 import {
   MUSEUMS_TEXT, SECTIONS, SITES, TRAILS, hasPage, sectionByKey, siteById, siteHref, sitesIn, trailById,
 } from '../data/explore.js';
+import { PAGE_COPY } from '../data/pagecopy.js';
 
 const marker = (s) => ({ pos: s.pos, name: s.name, href: hasPage(s) ? siteHref(s) : null, kind: s.section });
 const trailMarker = (t) => ({ pos: t.pos, name: t.name, href: `#/explore/trails/${t.id}`, kind: 'trails' });
@@ -20,7 +21,7 @@ const trailCard = (t) => card({ href: `#/explore/trails/${t.id}`, img: t.photo, 
 /* ---------------- #/explore ---------------- */
 export function pageExplore() {
   const all = SITES.filter((s) => s.section !== 'herbarium');
-  return `${pagehead([['#/', 'Home'], ['', 'Explore']], 'Explore', 'Botswana’s heritage beyond the museum building: national monuments, other museums, the National Botanical Garden and Herbarium, World Heritage Sites and the heritage trails that connect them.')}
+  return `${pagehead([['#/', 'Home'], ['', esc(PAGE_COPY.explore.title)]], esc(PAGE_COPY.explore.title), 'Botswana’s heritage beyond the museum building: national monuments, other museums, the National Botanical Garden and Herbarium, World Heritage Sites and the heritage trails that connect them.')}
   <div class="wrap" style="padding-block:32px 72px">
     ${mapbox([...all.map(marker), ...TRAILS.map(trailMarker)], { tall: true, label: 'Map of heritage places in Botswana' })}
     <p class="small muted maplegend"><span class="dot blue"></span>Monuments and sites <span class="dot orange"></span>Museums and trails <span class="dot dark"></span>Botanical Garden &amp; Herbarium</p>

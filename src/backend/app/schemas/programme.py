@@ -11,6 +11,8 @@ class ExhibitionOut(CamelModel):
 
 
 class EventOut(CamelModel):
+    # The id the "Book" button carries into the ticket flow.
+    id: int
     d: str        # 'YYYY-MM-DD', the key the prototype uses
     time: str
     kind: str

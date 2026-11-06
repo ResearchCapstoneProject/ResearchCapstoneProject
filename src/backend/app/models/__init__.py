@@ -12,6 +12,7 @@ from .reference import (
     Publication,
     Room,
     Setting,
+    TextOverride,
     TicketType,
 )
 from .visits import Booking, BookingLine
@@ -20,6 +21,6 @@ __all__ = [
     "AuditLog", "Booking", "BookingLine", "DEPT_NAMES", "Department", "Exhibition",
     "Holiday", "ImageOverride", "InventoryCounter", "Location", "MuseumEvent",
     "MuseumObject", "ObjectImage", "OpeningHours", "Publication", "Room",
-    "ScanEvent", "Setting", "StaffSession", "StaffUser", "TicketType", "Tour",
-    "TourStop",
+    "ScanEvent", "Setting", "StaffSession", "StaffUser", "TextOverride",
+    "TicketType", "Tour", "TourStop",
 ]

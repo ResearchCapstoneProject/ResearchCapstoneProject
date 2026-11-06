@@ -94,6 +94,15 @@ class Publication(Base):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
 
+class TextOverride(Base):
+    """A text the museum rewrote: path into the content modules -> new text."""
+
+    __tablename__ = "text_override"
+    text_key: Mapped[str] = mapped_column(String(191), primary_key=True)
+    value: Mapped[str] = mapped_column(Text)
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
 class ImageOverride(Base):
     """A picture the museum replaced: bundled path -> uploaded file."""
 

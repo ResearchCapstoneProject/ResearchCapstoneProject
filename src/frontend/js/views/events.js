@@ -1,6 +1,8 @@
 import { eventRow, pagehead } from '../ui/cards.js';
 import { eventsAll } from '../state/selectors.js';
 import { dkey } from '../core/format.js';
+import { PAGE_COPY } from '../data/pagecopy.js';
+import { esc } from '../core/dom.js';
 
 /* Split on today's date, so an event moves to "Past events" by itself. */
 export function splitEvents() {
@@ -11,7 +13,7 @@ export function splitEvents() {
 
 export function pageEvents() {
   const { upcoming, past } = splitEvents();
-  return `${pagehead([['#/', 'Home'], ['', 'Events']], 'Events', 'Talks, tours, workshops and community events for all ages.')}
+  return `${pagehead([['#/', 'Home'], ['', esc(PAGE_COPY.events.title)]], esc(PAGE_COPY.events.title), esc(PAGE_COPY.events.lede))}
   <div class="wrap" style="padding-block:40px 32px">
     <h2 class="h3" style="margin-bottom:16px">Upcoming events</h2>
     ${upcoming.length ? `<div class="events">${upcoming.map((e) => eventRow(e)).join('')}</div>` : '<p class="muted">No upcoming events are listed at the moment.</p>'}

@@ -128,6 +128,20 @@ on their next load without a deployment.
   the museum's own file back at any time. The list is scanned out of the content modules rather than
   hand-kept, so a photo added to a monument next year appears here by itself. Object photographs
   stay with the object; the logo and the home-page picture are in Appearance.
+- **Texts** (`#/staff/texts`, curators): every text the site carries as content — page
+  introductions, the history, the vision and mission, every monument, museum and trail, the
+  publication sections. A few hundred of them, so the page is a search: pick a section, type a word,
+  edit what comes back. "Back to the original" always works, because the museum's own wording stays
+  in the site's modules underneath. Not editable on purpose: the words the interface is made of
+  (buttons, table headings, step names) — a half-rewritten interface is worse than a fixed one.
+
+### Booking an event
+"Book" on an event leads to `#/tickets/event/<id>`: the ticket page says which event is being
+booked, preselects that day and the slot the event starts in, and the booking carries the event to
+the front desk, which sees "for &lt;the event&gt;" next to the code. An event on a closed day says so
+instead of silently preselecting nothing. The visitor booking goes to `POST /api/bookings`, so the
+code, the total and the capacity check come from the server — offline it still stays in the
+browser, which is what the demo profile shows.
 
 ## Layout
 ```

@@ -12,6 +12,8 @@ class BookingCreate(CamelModel):
     minute: int = Field(default=0, ge=0, le=59)
     # ticket_key -> quantity, e.g. {"res": 2, "child": 1, "intl": 0, "tour": 0}
     q: dict[str, int]
+    # Set when the visitor came from an event's "Book" button.
+    event_id: int | None = None
     name: str
     email: str
     phone: str = ""
@@ -52,6 +54,9 @@ class BookingCreate(CamelModel):
 
 
 class BookingOut(CamelModel):
+    # Filled in below the other fields; see booking_out() in routers/bookings.py.
+    event_id: int | None = None
+    event_title: str = ""
     code: str
     date: str
     hour: int

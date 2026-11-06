@@ -29,6 +29,13 @@ class Booking(Base):
     # Slot length is configurable, so the start minute is part of the slot
     # identity. 0 for the hourly slots the museum starts with.
     visit_minute: Mapped[int] = mapped_column(default=0)
+    # The event the visitor booked from, if any.
+    event_id: Mapped[int | None] = mapped_column(
+        ForeignKey("museum_event.id", ondelete="SET NULL"), nullable=True,
+        default=None)
+    # Joined eagerly: the staff list renders the event's title next to every
+    # booking, and a lazy load there would be one query per row.
+    event = relationship("MuseumEvent", lazy="joined")
     visitors: Mapped[int] = mapped_column(SmallInteger)
     total_thebe: Mapped[int] = mapped_column()
     visitor_name: Mapped[str] = mapped_column(String(128))
