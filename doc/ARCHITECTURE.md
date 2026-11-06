@@ -205,6 +205,32 @@ What is deliberately not here: the demo reset. It deletes everything that is
 server with the museum's records on it, so `DEMO_RESET_ENABLED=0` turns it
 off and `GET /api/config` tells the staff area to stop offering the button.
 
+## E-mail
+
+`services/mail.py` has three modes, and the middle one is why the wording in
+the interface can be trusted: `off` sends nothing **and** tells the frontend
+so through `GET /api/config`, `outbox` writes the message to a file, `smtp`
+hands it to a server. A deployment without a mail account therefore needs no
+code change, and nobody has to take "the e-ticket has been sent" on faith
+while nothing is configured.
+
+Two rules in that module matter more than the wording:
+
+**A message never fails a booking.** Sending happens in a FastAPI background
+task, after the response, and every exception is caught and logged. The
+visitor has a slot, a code and a ticket on screen; a mail server that is down
+must not turn that into an error. The confirmation builder takes plain values
+rather than the `Booking` row, because the request's session is closed by the
+time the task runs and a detached row would raise on the first attribute it
+had not loaded.
+
+**The link in the mail does not leak the visitor's record.**
+`GET /api/bookings/{code}` is public -- it has to be, it is that link -- so it
+answers with `TicketOut`: code, day, slot, tickets, visitors, name, event. No
+e-mail address, no phone number, no country. The name stays because it is on
+the ticket the visitor is holding, and the code is random enough to be the
+only key, the same arrangement as a flight reference.
+
 ## Going live
 
 `services/golive.py` is the other direction, and the module's docstring is

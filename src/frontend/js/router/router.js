@@ -21,6 +21,7 @@ import {
 import { bindImages, pageStaffImages, wireImages } from '../views/staff-images.js';
 import { bindTexts, pageStaffTexts, wireTexts } from '../views/staff-texts.js';
 import { pageTickets, startEventBooking } from '../views/tickets.js';
+import { bindTicket, pageTicket } from '../views/ticket.js';
 import { pageDepartment, pageDepartments } from '../views/departments.js';
 import { pageImprint, pagePrivacy } from '../views/legal.js';
 import { pageExplore, pageExploreRoute } from '../views/explore.js';
@@ -78,6 +79,13 @@ export function route() {
     /* #/tickets/event/<id> is where an event's Book button lands: the wizard
        starts on that event, and the address goes back to #/tickets so a
        reload does not start it over again. */
+    /* #/ticket/<code> is the link in the confirmation e-mail. */
+    case 'ticket': {
+      html = pageTicket(b); title = 'Your ticket';
+      const again = () => { $('#app').innerHTML = pageTicket(b); };
+      after = () => bindTicket(b, again);
+      break;
+    }
     case 'tickets':
       if (b === 'event' && c) { startEventBooking(c); history.replaceState(null, '', '#/tickets'); }
       else if (store.T.step === 4) store.T = newT();

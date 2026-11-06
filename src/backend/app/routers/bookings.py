@@ -1,16 +1,17 @@
 """Availability and the booking write path."""
 from datetime import date, timedelta
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 from sqlalchemy.orm import Session
 
-from ..db import get_db
+from ..config import settings
+from ..db import SessionLocal, get_db
 from ..errors import bad_request, conflict, not_found
 from ..models import Booking, BookingLine, MuseumEvent, TicketType
 from ..schemas.bookings import (
-    BookingCreate, BookingOut, DayAvailability, SlotOut,
+    BookingCreate, BookingOut, DayAvailability, SlotOut, TicketOut,
 )
-from ..services import availability, booking_codes
+from ..services import availability, booking_codes, mail
 
 router = APIRouter(prefix="/api", tags=["visits"])
 
@@ -58,7 +59,8 @@ def get_availability(
 
 
 @router.post("/bookings", response_model=BookingOut, status_code=201)
-def create_booking(payload: BookingCreate, db: Session = Depends(get_db)) -> BookingOut:
+def create_booking(payload: BookingCreate, background: BackgroundTasks,
+                   db: Session = Depends(get_db)) -> BookingOut:
     tickets = {t.ticket_key: t for t in db.query(TicketType)
                .filter(TicketType.is_active.is_(True)).all()}
     unknown = set(payload.q) - set(tickets)
@@ -130,12 +132,63 @@ def create_booking(payload: BookingCreate, db: Session = Depends(get_db)) -> Boo
                                unit_price_thebe=tickets[k].price_thebe))
     db.commit()
     db.refresh(booking)
+
+    # After the response, and never fatal: see services/mail.py. The visitor
+    # has the code on screen either way.
+    if mail.enabled():
+        background.add_task(send_confirmation, booking.code, booking.email,
+                            booking.visitor_name, booking.visit_date.isoformat(),
+                            booking.visit_hour, booking.visit_minute,
+                            booking.visitors, booking.total_thebe,
+                            {l.ticket_key: l.qty for l in booking.lines},
+                            booking.event.title if booking.event else "")
     return booking_out(booking)
 
 
-@router.get("/bookings/{code}", response_model=BookingOut)
-def get_booking(code: str, db: Session = Depends(get_db)) -> BookingOut:
+def send_confirmation(code: str, to: str, name: str, day: str, hour: int,
+                      minute: int, visitors: int, total_thebe: int,
+                      q: dict[str, int], event_title: str) -> None:
+    """Runs after the response, with its own session.
+
+    The values are passed in rather than the Booking row: the request's
+    session is closed by the time this runs, and a detached row would raise
+    on the first attribute it had not loaded.
+    """
+    with SessionLocal() as db:
+        names = {t.ticket_key: t.name for t in db.query(TicketType).all()}
+        length = availability.slot_minutes(db)
+
+    start = f"{hour:02d}:{minute:02d}"
+    end_total = hour * 60 + minute + length
+    end = f"{(end_total // 60) % 24:02d}:{end_total % 60:02d}"
+    lines = ", ".join(f"{n} × {names.get(k, k)}" for k, n in q.items() if n)
+    total = ("free" if not total_thebe
+             else f"BWP {total_thebe / 100:.2f} at the front desk")
+    base = settings.public_base_url.rstrip("/")
+
+    mail.send(
+        to,
+        f"Your visit to the Botswana National Museum · {code}",
+        mail.ticket_text(
+            code=code, name=name or "visitor", date_label=day,
+            time_label=f"{start} – {end}", visitors=visitors, lines=lines,
+            total_label=total, event_title=event_title,
+            ticket_url=f"{base}/#/ticket/{code}",
+        ),
+        ref=code,
+    )
+
+
+@router.get("/bookings/{code}", response_model=TicketOut)
+def get_booking(code: str, db: Session = Depends(get_db)) -> TicketOut:
+    """The ticket behind a code. Public: it is the link in the e-mail."""
     b = db.query(Booking).filter(Booking.code == code.upper()).one_or_none()
     if b is None:
         raise not_found("No booking with that code.")
-    return booking_out(b)
+    return TicketOut(
+        code=b.code, date=b.visit_date.isoformat(), hour=b.visit_hour,
+        minute=b.visit_minute, q={l.ticket_key: l.qty for l in b.lines},
+        visitors=b.visitors, total_thebe=b.total_thebe, name=b.visitor_name,
+        event_title=b.event.title if b.event else "",
+        checked_in=b.checked_in,
+    )

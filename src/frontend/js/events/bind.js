@@ -10,7 +10,7 @@ import { renderResults } from '../views/collection.js';
 import { pageStaffBookings } from '../views/staff-bookings.js';
 import {
   addGroup, deleteGroup, goLive, pageStaffSettings, purgeBookings,
-  saveGroupPrice, saveVisitSettings, setDemoNotes, toggleGroup,
+  saveGroupPrice, saveVisitSettings, sendTestMail, setDemoNotes, toggleGroup,
 } from '../views/staff-settings.js';
 import {
   discardDesign, pageStaffDesign, resetDesign, resetDesignFont,
@@ -157,6 +157,7 @@ document.addEventListener('click', (e) => {
     case 'im-reset': resetImage(t.dataset.path, rerenderImages); break;
     case 'set-purge': purgeBookings(rerenderSettings); break;
     case 'set-golive': goLive(rerenderSettings); break;
+    case 'set-mailtest': sendTestMail(rerenderSettings); break;
     case 'set-demo-on': setDemoNotes(true, rerenderSettings); break;
     case 'bk-del':
       if (confirm('Delete this booking? The visitor\'s name, e-mail address and phone number are removed with it.')) {

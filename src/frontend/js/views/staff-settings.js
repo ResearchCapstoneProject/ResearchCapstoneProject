@@ -40,6 +40,31 @@ function groupRow(g) {
   </tr>`;
 }
 
+/* Whether the museum's mail account works is a question only a real message
+   can answer, so the page offers to send one. Switching e-mail on is not in
+   here: it needs the account's host, user and password, which belong in the
+   server's .env and not in a form on a web page. */
+function mailSection() {
+  const admin = !!(store.api.user && store.api.user.role === 'admin');
+  if (!admin || !isOnline()) return '';
+  const on = !!(state.settings && state.settings.emailEnabled);
+
+  return `<section class="golive mail">
+    <h2 class="h3" style="margin:0 0 4px">E-mail</h2>
+    <p class="small" style="margin:0 0 12px;max-width:72ch">${on
+    ? 'Confirmations are being sent. A visitor who books gets their code and a link to their ticket.'
+    : 'Not switched on, so the ticket page does not promise a confirmation. It takes the museum’s mail '
+      + 'account in the server’s <code>.env</code> — <code>MAIL_MODE=smtp</code>, <code>SMTP_HOST</code>, '
+      + 'user and password; <code>doc/DEPLOY.md</code> has the lines.'}</p>
+    <div class="formgrid" style="max-width:620px;margin-bottom:12px">
+      <div class="field"><label for="s-mailto">Send a test message to</label>
+        <input id="s-mailto" type="email" placeholder="you@example.org" autocomplete="email"></div>
+    </div>
+    <button class="btn ghost" type="button" data-act="set-mailtest">Send the test message</button>
+    <span class="small muted">· it says plainly whether it went, and why not</span>
+  </section>`;
+}
+
 /* Going live is an administrator's decision and it deletes records, so the
    section says plainly what goes and -- the part people actually worry about
    -- what stays. */
@@ -123,6 +148,7 @@ export function pageStaffSettings() {
     <p class="muted" style="margin:0 0 18px">How the opening hours are divided, and how many visitors may enter per slot.
       Slots start at opening time; a remainder shorter than one slot is left out so no slot runs past closing time.</p>
 
+    ${mailSection()}
     ${goLiveSection()}
 
     <form id="setform" class="formgrid" style="max-width:760px" novalidate>
@@ -173,6 +199,25 @@ export function invalidateSettings() { state.groups = null; state.settings = nul
 /* ---- actions, called from events/bind.js ---- */
 
 const pula = (el) => Math.round(Number(el.value || 0) * 100);
+
+export async function sendTestMail(rerender) {
+  const el = $('#s-mailto');
+  const to = (el && el.value || '').trim();
+  if (!to.includes('@')) { toast('Please enter an e-mail address.'); if (el) el.focus(); return; }
+  try {
+    const out = await repo.sendTestMail(to);
+    if (out.sent && out.mode === 'outbox') {
+      toast('Written to the server’s outbox folder — nothing left the machine (MAIL_MODE=outbox).');
+    } else if (out.sent) {
+      toast(`Sent to ${to}. If it does not arrive, look in the spam folder first.`);
+    } else if (!out.enabled) {
+      toast('E-mail is switched off on this server (MAIL_MODE=off).');
+    } else {
+      toast('The server could not send it. The reason is in the API log: docker compose logs api');
+    }
+  } catch (e) { toast(e.message || 'Could not send the test message.'); }
+  if (rerender) rerender();
+}
 
 export async function goLive(rerender) {
   if (!confirm('Remove the demonstration records? The sample bookings, the generated scan '
