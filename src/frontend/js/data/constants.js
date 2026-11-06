@@ -60,6 +60,9 @@ export let RETENTION_DAYS = 0;
    legal pages, the sample-content line in the footer, the wording in the
    staff area. Going live switches it off. */
 export let DEMO_MODE = true;
+/* Whether the server can send a confirmation. The ticket page promises one
+   only when it can. */
+export let EMAIL_ENABLED = false;
 export const TOUR_TIMES = [];
 export const HOLIDAYS = { '09-30': 'Botswana Day', '10-01': 'Public holiday', '12-25': 'Christmas' };
 /* Prices are in THEBE (100 thebe = 1 pula), matching price_thebe in the
@@ -175,5 +178,6 @@ export function applyServerConfig(cfg) {
   if (typeof cfg.demoResetEnabled === 'boolean') DEMO_RESET = cfg.demoResetEnabled;
   if (typeof cfg.bookingRetentionDays === 'number') RETENTION_DAYS = cfg.bookingRetentionDays;
   if (typeof cfg.demoMode === 'boolean') DEMO_MODE = cfg.demoMode;
+  if (typeof cfg.emailEnabled === 'boolean') EMAIL_ENABLED = cfg.emailEnabled;
   if (cfg.tourTimes) { TOUR_TIMES.length = 0; TOUR_TIMES.push(...cfg.tourTimes); }
 }

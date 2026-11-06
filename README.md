@@ -90,6 +90,47 @@ With no API reachable the site runs from `src/frontend/assets/seed/*.json` and k
 changes in the browser's localStorage. Everything works except the things that need a
 server: real sign-in, uploads and shared data.
 
+### Trying the confirmation e-mail
+No mail account needed, and nothing leaves the machine:
+
+```bash
+docker compose --profile mail up -d
+```
+
+Then in `.env`:
+
+```
+MAIL_MODE=smtp
+SMTP_HOST=mailpit
+SMTP_PORT=1025
+SMTP_STARTTLS=0
+MAIL_FROM=Botswana National Museum <no-reply@example.org>
+```
+
+```bash
+docker compose up -d && docker compose restart api
+```
+
+> **A changed `.env` needs `up -d`, not `restart`.** The API reads its settings from the
+> container's environment, and Compose sets that **when the container is created** (`env_file: .env`
+> in `docker-compose.yml`); the repository root is not mounted into the container, so there is no
+> `.env` file in there to re-read. `docker compose restart api` therefore keeps the old values and
+> looks exactly like "nothing happened". `docker compose up -d` recreates the container with the new
+> ones; `docker compose exec api env | grep MAIL` says which values it actually has.
+
+Book a visit, then open **http://localhost:8025**: the confirmation is there, with its code and the
+link to the ticket. The same inbox catches the test message from Staff → Settings → E-mail. This is
+also the honest way to show the museum what a visitor receives before anyone asks their IT for an
+account.
+
+`MAIL_MODE=outbox` is the smaller variant: messages are written to `MAIL_OUTBOX_DIR` as files
+(`docker compose exec api sh -c 'ls -t /data/outbox | head'`), with no extra container. Keep that
+directory out of `UPLOAD_DIR` — uploads are served at `/uploads`.
+
+Both of those are local only, and `no-reply@example.org` above is a placeholder for exactly that
+reason. Real sending uses the project's own mailbox, `botswana-national-museum@gmx.net`; that
+account, and why it is an interim arrangement rather than the destination, is in `doc/DEPLOY.md`.
+
 ### Showing the offline fallback
 ```bash
 docker compose --profile demo up
@@ -155,7 +196,8 @@ Two things differ from a local run, and both have cost us a broken site already.
   frontend visitors get *immediately*, while the API keeps running the old code until its
   container is restarted. In between, a new frontend talks to an old API.
 
-Deploy in this order and the three never disagree:
+`doc/DEPLOY.md` is the full procedure, including the backup to take first and the two-step HTTPS
+switch. The short version, and the order that matters:
 
 ```bash
 git pull
@@ -389,7 +431,14 @@ sign-in, object CRUD, image upload and booking check-in.
 Payment is taken at the front desk only; the site never charges online, by
 decision rather than for lack of a provider.
 
-Still simulated, and deliberately labelled as such in the interface: e-ticket e-mail, the newsletter, the audio guide, Setswana, and the AR page. They are listed in one place, `FEATURES` in
+E-mail works, and is off until the museum's mail account is in the server's `.env` (`MAIL_MODE`,
+`SMTP_HOST`, user and password — `doc/DEPLOY.md` has the lines and a test button in the staff area).
+Until then the ticket page promises no confirmation rather than claiming one was sent. A booking
+confirmation carries the code, the day, the slot, the tickets, the event if there was one, and a link
+to `#/ticket/<code>` — the same e-ticket with its QR code, looked up by the code alone.
+
+Still simulated, and deliberately labelled as such in the interface: the newsletter, the audio guide,
+Setswana, and the AR page. They are listed in one place, `FEATURES` in
 `src/frontend/js/core/config.js`.
 
 Open questions for the museum are in `TODO.md`.

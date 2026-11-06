@@ -4,7 +4,7 @@ import { $, esc } from '../core/dom.js';
 import { dkey, fmtDate, fromKey, hh, money } from '../core/format.js';
 import { qrSVG } from '../core/qr.js';
 import { isPast, nextDays } from '../core/time.js';
-import { CAPACITY, SLOT_MINUTES, TICKETS, TOUR_TIMES } from '../data/constants.js';
+import { CAPACITY, EMAIL_ENABLED, SLOT_MINUTES, TICKETS, TOUR_TIMES } from '../data/constants.js';
 import { holiday, hoursFor, slotEnd, slotLabel, slotStarts } from '../data/opening.js';
 import { leftIn, newT, totalOf, visitorsOf } from '../state/booking.js';
 import { eventsAll } from '../state/selectors.js';
@@ -177,7 +177,9 @@ export function tkBody() {
   return `<div>
     <div class="eyebrow" style="margin-bottom:8px">Booking confirmed</div>
     <h2 class="h2" style="font-size:34px;margin-bottom:10px">Re a leboga – see you soon!</h2>
-    <p class="lede" style="margin:0 0 28px">Your e-ticket has been sent to ${esc(b.email)}. Show the QR code at the entrance.</p>
+    <p class="lede" style="margin:0 0 28px">${EMAIL_ENABLED && b.email
+    ? `Your e-ticket is on its way to ${esc(b.email)}. Show the QR code at the entrance.`
+    : 'Show the QR code at the entrance, or keep your booking code. E-mail confirmations are not switched on yet.'}</p>
     <div class="eticket">
       <div class="l">
         <div class="flagrule" aria-hidden="true"></div>
@@ -193,7 +195,9 @@ export function tkSummary() {
   if (store.T.step === 4) {
     return `<aside class="summary" aria-label="Before your visit"><h3>Before your visit</h3>
       <ul class="small" style="margin:0;padding-left:18px;display:grid;gap:8px"><li>Arrive within your entry slot – you can stay until closing.</li><li>Show this code at the front desk; admission is free.</li><li>Anything that is not free is paid at the front desk.</li></ul>
-      <p class="fine">E-mail confirmations are not available yet, and nothing is charged online.</p></aside>`;
+      <p class="fine">${EMAIL_ENABLED
+    ? 'The confirmation is sent to the address you gave; nothing is charged online.'
+    : 'E-mail confirmations are not available yet, and nothing is charged online.'}</p></aside>`;
   }
   const vis = visitorsOf(store.T.q); const total = totalOf(store.T.q);
   const lines = TICKETS.filter((t) => store.T.q[t.key]).map((t) => `<dt>${store.T.q[t.key]} × ${esc(t.name)}</dt><dd>${money(t.price * store.T.q[t.key])}</dd>`).join('');
@@ -207,7 +211,9 @@ export function tkSummary() {
       ${lines}
     </dl>
     <div class="total"><span>Total</span><span>${vis ? (total ? money(total) : 'Free') : '–'}</span></div>
-    <p class="fine">Nothing is charged online. Anything payable is settled at the front desk.</p>
+    <p class="fine">${EMAIL_ENABLED
+    ? 'Your confirmation is sent to the e-mail address you give. '
+    : 'E-mail confirmations are not available yet. '}Nothing is charged online; anything payable is settled at the front desk.</p>
   </aside>`;
 }
 export async function tkConfirm() {

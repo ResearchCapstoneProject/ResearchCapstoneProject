@@ -10,8 +10,9 @@
 --
 -- Then restart the API: docker compose restart api
 --
--- Safe to run twice. Apply it after 2026-11-05-site-content.sql, which is
--- where museum_event gained its other columns.
+-- Safe to run twice, and the order among the migrations of the same date does
+-- not matter: museum_event has existed since the first schema, and each file
+-- checks for itself what is already there.
 -- ---------------------------------------------------------------------------
 
 SET @sql := IF((SELECT COUNT(*) FROM information_schema.columns

@@ -12,7 +12,7 @@ from ..schemas.reference import (
     ConfigOut, DepartmentOut, LocationOut, RoomOut, TicketTypeOut,
 )
 from ..schemas.theme import ThemeOut
-from ..services import availability, golive, images, retention, theme
+from ..services import availability, golive, images, mail, retention, theme
 
 router = APIRouter(prefix="/api", tags=["config"])
 
@@ -62,4 +62,5 @@ def get_config(db: Session = Depends(get_db)) -> ConfigOut:
         demo_reset_enabled=settings.demo_reset_enabled,
         booking_retention_days=retention.retention_days(db),
         demo_mode=golive.demo_mode(db),
+        email_enabled=mail.enabled(),
     )

@@ -275,6 +275,20 @@ export async function availability(startKey, days) {
   return null;    // offline callers fall back to the local sampleOcc path
 }
 
+/* The ticket behind a code, for the link in the confirmation e-mail. Public,
+   and the server answers with the ticket rather than the visitor's record. */
+export async function getTicket(code) {
+  if (isOnline()) return call(() => request(`/bookings/${encodeURIComponent(code)}`));
+  const b = store.S.bookings.find((x) => x.code === String(code).toUpperCase());
+  if (!b) throw new ApiError(404, { code: 'not_found', message: 'No booking with that code.' });
+  return { ...b, minute: b.min || 0, totalThebe: b.total || 0 };
+}
+
+export async function sendTestMail(to) {
+  if (!isOnline()) return offlineOnly();
+  return call(() => request('/staff/mail-test', { method: 'POST', body: { to } }));
+}
+
 export async function createBooking(payload) {
   if (isOnline()) {
     const b = fromApi(await call(() =>
