@@ -1,4 +1,5 @@
 from .common import CamelModel
+from .theme import ThemeOut
 
 
 class DepartmentOut(CamelModel):
@@ -46,3 +47,16 @@ class ConfigOut(CamelModel):
     public_base_url: str
     booking_window_days: int
     currency: str
+    # Colours, fonts, logo and hero picture, as the staff area set them.
+    theme: ThemeOut
+    # Bundled picture path -> the upload that replaced it. core/assets.js
+    # rewrites every <img> after a render with this.
+    image_overrides: dict[str, str] = {}
+    # Path into the content modules -> the text the museum put there instead.
+    texts: dict[str, str] = {}
+    # Days after a visit before a booking is deleted; 0 while the museum has
+    # not set a period. The privacy notice says which of the two it is.
+    booking_retention_days: int = 0
+    # Whether a confirmation can actually be sent. The ticket page promises an
+    # e-mail only where there is a mail account behind it.
+    email_enabled: bool = False

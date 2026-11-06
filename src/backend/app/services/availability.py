@@ -1,8 +1,7 @@
 """Opening hours, slot capacity and the booking window.
 
 The prototype derived occupancy from a hash of the date so the demo looked
-busy. Here it is a real count over confirmed bookings; the demo rows carry
-source='demo' so the shape is preserved without pretending it is measurement.
+busy. Here it is a real count over confirmed bookings.
 """
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo

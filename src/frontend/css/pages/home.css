@@ -60,13 +60,3 @@
 .craft:hover b { text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 560px) { .crafts { grid-template-columns: 1fr; } .craft { grid-template-columns: 88px minmax(0, 1fr); } }
 
-/* ---------- digital museum ---------- */
-.digital { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border-top: 2px solid var(--ink); }
-.digital > * { padding: 22px 20px 26px 0; border-right: 1px solid var(--line); margin-right: 20px; display: flex; flex-direction: column; gap: 10px; color: var(--ink); text-decoration: none; }
-.digital > *:last-child { border-right: 0; margin-right: 0; }
-.digital svg { width: 36px; height: 36px; }
-.digital h3 { font-size: 18px; font-stretch: 105%; font-weight: 700; }
-.digital p { margin: 0; font-size: 14px; color: var(--muted); }
-.digital a:hover h3 { text-decoration: underline; }
-@media (max-width: 1000px) { .digital { grid-template-columns: repeat(2, minmax(0, 1fr)); } .digital > * { border-right: 0; margin-right: 0; border-bottom: 1px solid var(--line); padding-right: 16px; } }
-@media (max-width: 520px) { .digital { grid-template-columns: 1fr; } }

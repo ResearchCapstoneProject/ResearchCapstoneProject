@@ -96,8 +96,8 @@ INSERT INTO setting (setting_key, value) VALUES
 ON DUPLICATE KEY UPDATE value=VALUES(value);
 
 -- inventory counters ----------------------------------------------------------
--- Bumped past the seeded objects by the seeder; never reset, not even by the
--- demo reset, because an inventory number must never be reused.
+-- Bumped past the seeded objects by the seeder; never reset, because an
+-- inventory number must never be reused.
 INSERT INTO inventory_counter (dept_code, next_seq) VALUES
   ('ARC', 1),
   ('ETH', 1),

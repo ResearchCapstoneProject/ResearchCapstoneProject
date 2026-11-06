@@ -10,11 +10,11 @@ let seedCache = null;
 
 export async function loadSeed() {
   if (seedCache) return seedCache;
-  const names = ['objects', 'exhibitions', 'events', 'tours'];
-  const [objects, exhibitions, events, tours] = await Promise.all(
+  const names = ['objects', 'events'];
+  const [objects, events] = await Promise.all(
     names.map((n) => fetch(`${SEED_URL}/${n}.json`).then((r) => r.json())),
   );
-  seedCache = { objects, exhibitions, events, tours };
+  seedCache = { objects, events };
   return seedCache;
 }
 
@@ -31,7 +31,7 @@ export function decorateSeedObjects(rows) {
   }));
 }
 
-/* A browser that saved its demo state before the seed changed would keep a
+/* A browser that saved its state before the seed changed would keep a
    stale collection. Drop seed records the seed no longer has (the sample
    objects removed in favour of the ACB catalogue) and add the ones it has not
    seen yet; `seedIds` remembers which ones it has, so a seed object deleted
@@ -51,6 +51,11 @@ export const freshState = (seed) => ({
   seedIds: seed.objects.map((o) => o.id),
   bookings: [],
   scans: {},
+  /* null means "no server list here": the events page then shows the bundled
+     programme, and the publications page the bundled catalogue. An empty
+     array is different -- it means the museum has withdrawn everything. */
+  events: null,
+  publications: null,
 });
 
 /* Saved data from before the storage key was renamed moves to the new key
@@ -89,10 +94,6 @@ export function writeLocal(state = store.S) {
   } catch {
     return false;   // quota or private window; the app keeps working in memory
   }
-}
-
-export function clearLocal() {
-  try { localStorage.removeItem(LS_KEY); } catch { /* nothing to do */ }
 }
 
 /* Kept for the modules that still call save() directly. */

@@ -192,17 +192,6 @@ CREATE TABLE object_image (
 
 -- ---------------------------------------------------------- programme ------
 
-CREATE TABLE exhibition (
-  exhibition_key VARCHAR(32)  NOT NULL PRIMARY KEY,  -- at60, tsodilo, art, kalahari
-  art_key        VARCHAR(32)  NOT NULL,              -- resolved via EX_ART on the client
-  kind           VARCHAR(64)  NOT NULL,
-  dates_label    VARCHAR(128) NOT NULL,              -- free text: '30 Sep 2026 – 28 Mar 2027'
-  title          VARCHAR(255) NOT NULL,
-  body           TEXT         NOT NULL,
-  is_published   TINYINT(1)   NOT NULL DEFAULT 1,
-  sort_order     SMALLINT     NOT NULL DEFAULT 0
-) ENGINE=InnoDB;
-
 CREATE TABLE museum_event (
   id           INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   event_date   DATE         NOT NULL,
@@ -210,31 +199,51 @@ CREATE TABLE museum_event (
   kind         VARCHAR(64)  NOT NULL,
   title        VARCHAR(255) NOT NULL,
   place        VARCHAR(128) NOT NULL,
+  -- Who is speaking or leading, the description shown under the title, and
+  -- the flyer: all three were in the museum's own event material, so the
+  -- staff area can enter them rather than only a title and a time.
+  by_line      VARCHAR(128) NOT NULL DEFAULT '',
+  body_text    TEXT         NULL,
+  pdf_url      VARCHAR(255) NOT NULL DEFAULT '',
   is_published TINYINT(1)   NOT NULL DEFAULT 1,
   KEY idx_event_date (event_date)
 ) ENGINE=InnoDB;
 
-CREATE TABLE tour (
-  id           VARCHAR(32)  NOT NULL PRIMARY KEY,    -- highlights, bot60, family
+-- A publication the museum adds through the staff area. The bundled
+-- catalogue (brochures, Zebra's Voice, the Plant/Insect of the Month posters)
+-- ships with the frontend; rows here are shown alongside it, under the same
+-- section key.
+CREATE TABLE publication (
+  id           INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  type_key     VARCHAR(32)  NOT NULL,     -- brochures, zebras-voice, ...
   title        VARCHAR(255) NOT NULL,
-  minutes      SMALLINT UNSIGNED NOT NULL,
-  start_label  VARCHAR(128) NOT NULL,
-  audience     VARCHAR(128) NOT NULL,
-  subtitle     VARCHAR(255) NOT NULL DEFAULT '',
-  intro        TEXT         NOT NULL,
+  date_label   VARCHAR(64)  NOT NULL DEFAULT '',   -- free text: 'Nov 2026'
+  thumb_url    VARCHAR(255) NOT NULL DEFAULT '',   -- cover image
+  pdf_url      VARCHAR(255) NOT NULL DEFAULT '',
+  href         VARCHAR(255) NOT NULL DEFAULT '',   -- optional page to open
   is_published TINYINT(1)   NOT NULL DEFAULT 1,
-  sort_order   SMALLINT     NOT NULL DEFAULT 0
+  sort_order   SMALLINT     NOT NULL DEFAULT 0,
+  created_at   DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  KEY idx_publication_type (type_key, sort_order)
 ) ENGINE=InnoDB;
 
-CREATE TABLE tour_stop (
-  tour_id    VARCHAR(32)  NOT NULL,
-  position   SMALLINT     NOT NULL,
-  object_id  VARCHAR(20)  NOT NULL,
-  PRIMARY KEY (tour_id, position),
-  UNIQUE KEY uq_tour_object (tour_id, object_id),
-  CONSTRAINT fk_stop_tour   FOREIGN KEY (tour_id)   REFERENCES tour(id) ON DELETE CASCADE,
-  CONSTRAINT fk_stop_object FOREIGN KEY (object_id) REFERENCES museum_object(id)
-                              ON DELETE CASCADE
+-- One text the museum rewrote. The key is the path into the site's own
+-- content modules ('pagecopy.events.lede'), so a reset is a deleted row and
+-- the bundled text is always still there underneath.
+CREATE TABLE text_override (
+  text_key   VARCHAR(191) NOT NULL PRIMARY KEY,
+  value      TEXT         NOT NULL,
+  updated_at DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+                            ON UPDATE CURRENT_TIMESTAMP(3)
+) ENGINE=InnoDB;
+
+-- One replaced picture. The key is the path the site ships with, so a reset
+-- is a deleted row and no view needs to know whether a picture was replaced.
+CREATE TABLE image_override (
+  asset_path VARCHAR(191) NOT NULL PRIMARY KEY,   -- '/assets/img/.../x.jpg'
+  filename   VARCHAR(190) NOT NULL,              -- the upload in /uploads
+  updated_at DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+                            ON UPDATE CURRENT_TIMESTAMP(3)
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------- visits ------
@@ -255,13 +264,20 @@ CREATE TABLE booking (
   email         VARCHAR(190) NOT NULL,
   phone         VARCHAR(32)  NOT NULL DEFAULT '',
   country       VARCHAR(64)  NOT NULL DEFAULT '',
-  source        ENUM('online','desk','demo') NOT NULL DEFAULT 'online',
+  source        ENUM('online','desk') NOT NULL DEFAULT 'online',
   status        ENUM('confirmed','cancelled') NOT NULL DEFAULT 'confirmed',
+  -- Set when the visitor booked from an event. ON DELETE SET NULL: removing
+  -- an event from the programme must not take its bookings with it, because
+  -- the people are still coming.
+  event_id      INT UNSIGNED NULL,
   created_at    DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   checked_in_at DATETIME(3)  NULL,
   UNIQUE KEY uq_booking_code (code),
   KEY idx_booking_slot (visit_date, visit_hour, visit_minute, status),
   KEY idx_booking_email (email),
+  KEY idx_booking_event (event_id),
+  CONSTRAINT fk_booking_event FOREIGN KEY (event_id)
+    REFERENCES museum_event(id) ON DELETE SET NULL,
   CONSTRAINT ck_visit_hour   CHECK (visit_hour BETWEEN 0 AND 23),
   CONSTRAINT ck_visit_minute CHECK (visit_minute BETWEEN 0 AND 59)
 ) ENGINE=InnoDB;
@@ -286,8 +302,7 @@ CREATE TABLE scan_event (
   scanned_at DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   -- 'qr'         a real visitor scanning a gallery label
   -- 'staff_demo' the staff "Simulate visitor scan" button
-  -- 'seed'       generated demo history, so charts are not empty
-  source     ENUM('qr','staff_demo','seed') NOT NULL DEFAULT 'qr',
+  source     ENUM('qr','staff_demo') NOT NULL DEFAULT 'qr',
   ip_hash    CHAR(64)     NULL,                     -- sha256(ip + daily salt); no raw IPs
   ua_hash    CHAR(64)     NULL,
   KEY idx_scan_object_time (object_id, scanned_at),

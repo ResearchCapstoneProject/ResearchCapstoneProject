@@ -15,10 +15,26 @@
        answer, shown as a form error. */
 import { getPublicBaseUrl, setPublicBaseUrl } from '../core/config.js';
 import { store } from '../state/store.js';
-import { applyServerConfig, CAPACITY, SLOT_MINUTES, TICKETS } from './constants.js';
+import {
+  applyServerConfig, CAPACITY, EVENTS, SLOT_MINUTES, TICKETS,
+} from './constants.js';
+import { overrides } from '../core/assets.js';
+import { applyTextOverrides, setTextOverrides } from '../core/text.js';
+
+/* Everything GET /config carries, applied in one place: the reference data
+   and the look (applyServerConfig), the museum's own texts, and the picture
+   swaps (which applyServerConfig passes on to core/assets.js). Used at boot
+   and again after a change in the staff area. */
+function applyConfig(cfg) {
+  applyServerConfig(cfg);
+  setTextOverrides(cfg && cfg.texts);
+  applyTextOverrides();
+  return cfg;
+}
+import { applyTheme, contrastOnWhite, THEME } from '../core/theme.js';
 import { ApiError, Unreachable, probeHealth, request } from './api.js';
 import {
-  addNewSeedObjects, clearLocal, freshState, loadSeed, readLocal, writeLocal,
+  addNewSeedObjects, freshState, loadSeed, readLocal, writeLocal,
 } from './local.js';
 
 export const mode = () => store.api.mode;
@@ -70,11 +86,11 @@ export async function bootstrap() {
 
   if (ok) {
     try {
-      const cfg = await request('/config');
-      applyServerConfig(cfg);
+      const cfg = applyConfig(await request('/config'));
       setPublicBaseUrl(cfg.publicBaseUrl);
       store.api.user = await currentUser();
       store.S = await loadFromApi();
+      await refreshAvailability();
       return store.api.mode;
     } catch (e) {
       /* The probe said the API was up, then a call failed. api.js maps every
@@ -94,13 +110,38 @@ export async function bootstrap() {
   return store.api.mode;
 }
 
+/* The API and the offline store disagreed on two field names: the server
+   says `minute` and `totalThebe`, the browser's own bookings say `min` and
+   `total`. Everything that renders a booking reads the second pair, so every
+   booking coming off the API passes through here -- which also quietly fixes
+   the staff list, where a server booking's start minute used to read as 0. */
+const fromApi = (b) => ({
+  ...b,
+  min: b.minute || 0,
+  total: b.totalThebe || 0,
+  checkedIn: !!b.checkedIn,
+});
+
 async function loadFromApi() {
-  const [objects, bookings] = await Promise.all([
+  const [objects, bookings, events, publications] = await Promise.all([
     request('/objects').then((r) => r.items),
     // Bookings are staff-only; a visitor simply has none to show.
-    store.api.user ? request('/staff/bookings') : Promise.resolve([]),
+    store.api.user ? request('/staff/bookings').then((r) => r.map(fromApi))
+      : Promise.resolve([]),
+    request('/events'),
+    request('/publications'),
   ]);
-  return { objects, bookings, scans: {} };
+  return { objects, bookings, scans: {}, events, publications };
+}
+
+/* Re-reads the public programme after a change in the staff area, so the
+   events page and the publications pages show what was just saved. */
+async function refreshContent() {
+  const [events, publications] = await Promise.all([
+    call(() => request('/events')), call(() => request('/publications')),
+  ]);
+  store.S.events = events;
+  store.S.publications = publications;
 }
 
 export async function refresh() {
@@ -225,21 +266,45 @@ function fileToDataUrl(file) {
 
 // ----------------------------------------------------------------- bookings
 
-export async function availability(startKey, days) {
-  if (isOnline()) {
-    const qs = new URLSearchParams();
-    if (startKey) qs.set('start', startKey);
-    if (days) qs.set('days', String(days));
-    return call(() => request(`/availability?${qs}`));
-  }
-  return null;    // offline callers fall back to the local sampleOcc path
+/* How full every bookable slot is, as the server counts it, into store.AV
+   keyed 'YYYY-MM-DD@h:m'. The ticket page and the staff bookings page read
+   that map through state/booking.js rather than counting store.S.bookings,
+   which holds only what this browser knows about. Offline there is no count
+   to fetch and the map stays empty. */
+export async function refreshAvailability() {
+  if (!isOnline()) { store.AV = {}; return store.AV; }
+  // The pages show a fortnight, whatever the museum's booking window is, so
+  // ask for a fortnight: a slot the server has no count for would read as
+  // empty rather than as closed.
+  const days = await call(() => request('/availability?days=14'));
+  const map = {};
+  days.forEach((d) => d.slots.forEach((s) => {
+    map[`${d.date}@${s.hour}:${s.minute || 0}`] = s.taken;
+  }));
+  store.AV = map;
+  return map;
+}
+
+/* The ticket behind a code, for the link in the confirmation e-mail. Public,
+   and the server answers with the ticket rather than the visitor's record. */
+export async function getTicket(code) {
+  if (isOnline()) return call(() => request(`/bookings/${encodeURIComponent(code)}`));
+  const b = store.S.bookings.find((x) => x.code === String(code).toUpperCase());
+  if (!b) throw new ApiError(404, { code: 'not_found', message: 'No booking with that code.' });
+  return { ...b, minute: b.min || 0, totalThebe: b.total || 0 };
+}
+
+export async function sendTestMail(to) {
+  if (!isOnline()) return offlineOnly();
+  return call(() => request('/staff/mail-test', { method: 'POST', body: { to } }));
 }
 
 export async function createBooking(payload) {
   if (isOnline()) {
-    const b = await call(() =>
-      request('/bookings', { method: 'POST', body: payload }));
+    const b = fromApi(await call(() =>
+      request('/bookings', { method: 'POST', body: payload })));
     store.S.bookings.push(b);
+    await refreshAvailability();
     return b;
   }
   const code = 'BNM-' + Array.from({ length: 5 }, () =>
@@ -250,11 +315,30 @@ export async function createBooking(payload) {
   return b;
 }
 
+/* For a visitor who asks to be forgotten. Admin only on the server. */
+export async function deleteBooking(code) {
+  if (!isOnline()) return offlineOnly();
+  await call(() =>
+    request(`/staff/bookings/${encodeURIComponent(code)}`, { method: 'DELETE' }));
+  const i = store.S.bookings.findIndex((b) => b.code === code);
+  if (i >= 0) store.S.bookings.splice(i, 1);
+  await refreshAvailability();
+}
+
+/* Applies the retention period now instead of at the next restart. */
+export async function purgeBookings() {
+  if (!isOnline()) return offlineOnly();
+  const out = await call(() => request('/staff/bookings/purge', { method: 'POST' }));
+  store.S.bookings = await call(() => request('/staff/bookings'));
+  await refreshAvailability();
+  return out;
+}
+
 export async function checkIn(code) {
   if (isOnline()) {
-    const b = await call(() =>
+    const b = fromApi(await call(() =>
       request(`/staff/bookings/${encodeURIComponent(code)}/check-in`,
-        { method: 'POST' }));
+        { method: 'POST' })));
     const i = store.S.bookings.findIndex((x) => x.code === code);
     if (i >= 0) store.S.bookings[i] = b;
     return b;
@@ -270,8 +354,10 @@ export async function checkIn(code) {
    capacity and the slot length the visitor-facing pages hold are the ones
    the museum just saved -- without a reload. */
 async function refreshConfig() {
-  const cfg = await call(() => request('/config'));
-  applyServerConfig(cfg);
+  const cfg = applyConfig(await call(() => request('/config')));
+  // Capacity and slot length change what the slots are, so the counts the
+  // ticket page holds are about to be keyed on hours that no longer exist.
+  await refreshAvailability();
   return cfg;
 }
 
@@ -284,7 +370,7 @@ function offlineOnly() {
 
 export async function listTicketTypes() {
   if (isOnline()) return call(() => request('/staff/ticket-types'));
-  // Offline the staff page is read-only; show what the demo is using.
+  // Offline the staff page is read-only; show what the browser is using.
   return TICKETS.map((t) => ({
     key: t.key, name: t.name, desc: t.desc, priceThebe: t.price,
     addon: !!t.addon, active: true, sortOrder: 0, inUse: false,
@@ -333,6 +419,216 @@ export async function updateVisitSettings(patch) {
   return saved;
 }
 
+// ------------------------------------------------------- events (staff side)
+
+/* The programme lives in the database and is public through GET /events; the
+   staff list also carries the withdrawn ones. Offline the bundled programme
+   is shown read-only, like the visitor groups. */
+
+export async function listEvents() {
+  if (isOnline()) return call(() => request('/staff/events'));
+  return [...EVENTS]
+    .sort((a, b) => b.d.localeCompare(a.d))
+    .map((e, i) => ({ id: -(i + 1), ...e, published: true }));
+}
+
+export async function createEvent(draft) {
+  if (!isOnline()) return offlineOnly();
+  const created = await call(() => request('/staff/events', { method: 'POST', body: draft }));
+  await refreshContent();
+  return created;
+}
+
+export async function updateEvent(id, patch) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request(`/staff/events/${encodeURIComponent(id)}`, { method: 'PATCH', body: patch }));
+  await refreshContent();
+  return saved;
+}
+
+export async function deleteEvent(id) {
+  if (!isOnline()) return offlineOnly();
+  await call(() => request(`/staff/events/${encodeURIComponent(id)}`, { method: 'DELETE' }));
+  await refreshContent();
+}
+
+export async function uploadEventFlyer(id, file) {
+  if (!isOnline()) return offlineOnly();
+  const form = new FormData();
+  form.append('file', file);
+  const saved = await call(() =>
+    request(`/staff/events/${encodeURIComponent(id)}/flyer`, { method: 'POST', form }));
+  await refreshContent();
+  return saved;
+}
+
+export async function removeEventFlyer(id) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request(`/staff/events/${encodeURIComponent(id)}/flyer`, { method: 'DELETE' }));
+  await refreshContent();
+  return saved;
+}
+
+// ------------------------------------------------- publications (staff side)
+
+export async function listPublicationsAdmin() {
+  if (isOnline()) return call(() => request('/staff/publications'));
+  return [];      // offline there is nothing but the bundled catalogue
+}
+
+export async function createPublication(draft) {
+  if (!isOnline()) return offlineOnly();
+  const created = await call(() =>
+    request('/staff/publications', { method: 'POST', body: draft }));
+  await refreshContent();
+  return created;
+}
+
+export async function updatePublication(id, patch) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request(`/staff/publications/${encodeURIComponent(id)}`, { method: 'PATCH', body: patch }));
+  await refreshContent();
+  return saved;
+}
+
+export async function deletePublication(id) {
+  if (!isOnline()) return offlineOnly();
+  await call(() =>
+    request(`/staff/publications/${encodeURIComponent(id)}`, { method: 'DELETE' }));
+  await refreshContent();
+}
+
+/* `what` is 'cover' or 'pdf'. */
+export async function uploadPublicationFile(id, what, file) {
+  if (!isOnline()) return offlineOnly();
+  const form = new FormData();
+  form.append('file', file);
+  const saved = await call(() =>
+    request(`/staff/publications/${encodeURIComponent(id)}/${what}`, { method: 'POST', form }));
+  await refreshContent();
+  return saved;
+}
+
+// -------------------------------------------------------- the museum's texts
+
+export async function saveText(key, value) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request('/staff/texts', { method: 'PUT', body: { key, value } }));
+  await refreshConfig();      // re-applies the texts for every open page
+  return saved;
+}
+
+export async function clearText(key) {
+  if (!isOnline()) return offlineOnly();
+  await call(() =>
+    request(`/staff/texts?key=${encodeURIComponent(key)}`, { method: 'DELETE' }));
+  await refreshConfig();
+}
+
+// ------------------------------------------------------------ replaced images
+
+export async function listImageOverrides() {
+  if (isOnline()) return call(() => request('/staff/image-overrides'));
+  return Object.entries(overrides()).map(([path, url]) => ({ path, url, updated: 0 }));
+}
+
+export async function setImageOverride(path, file) {
+  if (!isOnline()) return offlineOnly();
+  const form = new FormData();
+  form.append('path', path);
+  form.append('file', file);
+  const saved = await call(() =>
+    request('/staff/image-overrides', { method: 'POST', form }));
+  await refreshConfig();          // re-applies the map for every open page
+  return saved;
+}
+
+export async function clearImageOverride(path) {
+  if (!isOnline()) return offlineOnly();
+  await call(() =>
+    request(`/staff/image-overrides?path=${encodeURIComponent(path)}`, { method: 'DELETE' }));
+  await refreshConfig();
+}
+
+// ------------------------------------------------------------ appearance kit
+
+/* Colours, fonts, logo, hero picture and the wording in the masthead. The
+   kit writes settings on the server, so offline it is read-only like the
+   visitor groups -- with the difference that the current look is already in
+   THEME, having come down with GET /config. */
+
+export async function getTheme() {
+  if (isOnline()) return call(() => request('/staff/theme'));
+  return {
+    theme: { ...THEME },
+    defaults: { ...THEME },
+    fonts: [{ key: THEME.headingFont, name: 'Current font', stack: THEME.headingStack, note: '' }],
+    contrast: {
+      brand: contrastOnWhite(THEME.brand),
+      action: contrastOnWhite(THEME.action),
+      accent: contrastOnWhite(THEME.accent),
+    },
+  };
+}
+
+export async function updateTheme(patch) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request('/staff/theme', { method: 'PATCH', body: patch }));
+  applyTheme(saved.theme);
+  return saved;
+}
+
+/* `slot` is 'logo' or 'hero'. The file goes up as multipart, like an object
+   photograph, so the server decides the format from what Pillow decodes. */
+export async function uploadThemeImage(slot, file) {
+  if (!isOnline()) return offlineOnly();
+  const form = new FormData();
+  form.append('file', file);
+  const saved = await call(() =>
+    request(`/staff/theme/image/${encodeURIComponent(slot)}`,
+      { method: 'POST', form }));
+  applyTheme(saved.theme);
+  return saved;
+}
+
+export async function resetThemeImage(slot) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request(`/staff/theme/image/${encodeURIComponent(slot)}`, { method: 'DELETE' }));
+  applyTheme(saved.theme);
+  return saved;
+}
+
+export async function uploadThemeFont(file, family) {
+  if (!isOnline()) return offlineOnly();
+  const form = new FormData();
+  form.append('file', file);
+  form.append('family', family || '');
+  const saved = await call(() =>
+    request('/staff/theme/font', { method: 'POST', form }));
+  applyTheme(saved.theme);
+  return saved;
+}
+
+export async function resetThemeFont() {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() => request('/staff/theme/font', { method: 'DELETE' }));
+  applyTheme(saved.theme);
+  return saved;
+}
+
+export async function resetTheme() {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() => request('/staff/theme', { method: 'DELETE' }));
+  applyTheme(saved.theme);
+  return saved;
+}
+
 // -------------------------------------------------------------------- scans
 
 export async function recordScan(objectId, source = 'qr') {
@@ -372,19 +668,6 @@ export async function currentUser() {
     if (e instanceof Unreachable) throw e;
     return null;
   }
-}
-
-// --------------------------------------------------------------- demo reset
-
-export async function resetDemo() {
-  if (isOnline()) {
-    await call(() => request('/staff/demo/reset', { method: 'POST' }));
-    return bootstrap();
-  }
-  clearLocal();
-  store.S = freshState(await loadSeed());
-  writeLocal();
-  return 'offline';
 }
 
 export { getPublicBaseUrl };

@@ -2,7 +2,6 @@ import { eventRow } from '../ui/cards.js';
 import { card } from '../ui/content.js';
 import { trailCards } from './explore.js';
 import { splitEvents } from './events.js';
-import { ICON } from '../art/icons.js';
 import { imgSrc } from '../art/registry.js';
 import { ABOUT, IMG } from '../data/about.js';
 import { SECTIONS } from '../data/explore.js';
@@ -10,11 +9,18 @@ import { openStatus } from '../data/opening.js';
 import { published } from '../state/selectors.js';
 import { craftOf } from '../state/query.js';
 import { esc } from '../core/dom.js';
+import { THEME } from '../core/theme.js';
+import { PAGE_COPY } from '../data/pagecopy.js';
 
 /* The museum building, in several widths so every screen gets a sharp copy
    without downloading the 6000px original. */
 const HERO = `${IMG}/web/natural-history/pix/museum-picture`;
-const heroImg = `<img src="${HERO}-1600.jpg" srcset="${[960, 1600, 2400, 3200].map((w) => `${HERO}-${w}.jpg ${w}w`).join(', ')}" sizes="100vw" alt="The Botswana National Museum building" fetchpriority="high">`;
+/* A function, not a constant: a picture uploaded in the staff area arrives
+   with GET /api/config, after this module has been evaluated. The bundled
+   photograph keeps its srcset; an uploaded one is served in one size. */
+const heroImg = () => (THEME.heroUrl
+  ? `<img src="${esc(THEME.heroUrl)}" alt="${esc(THEME.siteName)}" fetchpriority="high">`
+  : `<img src="${HERO}-1600.jpg" srcset="${[960, 1600, 2400, 3200].map((w) => `${HERO}-${w}.jpg ${w}w`).join(', ')}" sizes="100vw" alt="The Botswana National Museum building" fetchpriority="high">`);
 
 /* The six crafts of the "Art and Crafts of Botswana" catalogue; each card
    opens the collection filtered to that craft. `pick` is the record whose
@@ -45,11 +51,11 @@ export function pageHome() {
   const { upcoming } = splitEvents();
   return `
   <section class="phero" aria-label="Welcome">
-    ${heroImg}
+    ${heroImg()}
     <div class="wrap">
       <div class="pcopy">
-        <div class="eyebrow">Department of National Museum and Monuments · Gaborone</div>
-        <h1>Botswana National Museum</h1>
+        <div class="eyebrow">${esc(PAGE_COPY.home.eyebrow)}</div>
+        <h1>${esc(PAGE_COPY.home.headline)}</h1>
         <p>${esc(ABOUT[0])}</p>
         <div class="ctas"><a class="btn sky" href="#/visit">Plan your visit</a><a class="btn ghost light" href="#/collection">Explore the collection</a></div>
       </div>
@@ -112,19 +118,6 @@ export function pageHome() {
     <div class="wrap">
       <div class="sec-head"><div><div class="eyebrow">What’s on</div><h2 class="h2">Upcoming events</h2></div><a class="btn ghost small arrow" href="#/events">Upcoming &amp; past events </a></div>
       ${upcoming.length ? `<div class="events">${upcoming.slice(0, 4).map((e) => eventRow(e)).join('')}</div>` : '<p class="muted">No upcoming events are listed at the moment. <a href="#/events">See past events</a>.</p>'}
-    </div>
-  </section>
-
-  <section class="bg-mist">
-    <div class="wrap">
-      <div class="sec-head"><div><div class="eyebrow">Museum digital</div><h2 class="h2">Visit online, discover more in the galleries</h2></div></div>
-      <div class="digital">
-        <a href="#/collection">${ICON.grid}<span class="chip live dot">Available now</span><h3>Collection Online</h3><p>Search and browse every published object record.</p></a>
-        <a href="#/object/BNM-ETH-0302">${ICON.qr}<span class="chip live dot">Available now</span><h3>QR codes on objects</h3><p>Scan a label in the gallery to open the object page.</p></a>
-        <a href="#/explore/trails">${ICON.route}<span class="chip live dot">Available now</span><h3>Heritage trails</h3><p>Trips to monuments and museums, with maps to download.</p></a>
-        <a href="#/page/ar">${ICON.ar}<span class="chip plan dot">Planned</span><h3>AR in the galleries</h3><p>See objects in 3D and in their original setting.</p></a>
-        <a href="#/page/displays">${ICON.screen}<span class="chip plan dot">Planned</span><h3>Interactive displays</h3><p>Touch screens in the galleries fed by the same database.</p></a>
-      </div>
     </div>
   </section>`;
 }

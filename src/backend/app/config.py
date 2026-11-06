@@ -30,10 +30,31 @@ class Settings(BaseSettings):
 
     upload_dir: Path = Path("/data/uploads")
     max_upload_bytes: int = 8 * 1024 * 1024
+    # Brochures and magazines are bigger than photographs; the museum's own
+    # Zebra's Voice issues run to a few dozen megabytes.
+    max_pdf_bytes: int = 32 * 1024 * 1024
     image_max_edge: int = 1600
 
+    # ------------------------------------------------------------- e-mail
+    # mail_mode decides what happens to a message:
+    #   off     -- nothing is sent, and the site says e-mail is not available
+    #   outbox  -- written to mail_outbox_dir as a file, for development and
+    #              for the tests; the site behaves as if it had been sent
+    #   smtp    -- handed to smtp_host
+    # A deployment with no mail account therefore needs no code change, and a
+    # developer can see what visitors would receive without sending anything.
+    mail_mode: str = "off"
+    mail_outbox_dir: Path = Path("/data/outbox")
+    mail_from: str = "Botswana National Museum <no-reply@localhost>"
+    mail_reply_to: str = ""
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_starttls: bool = True
+    smtp_timeout: int = 10
+
     seed_on_start: bool = True
-    demo_reset_enabled: bool = True
 
     # 'like' reproduces the prototype's substring search exactly.
     # 'fulltext' uses the ft_object index -- read doc/ARCHITECTURE.md first.

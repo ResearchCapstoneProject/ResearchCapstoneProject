@@ -29,6 +29,12 @@ async def lifespan(app: FastAPI):
                 from . import seed
                 seed.run(db)
                 DEPT_NAMES.update({d.code: d.name for d in db.query(Department).all()})
+            # Bookings older than the museum's retention period. Nothing
+            # happens while the period is 0, which is the default.
+            from .services import retention
+            gone = retention.purge_old_bookings(db)
+            if gone:
+                print(f"[startup] deleted {gone} booking(s) past the retention period")
         except Exception as exc:  # noqa: BLE001
             # A missing database should not stop the process: the frontend
             # falls back to offline mode, and /api/health reports the failure.

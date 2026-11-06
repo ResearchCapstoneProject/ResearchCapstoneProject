@@ -4,23 +4,93 @@ import { $, esc } from '../core/dom.js';
 import { dkey, fmtDate, fromKey, hh, money } from '../core/format.js';
 import { qrSVG } from '../core/qr.js';
 import { isPast, nextDays } from '../core/time.js';
-import { CAPACITY, SLOT_MINUTES, TICKETS, TOUR_TIMES } from '../data/constants.js';
-import { save } from '../data/local.js';
+import { CAPACITY, EMAIL_ENABLED, SLOT_MINUTES, TICKETS, TOUR_TIMES } from '../data/constants.js';
 import { holiday, hoursFor, slotEnd, slotLabel, slotStarts } from '../data/opening.js';
 import { leftIn, newT, totalOf, visitorsOf } from '../state/booking.js';
+import { eventsAll } from '../state/selectors.js';
+import { createBooking } from '../data/repo.js';
+import { toast } from '../ui/toast.js';
 import { taken } from '../state/booking.js';
+import { fill, PAGE_COPY } from '../data/pagecopy.js';
+
+/* The event the visitor pressed "Book" on, if any. */
+const bookingEvent = () => (store.T.eventId
+  ? eventsAll().find((e) => String(e.id) === String(store.T.eventId)) || null
+  : null);
+
+/* Arriving from an event: the wizard starts on that event's day, with the
+   slot the event begins in already chosen when it is still bookable. */
+export function startEventBooking(id) {
+  store.T = newT();
+  const ev = eventsAll().find((e) => String(e.id) === String(id));
+  if (!ev) return;
+  store.T.eventId = ev.id;
+
+  const starts = slotStarts(ev.d);
+  if (!hoursFor(ev.d) || starts.every(({ h, m }) => isPast(ev.d, h, m))) return;
+  store.T.date = ev.d;
+
+  /* '14:00' or '09:30–12:30' -- the first time in the label is the start. */
+  const t = (ev.time || '').match(/(\d{1,2})[:.](\d{2})/);
+  if (!t) return;
+  const minutes = Number(t[1]) * 60 + Number(t[2]);
+  const exact = starts.find(({ h, m }) => h * 60 + m === minutes);
+  const containing = starts.filter(({ h, m }) => h * 60 + m <= minutes).pop();
+  const slot = exact || containing;
+  if (slot && !isPast(ev.d, slot.h, slot.m) && leftIn(ev.d, slot.h, slot.m) > 0) {
+    store.T.hour = slot.h;
+    store.T.min = slot.m;
+  }
+}
 
 /* ---------------- tickets ---------------- */
 
 export function pageTickets() {
   if (store.T.step === 4 && !store.T.done) store.T = newT();
   const steps = ['Date & time', 'Tickets', 'Your details', 'Confirmation'];
-  return `${pagehead([['#/', 'Home'], ['', 'Tickets']], 'Tickets &amp; time slots', `Admission is free. Book a time slot online and skip the queue – each ${SLOT_MINUTES}-minute slot holds up to ${CAPACITY} visitors, so the galleries never get too crowded.`)}
+  return `${pagehead([['#/', 'Home'], ['', esc(PAGE_COPY.tickets.title)]], esc(PAGE_COPY.tickets.title), esc(fill(PAGE_COPY.tickets.lede, { minutes: SLOT_MINUTES, capacity: CAPACITY })))}
   <div class="wrap">
+    ${eventStrip()}
     <ol class="steps" aria-label="Booking steps">${steps.map((s, i) => `<li class="${i + 1 === store.T.step ? 'on' : i + 1 < store.T.step ? 'done' : ''}" ${i + 1 === store.T.step ? 'aria-current="step"' : ''}>${s}</li>`).join('')}</ol>
     <div class="tk" id="tk">${tkBody()}${tkSummary()}</div>
   </div>`;
 }
+/* The wizard used to let "Next" through on an empty step, which ended in a
+   booking with no day at all -- visible the moment an event fell on a Monday,
+   when the museum is closed and nothing could be preselected. */
+export function tkNext() {
+  if (store.T.step === 1 && (store.T.date === null || store.T.hour === null)) {
+    toast(store.T.date === null
+      ? 'Please choose a day first.'
+      : 'Please choose an entry time.');
+    return;
+  }
+  if (store.T.step === 2 && visitorsOf(store.T.q) < 1) {
+    toast('Please choose at least one ticket.');
+    return;
+  }
+  store.T.step += 1;
+  tkRerender(true);
+}
+
+function eventStrip() {
+  const ev = bookingEvent();
+  if (!ev) return '';
+  /* An event on a closed day, or one that has been and gone: say so, rather
+     than leaving the visitor wondering why no day is selected. */
+  const closed = !hoursFor(ev.d)
+    ? 'The museum is closed that day – a time slot cannot be booked for it.'
+    : (slotStarts(ev.d).every(({ h, m }) => isPast(ev.d, h, m))
+      ? 'That day has passed. You can still book another visit.' : '');
+  return `<div class="evstrip">
+    <div><div class="eyebrow">Booking for this event</div>
+      <b>${esc(ev.title)}</b>
+      <span class="small muted">${esc(fmtDate(ev.d))}${ev.time ? ` · ${esc(ev.time)}` : ''}${ev.place ? ` · ${esc(ev.place)}` : ''}</span>
+      ${closed ? `<span class="small" style="color:var(--warn)">${esc(closed)}</span>` : ''}</div>
+    <button class="btn link" type="button" data-act="tk-noevent">Book a plain visit instead</button>
+  </div>`;
+}
+
 export function tkRerender(scroll = false) {
   const a = document.activeElement; let sel = null;
   if (a && a.dataset && a.dataset.act) sel = `[data-act="${a.dataset.act}"]` + ['k', 'h', 'm', 'd'].map((x) => (a.dataset[x] !== undefined ? `[data-${x}="${a.dataset[x]}"]` : '')).join('');
@@ -99,7 +169,7 @@ export function tkBody() {
       <h2 style="margin-top:36px">Payment</h2>
       <div class="pay">${pay}</div>
       <label class="check" style="margin-top:24px"><input type="checkbox" id="f-agree" ${store.T.agree ? 'checked' : ''}><span>I accept the house rules and the <a href="#/privacy" target="_blank" rel="noopener">privacy notice</a>.${e.agree ? ` <b style="color:var(--full)">${e.agree}</b>` : ''}</span></label>
-      <div class="navrow"><button class="btn ghost" type="button" data-act="tk-back">Back</button><button class="btn" type="button" data-act="tk-confirm">Confirm booking</button></div>
+      <div class="navrow"><button class="btn ghost" type="button" data-act="tk-back">Back</button><button class="btn" type="button" data-act="tk-confirm" ${store.T.busy ? 'disabled' : ''}>${store.T.busy ? 'Booking…' : 'Confirm booking'}</button></div>
     </div>`;
   }
   const b = store.T.done;
@@ -107,12 +177,14 @@ export function tkBody() {
   return `<div>
     <div class="eyebrow" style="margin-bottom:8px">Booking confirmed</div>
     <h2 class="h2" style="font-size:34px;margin-bottom:10px">Re a leboga – see you soon!</h2>
-    <p class="lede" style="margin:0 0 28px">Your e-ticket has been sent to ${esc(b.email)}. Show the QR code at the entrance.</p>
+    <p class="lede" style="margin:0 0 28px">${EMAIL_ENABLED && b.email
+    ? `Your e-ticket is on its way to ${esc(b.email)}. Show the QR code at the entrance.`
+    : 'Show the QR code at the entrance, or keep your booking code. E-mail confirmations are not switched on yet.'}</p>
     <div class="eticket">
       <div class="l">
         <div class="flagrule" aria-hidden="true"></div>
         <div><div class="eyebrow">Botswana National Museum · E-ticket</div><div class="h3" style="margin-top:6px">${esc(fmtDate(b.date))}</div></div>
-        <dl><dt>Entry</dt><dd>${slotLabel(b.hour, b.min || 0)} – ${slotEnd(b.hour, b.min || 0)}</dd><dt>Visitors</dt><dd>${lines}</dd><dt>Name</dt><dd>${esc(b.name)}</dd><dt>Total</dt><dd>${b.total ? `${money(b.total)} · pay on arrival` : 'Free'}</dd></dl>
+        <dl><dt>Entry</dt><dd>${slotLabel(b.hour, b.min || 0)} – ${slotEnd(b.hour, b.min || 0)}</dd>${b.eventTitle ? `<dt>Event</dt><dd>${esc(b.eventTitle)}</dd>` : ''}<dt>Visitors</dt><dd>${lines}</dd><dt>Name</dt><dd>${esc(b.name)}</dd><dt>Total</dt><dd>${b.total ? `${money(b.total)} · pay on arrival` : 'Free'}</dd></dl>
       </div>
       <div class="r">${qrSVG(`BNM-TICKET|${b.code}|${b.date}|${slotLabel(b.hour, b.min || 0)}|${b.visitors}`, 'Ticket QR code')}<span class="code">${b.code}</span></div>
     </div>
@@ -123,7 +195,9 @@ export function tkSummary() {
   if (store.T.step === 4) {
     return `<aside class="summary" aria-label="Before your visit"><h3>Before your visit</h3>
       <ul class="small" style="margin:0;padding-left:18px;display:grid;gap:8px"><li>Arrive within your entry slot – you can stay until closing.</li><li>Show this code at the front desk; admission is free.</li><li>Anything that is not free is paid at the front desk.</li></ul>
-      <p class="fine">E-mail confirmations are not available yet, and nothing is charged online.</p></aside>`;
+      <p class="fine">${EMAIL_ENABLED
+    ? 'The confirmation is sent to the address you gave; nothing is charged online.'
+    : 'E-mail confirmations are not available yet, and nothing is charged online.'}</p></aside>`;
   }
   const vis = visitorsOf(store.T.q); const total = totalOf(store.T.q);
   const lines = TICKETS.filter((t) => store.T.q[t.key]).map((t) => `<dt>${store.T.q[t.key]} × ${esc(t.name)}</dt><dd>${money(t.price * store.T.q[t.key])}</dd>`).join('');
@@ -133,13 +207,22 @@ export function tkSummary() {
       <dt>Day</dt><dd>${store.T.date ? esc(fmtDate(store.T.date, { weekday: 'short', day: 'numeric', month: 'short' })) : '–'}</dd>
       <dt>Entry</dt><dd>${store.T.hour !== null ? `${slotLabel(store.T.hour, store.T.min || 0)} – ${slotEnd(store.T.hour, store.T.min || 0)}` : '–'}</dd>
       <dt>Visitors</dt><dd>${vis || '–'}</dd>
+      ${bookingEvent() ? `<dt>Event</dt><dd>${esc(bookingEvent().title)}</dd>` : ''}
       ${lines}
     </dl>
     <div class="total"><span>Total</span><span>${vis ? (total ? money(total) : 'Free') : '–'}</span></div>
-    <p class="fine">Nothing is charged online. Anything payable is settled at the front desk.</p>
+    <p class="fine">${EMAIL_ENABLED
+    ? 'Your confirmation is sent to the e-mail address you give. '
+    : 'E-mail confirmations are not available yet. '}Nothing is charged online; anything payable is settled at the front desk.</p>
   </aside>`;
 }
-export function tkConfirm() {
+export async function tkConfirm() {
+  if (store.T.date === null || store.T.hour === null) {
+    store.T.step = 1;
+    toast('Please choose a day and an entry time first.');
+    tkRerender(true);
+    return;
+  }
   store.T.name = $('#f-name').value.trim(); store.T.email = $('#f-email').value.trim(); store.T.phone = $('#f-phone').value.trim(); store.T.country = $('#f-country').value; store.T.agree = $('#f-agree').checked;
   const err = {};
   if (store.T.name.length < 2) err.name = 'Please enter your name.';
@@ -147,8 +230,44 @@ export function tkConfirm() {
   if (!store.T.agree) err.agree = 'Please accept to continue.';
   store.T.err = err;
   if (Object.keys(err).length) { tkRerender(); const first = err.name ? '#f-name' : err.email ? '#f-email' : '#f-agree'; $(first).focus(); return; }
-  const code = 'BNM-' + Array.from({ length: 5 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('');
-  const b = { code, date: store.T.date, hour: store.T.hour, min: store.T.min || 0, q: { ...store.T.q }, visitors: visitorsOf(store.T.q), total: totalOf(store.T.q), name: store.T.name, email: store.T.email, phone: store.T.phone, country: store.T.country, created: Date.now(), checkedIn: false };
-  store.S.bookings.push(b); save();
-  store.T.done = b; store.T.step = 4; tkRerender(true);
+
+  /* This used to invent a code and write the booking into localStorage, which
+     meant an online booking never reached the museum: the front desk's list
+     and the check-in read from the server. The code and the total now come
+     from the API, which also re-checks the capacity under a row lock -- the
+     one place where two visitors can race for the last places. Offline,
+     repo.createBooking() still keeps it in the browser, so a demo without a
+     server behaves as before. */
+  store.T.busy = true;
+  tkRerender();
+  try {
+    const b = await createBooking({
+      date: store.T.date,
+      hour: store.T.hour,
+      minute: store.T.min || 0,
+      q: { ...store.T.q },
+      eventId: store.T.eventId || null,
+      name: store.T.name,
+      email: store.T.email,
+      phone: store.T.phone,
+      country: store.T.country,
+      agree: true,
+    });
+    store.T.busy = false;
+    store.T.done = b;
+    store.T.step = 4;
+    tkRerender(true);
+  } catch (e) {
+    store.T.busy = false;
+    if (e && e.code === 'slot_full') {
+      /* Somebody else took the last places while this form was open. Back to
+         the slot grid rather than a dead end. */
+      store.T.hour = null;
+      store.T.step = 1;
+      toast('Those places have just been taken. Please choose another time.');
+    } else {
+      toast((e && e.message) || 'The booking could not be saved. Please try again.');
+    }
+    tkRerender(true);
+  }
 }

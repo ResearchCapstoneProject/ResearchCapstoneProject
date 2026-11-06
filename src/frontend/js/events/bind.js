@@ -9,11 +9,27 @@ import { toast } from '../ui/toast.js';
 import { renderResults } from '../views/collection.js';
 import { pageStaffBookings } from '../views/staff-bookings.js';
 import {
-  addGroup, deleteGroup, pageStaffSettings, saveGroupPrice, saveVisitSettings,
-  toggleGroup,
+  addGroup, deleteGroup, pageStaffSettings, purgeBookings, saveGroupPrice,
+  saveVisitSettings, sendTestMail, toggleGroup,
 } from '../views/staff-settings.js';
+import {
+  discardDesign, pageStaffDesign, resetDesign, resetDesignFont,
+  resetDesignImage, saveDesign, wireDesign,
+} from '../views/staff-design.js';
+import {
+  cancelEdit, deleteEvent, editEvent, pageStaffEvents, removeFlyer,
+  submitEvent, toggleEvent, wireEvents,
+} from '../views/staff-events.js';
+import {
+  addPublication, deletePublication, pageStaffPublications,
+  togglePublication, wirePublications,
+} from '../views/staff-publications.js';
+import { pageStaffImages, resetImage, wireImages } from '../views/staff-images.js';
+import {
+  pageStaffTexts, resetText, saveText, wireTexts,
+} from '../views/staff-texts.js';
 import { updatePreview } from '../views/staff-form.js';
-import { tkConfirm, tkRerender } from '../views/tickets.js';
+import { tkConfirm, tkNext, tkRerender } from '../views/tickets.js';
 import { store } from '../state/store.js';
 import { viewsOf } from '../art/registry.js';
 import { $ } from '../core/dom.js';
@@ -28,6 +44,32 @@ import { pageStaffLogin } from '../views/staff-login.js';
 /* The settings page refreshes itself in place after a save, so the table and
    the form show what the server now holds rather than what was typed. */
 const rerenderSettings = () => { $('#app').innerHTML = pageStaffSettings(); };
+
+/* The appearance page does the same, and re-attaches its own handlers. */
+const rerenderDesign = () => {
+  $('#app').innerHTML = pageStaffDesign();
+  wireDesign(rerenderDesign);
+};
+
+const rerenderEvents = () => {
+  $('#app').innerHTML = pageStaffEvents();
+  wireEvents(rerenderEvents);
+};
+
+const rerenderPublications = () => {
+  $('#app').innerHTML = pageStaffPublications();
+  wirePublications(rerenderPublications);
+};
+
+const rerenderImages = () => {
+  $('#app').innerHTML = pageStaffImages();
+  wireImages(rerenderImages);
+};
+
+const rerenderTexts = () => {
+  $('#app').innerHTML = pageStaffTexts();
+  wireTexts(rerenderTexts);
+};
 
 /* ---------------- events ---------------- */
 const closeMenus = () => document.querySelectorAll('.navitem.open').forEach((n) => { n.classList.remove('open'); n.querySelector('[data-act="navmenu"]').setAttribute('aria-expanded', 'false'); });
@@ -49,14 +91,6 @@ document.addEventListener('click', (e) => {
   if (!t) { if (e.target.id === 'modal') closeModal(); return; }
   const act = t.dataset.act;
   switch (act) {
-    case 'reset':
-      if (confirm('Reset the demo data? Added objects, demo bookings and demo scans will be removed.')) {
-        repo.resetDemo().then(() => {
-          store.T = newT(); store.CQ = newQuery(); route();
-          toast('Demo data reset.');
-        }).catch(() => toast('Could not reset the demo data.'));
-      }
-      break;
     case 'logout':
       e.preventDefault();
       repo.logout().then(() => { location.hash = '#/'; route(); toast('Signed out.'); });
@@ -98,12 +132,37 @@ document.addEventListener('click', (e) => {
       });
       tkRerender(); break;
     }
-    case 'tk-next': store.T.step += 1; tkRerender(true); break;
+    case 'tk-next': tkNext(); break;
     case 'tk-back':
       if (store.T.step === 3) { store.T.name = $('#f-name').value; store.T.email = $('#f-email').value; store.T.phone = $('#f-phone').value; store.T.country = $('#f-country').value; store.T.agree = $('#f-agree').checked; }
       store.T.step -= 1; store.T.err = {}; tkRerender(true); break;
     case 'tk-confirm': tkConfirm(); break;
     case 'tk-new': store.T = newT(); tkRerender(true); break;
+    case 'tk-noevent': store.T.eventId = null; tkRerender(); break;
+    case 'ev-edit': editEvent(t.dataset.id, rerenderEvents); break;
+    case 'ev-cancel': cancelEdit(rerenderEvents); break;
+    case 'ev-toggle': toggleEvent(t.dataset.id, t.dataset.to === '1', rerenderEvents); break;
+    case 'ev-del': deleteEvent(t.dataset.id, rerenderEvents); break;
+    case 'ev-flyer-del': removeFlyer(t.dataset.id, rerenderEvents); break;
+    case 'pub-toggle': togglePublication(t.dataset.id, t.dataset.to === '1', rerenderPublications); break;
+    case 'pub-del': deletePublication(t.dataset.id, rerenderPublications); break;
+    case 'im-reset': resetImage(t.dataset.path, rerenderImages); break;
+    case 'set-purge': purgeBookings(rerenderSettings); break;
+    case 'set-mailtest': sendTestMail(rerenderSettings); break;
+    case 'bk-del':
+      if (confirm('Delete this booking? The visitor\'s name, e-mail address and phone number are removed with it.')) {
+        repo.deleteBooking(t.dataset.code)
+          .then(() => { route(); toast('Booking deleted.'); })
+          .catch((err) => toast(err.message || 'Could not delete the booking.'));
+      }
+      break;
+    case 'txt-save': saveText(t.dataset.key, rerenderTexts); break;
+    case 'txt-reset': resetText(t.dataset.key, rerenderTexts); break;
+    case 'dsg-save': saveDesign(rerenderDesign); break;
+    case 'dsg-discard': discardDesign(rerenderDesign); break;
+    case 'dsg-reset': resetDesign(rerenderDesign); break;
+    case 'dsg-img-reset': resetDesignImage(t.dataset.slot, rerenderDesign); break;
+    case 'dsg-font-reset': resetDesignFont(rerenderDesign); break;
     case 'grp-save': saveGroupPrice(t.dataset.key, rerenderSettings); break;
     case 'grp-toggle': toggleGroup(t.dataset.key, t.dataset.to === '1', rerenderSettings); break;
     case 'grp-del': deleteGroup(t.dataset.key, rerenderSettings); break;
@@ -124,6 +183,8 @@ document.addEventListener('click', (e) => {
   }
 });
 document.addEventListener('submit', (e) => {
+  if (e.target.id === 'evform') { e.preventDefault(); submitEvent(rerenderEvents); return; }
+  if (e.target.id === 'pubform') { e.preventDefault(); addPublication(rerenderPublications); return; }
   if (e.target.id === 'grpform') { e.preventDefault(); addGroup(rerenderSettings); return; }
   if (e.target.id === 'setform') { e.preventDefault(); saveVisitSettings(rerenderSettings); return; }
   if (e.target.id === 'stafflogin') {

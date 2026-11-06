@@ -11,9 +11,17 @@ import { pagePlaceholder } from '../views/placeholder.js';
 import { pageStaffBookings } from '../views/staff-bookings.js';
 import { bindForm, pageStaffForm } from '../views/staff-form.js';
 import { pageStaffObjects } from '../views/staff-objects.js';
-import { pageStaffStats } from '../views/staff-stats.js';
+import { bindStats, pageStaffStats } from '../views/staff-stats.js';
 import { bindSettings, pageStaffSettings } from '../views/staff-settings.js';
-import { pageTickets } from '../views/tickets.js';
+import { bindDesign, pageStaffDesign, wireDesign } from '../views/staff-design.js';
+import { bindEvents, pageStaffEvents, wireEvents } from '../views/staff-events.js';
+import {
+  bindPublications, pageStaffPublications, wirePublications,
+} from '../views/staff-publications.js';
+import { bindImages, pageStaffImages, wireImages } from '../views/staff-images.js';
+import { bindTexts, pageStaffTexts, wireTexts } from '../views/staff-texts.js';
+import { pageTickets, startEventBooking } from '../views/tickets.js';
+import { bindTicket, pageTicket } from '../views/ticket.js';
 import { pageDepartment, pageDepartments } from '../views/departments.js';
 import { pageImprint, pagePrivacy } from '../views/legal.js';
 import { pageExplore, pageExploreRoute } from '../views/explore.js';
@@ -23,6 +31,8 @@ import { pageVisit } from '../views/visit.js';
 import { store } from '../state/store.js';
 import { $ } from '../core/dom.js';
 import { PAGES } from '../data/constants.js';
+import { THEME } from '../core/theme.js';
+import { applyImageOverrides } from '../core/assets.js';
 import { newT } from '../state/booking.js';
 import { newQuery } from '../state/query.js';
 import { byId } from '../state/selectors.js';
@@ -34,13 +44,14 @@ import { SECTIONS, siteById } from '../data/explore.js';
 
 /* Old addresses that moved: the themed tours were replaced by the heritage
    trails in Explore, About merged into Visit, Tsodilo is an Explore page, and
-   the sample exhibitions, the museum floor-plan map and the virtual-tour
-   placeholder were removed. */
+   the exhibitions, the museum floor-plan map, the virtual-tour placeholder and
+   the two phase-2 placeholders the home page used to link were removed. */
 const MOVED = {
   tours: '#/explore/trails', tour: '#/explore/trails',
   exhibitions: '#/collection', map: '#/visit', 'page/virtual-tour': '#/',
   'publications/heritage-trails': '#/explore/trails',
   'page/about': '#/visit/about', 'page/tsodilo': '#/explore/monuments/tsodilo',
+  'page/ar': '#/', 'page/displays': '#/',
 };
 
 /* ---------------- router ---------------- */
@@ -66,7 +77,20 @@ export function route() {
     case 'events': html = pageEvents(); title = 'Events'; break;
     case 'imprint': html = pageImprint(); title = 'Imprint'; break;
     case 'privacy': html = pagePrivacy(); title = 'Privacy notice'; break;
-    case 'tickets': if (store.T.step === 4) store.T = newT(); html = pageTickets(); title = 'Tickets'; break;
+    /* #/tickets/event/<id> is where an event's Book button lands: the wizard
+       starts on that event, and the address goes back to #/tickets so a
+       reload does not start it over again. */
+    /* #/ticket/<code> is the link in the confirmation e-mail. */
+    case 'ticket': {
+      html = pageTicket(b); title = 'Your ticket';
+      const again = () => { $('#app').innerHTML = pageTicket(b); };
+      after = () => bindTicket(b, again);
+      break;
+    }
+    case 'tickets':
+      if (b === 'event' && c) { startEventBooking(c); history.replaceState(null, '', '#/tickets'); }
+      else if (store.T.step === 4) store.T = newT();
+      html = pageTickets(); title = 'Tickets'; break;
     /* #/collection/<craft> opens the collection filtered to one craft of the
        Art and Crafts of Botswana catalogue; the home page links them so. */
     case 'collection': if (b && store.CQ.craft !== b) store.CQ = newQuery({ craft: b }); html = pageCollection(); title = 'Collection Online'; after = renderResults; break;
@@ -75,13 +99,51 @@ export function route() {
       /* Guard. Online, the staff area needs a session -- the API enforces
          this too, so this only saves a pointless round trip and a flash of
          an empty table. Offline there is no server to sign in to, so the
-         area stays open for demos, with the banner saying so. */
+         area stays open, with the banner saying so. */
       if (b === 'login') { html = pageStaffLogin(); title = 'Staff sign-in'; break; }
       if (isOnline() && !store.api.user) { location.hash = '#/staff/login'; return; }
       if (b === 'add') { html = pageStaffForm(null); after = () => bindForm(null); title = 'Add object'; }
       else if (b === 'edit') { html = pageStaffForm(c); after = () => bindForm(c); title = 'Edit object'; }
       else if (b === 'bookings') { html = pageStaffBookings(); title = 'Bookings'; }
-      else if (b === 'stats') { html = pageStaffStats(); title = 'Scan statistics'; after = bindTips; }
+      else if (b === 'stats') {
+        html = pageStaffStats(); title = 'Scan statistics';
+        /* Same shape as the settings page: the shell goes up first, the
+           counts are fetched, then the page re-renders in place. */
+        const again = () => { $('#app').innerHTML = pageStaffStats(); bindTips(); };
+        after = () => { bindTips(); bindStats(again); };
+      }
+      else if (b === 'events') {
+        html = pageStaffEvents(); title = 'Events';
+        const again = () => { $('#app').innerHTML = pageStaffEvents(); wireEvents(again); };
+        after = () => bindEvents(again);
+      }
+      else if (b === 'publications') {
+        html = pageStaffPublications(); title = 'Publications';
+        const again = () => { $('#app').innerHTML = pageStaffPublications(); wirePublications(again); };
+        after = () => bindPublications(again);
+      }
+      else if (b === 'images') {
+        html = pageStaffImages(); title = 'Pictures';
+        const again = () => {
+          $('#app').innerHTML = pageStaffImages();
+          applyImageOverrides($('#app'));
+          wireImages(again);
+        };
+        after = () => bindImages(again);
+      }
+      else if (b === 'texts') {
+        html = pageStaffTexts(); title = 'Texts';
+        const again = () => { $('#app').innerHTML = pageStaffTexts(); wireTexts(again); };
+        after = () => bindTexts(again);
+      }
+      else if (b === 'design') {
+        html = pageStaffDesign(); title = 'Appearance';
+        /* Same shape as the settings page: render the shell, fetch the kit,
+           then re-render in place. wireDesign re-attaches the file inputs and
+           the live preview, which do not go through the delegated listeners. */
+        const again = () => { $('#app').innerHTML = pageStaffDesign(); wireDesign(again); };
+        after = () => bindDesign(again);
+      }
       else if (b === 'settings') {
         html = pageStaffSettings(); title = 'Settings';
         /* The groups and settings are fetched after the shell is on screen,
@@ -94,8 +156,10 @@ export function route() {
     default: html = pageNotFound(); title = 'Not found';
   }
   $('#app').innerHTML = html;
+  /* Pictures the museum replaced, swapped in after every render. */
+  applyImageOverrides($('#app'));
   if (after) after();
-  document.title = `${title} · Botswana National Museum`;
+  document.title = `${title} · ${THEME.siteName}`;
   document.querySelectorAll('[data-nav]').forEach((el) => el.classList.toggle('on', el.dataset.nav === a || (a === 'object' && el.dataset.nav === 'collection') || (a === 'page' && el.dataset.nav === `page/${b}`)));
   window.scrollTo(0, 0);
   if (anchor) { const el = document.getElementById(anchor); if (el) el.scrollIntoView(); }

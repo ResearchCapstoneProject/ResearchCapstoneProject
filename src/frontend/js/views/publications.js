@@ -2,15 +2,16 @@ import { pagehead } from '../ui/cards.js';
 import { card, factlist } from '../ui/content.js';
 import { pageNotFound } from './notfound.js';
 import { esc } from '../core/dom.js';
-import { PUB_TYPES, pubTypeByKey } from '../data/publications.js';
+import { pubTypeByKey, pubTypes } from '../data/publications.js';
+import { PAGE_COPY } from '../data/pagecopy.js';
 
 const cover = (t) => { const i = t.items.find((x) => x.thumb || x.poster) || {}; return i.thumb || i.poster; };
 
 /* ---------------- #/publications ---------------- */
 export function pagePublications() {
-  return `${pagehead([['#/', 'Home'], ['', 'Publications']], 'Publications', 'Brochures, the Zebra’s Voice magazine and the Natural History Division’s monthly features.')}
+  return `${pagehead([['#/', 'Home'], ['', esc(PAGE_COPY.publications.title)]], esc(PAGE_COPY.publications.title), esc(PAGE_COPY.publications.lede))}
   <div class="wrap" style="padding-block:40px 80px">
-    <div class="cgrid">${PUB_TYPES.map((t) => card({ href: `#/publications/${t.key}`, img: cover(t), eyebrow: t.eyebrow, title: t.title, text: t.lede })).join('')}</div>
+    <div class="cgrid">${pubTypes().map((t) => card({ href: `#/publications/${t.key}`, img: cover(t), eyebrow: t.eyebrow, title: t.title, text: t.lede })).join('')}</div>
   </div>`;
 }
 

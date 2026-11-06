@@ -4,8 +4,9 @@ import { DAYNAME } from '../core/time.js';
 import { HOURS, TICKETS } from '../data/constants.js';
 import { esc } from '../core/dom.js';
 import { hh, money } from '../core/format.js';
-import { ABOUT, ABOUT_PHOTOS, CONTACT, HISTORY, IMG, MISSION, OPERATIONS, VISION } from '../data/about.js';
-import { DEPARTMENTS, DEPT_INTRO } from '../data/departments.js';
+import { ABOUT, ABOUT_PHOTOS, CONTACT, COPY, HISTORY, IMG, OPERATIONS } from '../data/about.js';
+import { DEPARTMENTS, DEPT_COPY } from '../data/departments.js';
+import { PAGE_COPY } from '../data/pagecopy.js';
 
 /* Visit and About used to be two pages; they are one now, with in-page
    sections. #/visit/<section> scrolls to `sec-<section>` (see the router). */
@@ -14,7 +15,7 @@ export const VISIT_SECTIONS = [['plan', 'Plan your visit'], ['contact', 'Getting
 export function pageVisit() {
   const today = new Date().getDay();
   const order = [2, 3, 4, 5, 6, 0, 1];
-  return `${pagehead([['#/', 'Home'], ['', 'Visit & About']], 'Visit &amp; About', 'Plan your visit to the National Museum in Gaborone and get to know the Department of National Museum and Monuments.')}
+  return `${pagehead([['#/', 'Home'], ['', esc(PAGE_COPY.visit.title)]], esc(PAGE_COPY.visit.title), esc(PAGE_COPY.visit.lede))}
   ${subnav(VISIT_SECTIONS.map(([k, l]) => [`#/visit/${k}`, l]))}
 
   <div class="wrap placeholder" id="sec-plan" style="padding-block:48px 64px">
@@ -58,7 +59,7 @@ export function pageVisit() {
         <div class="eyebrow">About the Botswana National Museum and Monuments</div>
         <h2 class="h2" style="margin:10px 0 22px;color:var(--ink)">Sixty years of Botswana’s heritage</h2>
         ${ABOUT.map((t) => `<p>${esc(t)}</p>`).join('')}
-        <p>${esc(DEPT_INTRO)}</p>
+        <p>${esc(DEPT_COPY.intro)}</p>
       </div>
       <!-- The museum photos fill the column beside the text instead of
            sitting in a strip below it, which left a gap under the picture. -->
@@ -76,8 +77,8 @@ export function pageVisit() {
       <div>
         <div class="prose"><div class="eyebrow">History</div><h2 class="h3" style="margin:10px 0 16px;color:var(--ink)">From a board-run institution to a government department</h2>${HISTORY.map((t) => `<p>${esc(t)}</p>`).join('')}</div>
         <div class="statements" id="sec-mission">
-          <blockquote class="statement"><div class="eyebrow">Vision</div><p>${esc(VISION)}</p></blockquote>
-          <blockquote class="statement"><div class="eyebrow">Mission</div><p>${esc(MISSION)}</p></blockquote>
+          <blockquote class="statement"><div class="eyebrow">Vision</div><p>${esc(COPY.vision)}</p></blockquote>
+          <blockquote class="statement"><div class="eyebrow">Mission</div><p>${esc(COPY.mission)}</p></blockquote>
         </div>
       </div>
       <div class="prose"><div class="eyebrow">Operations</div><h2 class="h3" style="margin:10px 0 16px;color:var(--ink)">What the museum does</h2>${OPERATIONS.map((t) => `<p>${esc(t)}</p>`).join('')}<p><a href="#/publications/zebras-voice">Read the Zebra’s Voice →</a></p></div>

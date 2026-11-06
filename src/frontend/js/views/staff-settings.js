@@ -3,7 +3,7 @@
    Everything the museum asked to be able to change without a developer:
    which admission groups exist and what they cost, how many places a slot
    holds, and how long a slot is. Reads and writes go through repo.js, so the
-   page is read-only in the offline demo, where there is no server to save to. */
+   page is read-only offline, where there is no server to save to. */
 import { staffShell } from './staff-shell.js';
 import { toast } from '../ui/toast.js';
 import { store } from '../state/store.js';
@@ -37,6 +37,31 @@ function groupRow(g) {
       ${g.inUse ? '' : `<button class="btn link" type="button" data-act="grp-del" data-key="${g.key}" style="color:var(--full)" ${isOnline() ? '' : 'disabled'}>Delete</button>`}
     </div></td>
   </tr>`;
+}
+
+/* Whether the museum's mail account works is a question only a real message
+   can answer, so the page offers to send one. Switching e-mail on is not in
+   here: it needs the account's host, user and password, which belong in the
+   server's .env and not in a form on a web page. */
+function mailSection() {
+  const admin = !!(store.api.user && store.api.user.role === 'admin');
+  if (!admin || !isOnline()) return '';
+  const on = !!(state.settings && state.settings.emailEnabled);
+
+  return `<section class="setbox">
+    <h2 class="h3" style="margin:0 0 4px">E-mail</h2>
+    <p class="small" style="margin:0 0 12px;max-width:72ch">${on
+    ? 'Confirmations are being sent. A visitor who books gets their code and a link to their ticket.'
+    : 'Not switched on, so the ticket page does not promise a confirmation. It takes the museum’s mail '
+      + 'account in the server’s <code>.env</code> — <code>MAIL_MODE=smtp</code>, <code>SMTP_HOST</code>, '
+      + 'user and password; <code>doc/DEPLOY.md</code> has the lines.'}</p>
+    <div class="formgrid" style="max-width:620px;margin-bottom:12px">
+      <div class="field"><label for="s-mailto">Send a test message to</label>
+        <input id="s-mailto" type="email" placeholder="you@example.org" autocomplete="email"></div>
+    </div>
+    <button class="btn ghost" type="button" data-act="set-mailtest">Send the test message</button>
+    <span class="small muted">· it says plainly whether it went, and why not</span>
+  </section>`;
 }
 
 export function pageStaffSettings() {
@@ -81,6 +106,8 @@ export function pageStaffSettings() {
     <p class="muted" style="margin:0 0 18px">How the opening hours are divided, and how many visitors may enter per slot.
       Slots start at opening time; a remainder shorter than one slot is left out so no slot runs past closing time.</p>
 
+    ${mailSection()}
+
     <form id="setform" class="formgrid" style="max-width:760px" novalidate>
       <div class="field"><label for="s-len">Slot length</label>
         <select id="s-len" ${isOnline() ? '' : 'disabled'}>${s.slotLengths.map((m) => `<option value="${m}" ${m === s.slotMinutes ? 'selected' : ''}>${m} minutes</option>`).join('')}</select>
@@ -91,7 +118,12 @@ export function pageStaffSettings() {
       <div class="field"><label for="s-win">Booking window</label>
         <input id="s-win" type="number" min="1" max="365" value="${s.bookingWindowDays}" ${isOnline() ? '' : 'disabled'}>
         <span class="hint">How many days ahead visitors may book.</span></div>
-      <div class="full"><button class="btn" type="submit" ${isOnline() ? '' : 'disabled'}>Save slot settings</button></div>
+      <div class="field"><label for="s-ret">Delete bookings after</label>
+        <input id="s-ret" type="number" min="0" max="3650" value="${s.bookingRetentionDays || 0}" ${isOnline() ? '' : 'disabled'}>
+        <span class="hint">Days after the visit. <b>0 keeps them</b>. A booking holds a name, an e-mail address and
+          usually a phone number, so this is the period the privacy notice promises — it says what is set here.</span></div>
+      <div class="full"><button class="btn" type="submit" ${isOnline() ? '' : 'disabled'}>Save slot settings</button>
+        ${s.bookingRetentionDays ? `<button class="btn ghost" type="button" data-act="set-purge" ${isOnline() ? '' : 'disabled'}>Delete old bookings now</button>` : ''}</div>
     </form>
 
     <p class="small muted" style="margin-top:28px">Payment is always taken at the front desk; the website never charges anyone online.
@@ -124,6 +156,39 @@ export function invalidateSettings() { state.groups = null; state.settings = nul
 /* ---- actions, called from events/bind.js ---- */
 
 const pula = (el) => Math.round(Number(el.value || 0) * 100);
+
+export async function sendTestMail(rerender) {
+  const el = $('#s-mailto');
+  const to = (el && el.value || '').trim();
+  if (!to.includes('@')) { toast('Please enter an e-mail address.'); if (el) el.focus(); return; }
+  try {
+    const out = await repo.sendTestMail(to);
+    if (out.sent && out.mode === 'outbox') {
+      toast('Written to the server’s outbox folder — nothing left the machine (MAIL_MODE=outbox).');
+    } else if (out.sent) {
+      toast(`Sent to ${to}. If it does not arrive, look in the spam folder first.`);
+    } else if (!out.enabled) {
+      toast('E-mail is switched off on this server (MAIL_MODE=off).');
+    } else {
+      toast('The server could not send it. The reason is in the API log: docker compose logs api');
+    }
+  } catch (e) { toast(e.message || 'Could not send the test message.'); }
+  if (rerender) rerender();
+}
+
+export async function purgeBookings(rerender) {
+  const days = (state.settings || {}).bookingRetentionDays || 0;
+  if (!days) { toast('Set a retention period first.'); return; }
+  if (!confirm(`Delete every booking whose visit was more than ${days} days ago? This cannot be undone.`)) return;
+  try {
+    const out = await repo.purgeBookings();
+    toast(out.deleted
+      ? `${out.deleted} old booking(s) deleted.`
+      : 'Nothing was old enough to delete.');
+  } catch (e) { toast(e.message || 'Could not delete the old bookings.'); }
+  invalidateSettings();
+  await bindSettings(rerender);
+}
 
 export async function saveGroupPrice(key, rerender) {
   const el = $(`[data-price="${key}"]`);
@@ -177,6 +242,7 @@ export async function saveVisitSettings(rerender) {
       slotMinutes: Number($('#s-len').value),
       capacityPerSlot: Number($('#s-cap').value),
       bookingWindowDays: Number($('#s-win').value),
+      bookingRetentionDays: Number($('#s-ret').value || 0),
     });
     toast('Saved. New bookings use the new slots right away.');
   } catch (e) { toast(e.message || 'Could not save the settings.'); }

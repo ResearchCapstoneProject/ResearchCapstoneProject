@@ -38,3 +38,7 @@ when the image changed, which a database change does not. `README.md` has the fu
 | file | what it does |
 | --- | --- |
 | `2026-11-05-slot-minutes.sql` | `booking.visit_minute`, the `slot_minutes` setting, free admission as one visitor group |
+| `2026-11-05-site-content.sql` | event fields (speaker, text, flyer), the `publication` table, the `image_override` table |
+| `2026-11-05-booking-event.sql` | `booking.event_id`, so a booking can name the event it came from |
+| `2026-11-05-text-overrides.sql` | the `text_override` table behind "Texts" in the staff area |
+| `2026-11-06-remove-demonstration.sql` | deletes the invented records, drops the `exhibition`, `tour` and `tour_stop` tables and the `demo_mode` setting |

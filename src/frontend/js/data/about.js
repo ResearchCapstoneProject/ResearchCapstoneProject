@@ -24,9 +24,12 @@ export const HISTORY = [
   'As a result, the institution was taken over by the Government in 1976. It is currently under the Ministry of Environment and Tourism.',
 ];
 
-export const VISION = '“We, the Botswana National Museum, will be a model institution in the provision of a sustainable cultural and natural heritage service.”';
-
-export const MISSION = '“The Botswana National Museum exists to protect, preserve and promote Botswana’s cultural and natural heritage for sustainable utilization thereof by collecting, researching, conserving and exhibiting for public education and appreciation.”';
+/* An object, not two string exports: the staff area's text editor assigns
+   into it, and an imported string binding cannot be reassigned. */
+export const COPY = {
+  vision: '“We, the Botswana National Museum, will be a model institution in the provision of a sustainable cultural and natural heritage service.”',
+  mission: '“The Botswana National Museum exists to protect, preserve and promote Botswana’s cultural and natural heritage for sustainable utilization thereof by collecting, researching, conserving and exhibiting for public education and appreciation.”',
+};
 
 export const OPERATIONS = [
   'The Botswana National Museum has a myriad of specialist disciplines including archaeology, heritage management, zoology, geology, botany, education, anthropology and history. It is through the work of professionals in these areas that it carries out its mandate of protecting, conserving, researching, collecting and disseminating information on Botswana’s heritage.',

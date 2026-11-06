@@ -53,8 +53,8 @@ breaks every cycle between the data, view and event layers.
 Two rules, both silent-breakage traps:
 
 1. **Never `const { S } = store;` at module scope.** That captures the
-   reference and goes stale the moment "Reset demo" or "New booking" replaces
-   it. Inside a function body is fine.
+   reference and goes stale the moment "New booking" replaces it. Inside a
+   function body is fine.
 2. `state/store.js` imports nothing, so values needing other modules
    (`store.SB`) are set by `initState()` in `main.js`.
 
@@ -96,16 +96,16 @@ object wearing a retired one, which is the thing an accession register exists
 to prevent. `UPDATE inventory_counter SET next_seq = LAST_INSERT_ID(next_seq+1)`
 takes an InnoDB row lock and is atomic and monotonic.
 
-Counters are **not** reset by the demo reset. That is deliberate and looks
-like a bug if you do not know.
+Counters are **never** reset, not even when rows are deleted. That is
+deliberate and looks like a bug if you do not know.
 
 **A slot is a start time, not an hour.** `setting.slot_minutes` is set in the
 staff area, so `booking.visit_minute` is part of the slot identity and of the
 capacity lock. Slots tile the opening hours from opening time; a remainder
 shorter than one slot is dropped rather than letting the last slot overrun
 closing time. `slot_starts()` in the backend and `slotStarts()` in
-`js/data/opening.js` must stay in agreement, or the offline demo offers a slot
-the API then rejects.
+`js/data/opening.js` must stay in agreement, or the offline fallback offers a
+slot the API then rejects.
 
 **Visitor groups are data, not code.** The museum starts with one free
 `Admission` group and adds priced groups in the staff area. A group that has
@@ -126,7 +126,7 @@ types "Storeroom B".
 
 **Search ships as `LIKE`.** It reproduces the prototype's `matches()` exactly:
 split on whitespace, every word must appear. `FULLTEXT` is indexed and ready,
-but is not the default because it surprises people in a demo — the default
+but is not the default because it surprises people — the default
 `innodb_ft_min_token_size` of 3 drops two-letter words, the stopword list
 drops common English, and `BNM-ETH-0142` tokenises to `BNM`/`ETH`/`0142`, so
 searching a full inventory number matches the whole department. Flip it with
@@ -144,6 +144,165 @@ step applies every migration it has not seen; `README.md` has the order. The
 failure this prevents is specific: new code selecting `booking.visit_minute`
 from a database that does not have it, which MySQL answers with error 1054 on
 every booking query.
+
+## The appearance kit
+
+`css/base/tokens.css` already expressed every colour and face as a custom
+property, which is what makes the staff area's Appearance page cheap: it sets
+eight variables on `:root` and the whole site restyles, with no re-render and
+no second stylesheet. `core/theme.js` owns that, `services/theme.py` owns the
+server half, and the values live in `setting` rows under a `theme.` prefix --
+so the kit needed no migration, and a missing row means "the shipped design".
+
+Two rules are deliberate and worth keeping:
+
+**Three colours, not eleven.** Staff pick the museum colour, the action
+colour and an accent. `--sky-soft`, `--ochre-soft`, `--sand` and `--ochre-ink`
+are derived from them in the browser, and anything that carries text is
+darkened in a loop until it reaches 4.5:1 against white. A museum should not
+be able to produce unreadable text by choosing a nice pastel for its logo.
+
+**Fonts are either bundled or uploaded, never fetched.** The catalogue holds
+the two faces in `assets/fonts/`, two device stacks that download nothing,
+and whatever `.woff2` the museum uploads -- which is validated by its `wOF2`
+magic bytes, not by the file name. No Google Fonts: the galleries have no
+reliable connection, and an exhibition label should not wait on a CDN.
+
+The masthead is the one piece that is markup rather than a variable, so
+`applyTheme()` writes the name, the tagline and an uploaded logo's `src` into
+it in place. That is also what makes the staff page's live preview reach the
+header while someone is still typing in a field -- re-rendering the shell
+would take the focus out of it.
+
+## Personal data
+
+A booking holds a name, an e-mail address, usually a phone number and the day
+somebody was in the building; a staff session holds a password hash. Three
+decisions carry that:
+
+**Transport.** `Caddyfile.https` plus `COOKIE_SECURE=1` are the whole of it,
+switched on by two lines in the server's `.env` (see `README.md`). Without
+HTTPS everything above travels readable, and `COOKIE_SECURE=1` without HTTPS
+locks the staff out instead -- which is why they are documented as one step.
+
+**Retention.** `services/retention.py` deletes bookings whose visit is longer
+ago than a period the museum sets, on every API start and whenever the staff
+area asks. The default is 0, meaning keep: a deployment must not start
+deleting records because a developer chose a number. The booking lines are
+deleted explicitly rather than left to the foreign key -- MySQL cascades,
+SQLite only does with foreign keys switched on, and a deletion that depends
+on which database it runs against is not one to trust with personal data.
+
+**Deletion on request.** An administrator can delete one booking, which is
+the answer to "please remove my data". The audit entry keeps the booking code
+and nothing else: a log that recorded who had been deleted would defeat the
+deletion. Scan statistics never hold a person in the first place -- see
+`services/privacy.py`, where the IP and user agent become a hash with a
+daily-rotating salt.
+
+## E-mail
+
+`services/mail.py` has three modes, and the middle one is why the wording in
+the interface can be trusted: `off` sends nothing **and** tells the frontend
+so through `GET /api/config`, `outbox` writes the message to a file, `smtp`
+hands it to a server. A deployment without a mail account therefore needs no
+code change, and nobody has to take "the e-ticket has been sent" on faith
+while nothing is configured.
+
+Two rules in that module matter more than the wording:
+
+**A message never fails a booking.** Sending happens in a FastAPI background
+task, after the response, and every exception is caught and logged. The
+visitor has a slot, a code and a ticket on screen; a mail server that is down
+must not turn that into an error. The confirmation builder takes plain values
+rather than the `Booking` row, because the request's session is closed by the
+time the task runs and a detached row would raise on the first attribute it
+had not loaded.
+
+**The link in the mail does not leak the visitor's record.**
+`GET /api/bookings/{code}` is public -- it has to be, it is that link -- so it
+answers with `TicketOut`: code, day, slot, tickets, visitors, name, event. No
+e-mail address, no phone number, no country. The name stays because it is on
+the ticket the visitor is holding, and the code is random enough to be the
+only key, the same arrangement as a flight reference.
+
+## The demonstration, and where it went
+
+Until November 2026 the site carried a second tier of data: records the
+project invented so the thing could be shown before the museum had entered
+anything. Sample bookings (`source='demo'`), a generated scan history
+(`source='seed'`), the prototype's exhibitions and themed tours, and a note on
+the legal pages, in the footer and in the staff area saying so -- all of it
+switched on by a `demo_mode` setting, and all of it removable in one press of
+a **Going live** button in Staff -> Settings.
+
+That button has been applied and removed. The seeder creates none of those
+records, the `exhibition`, `tour` and `tour_stop` tables are gone, the
+`demo_mode` setting is gone, and `doc/migrations/2026-11-06-remove-demonstration.sql`
+brings a database that already holds data to the same place.
+
+The distinction that made the button safe is still worth knowing, because it
+is what the migration deletes and what it does not: all 60 objects carry a
+catalogue page from *Art and Crafts of Botswana*, so there was never such a
+thing as a sample object, and nothing has ever touched `museum_object`.
+Bookings a visitor made and `source='qr'` scans are real traffic and stay.
+
+The migration deletes booking lines explicitly instead of leaving them to the
+foreign key, for the reason given under Personal data: the cascade exists in
+MySQL and not in SQLite, and an orphaned line is a row nobody ever looks at
+again.
+
+## Rewriting a text
+
+The museum can change any text the site carries as content, and the mechanism
+is the same idea as the picture swaps: an override keyed by where the thing
+lives, applied over the bundled original.
+
+The key is the **path into the content modules** -- `pagecopy.events.lede`,
+`explore.SITES.2.blocks.1.p.0`. `core/text.js` walks the modules once at load,
+which gives every string a key and remembers the original, then writes the
+museum's version over it before the first render. A named key per sentence was
+the alternative and is worse: somebody has to invent and maintain it, and the
+first text added without one is a text nobody can edit.
+
+Three consequences worth knowing. A text goes back to the original by
+deleting a row, with no second copy of the original anywhere. A key that has
+moved on (a text renamed in a later version) is ignored rather than applied
+somewhere random, because `assign()` only ever replaces a string that is
+already there. And the walk skips fields that are an address rather than
+prose -- `key`, `id`, `href`, `cover`, `pdf` and friends -- so the editor
+cannot break a lookup or a link; `SKIP_FIELDS` in `core/text.js` is that
+list, and it is the thing to extend when a new content field appears.
+
+What this does not cover, deliberately: the words the interface is made of.
+Those live in the templates, and an editor for them buys a half-rewritten
+screen for no museum benefit. It is also why `data/pagecopy.js` exists -- the
+page headings and introductions moved out of the templates and into a data
+module, which is what made them editable at all.
+
+## Replacing a picture
+
+The site renders photographs in a dozen templates, and some build their path
+from a constant, so a resolver each template had to call would be forgotten
+exactly once and then be wrong on one page for a year. `core/assets.js`
+therefore works on the DOM: `GET /api/config` carries a map of bundled path ->
+upload, the router calls `applyImageOverrides($('#app'))` after every render,
+and the shell does the same for the masthead and the footer. A replacement
+reaches every page that shows that file, including pages written later.
+
+Two details that are easy to get wrong: the swap also drops `srcset` and
+`sizes`, because a leftover `srcset` wins over `src` in the browser's own
+selection -- the original would then come back on exactly the wide screen
+somebody is presenting on. And the stored key is checked against
+`/assets/img/` and `/assets/publications/` on the way in: it is a lookup key
+that every visitor's browser receives, not a URL, so it is not a place to
+park a link.
+
+The gallery in the staff area is scanned out of the content modules
+(`collectAssets` walks `ABOUT`, `DEPARTMENTS`, `SECTIONS`, `PUB_TYPES` for
+strings that look like an asset path) rather than being a list somebody keeps
+up to date. Add a photo to a monument and it is offered for replacement
+without a line of code.
 
 ## Online and offline
 
@@ -173,7 +332,9 @@ classic bug in this pattern. Other 4xx do not degrade either — a `409` on a
 full slot is a business answer, rendered as a form error.
 
 To see it: `docker compose --profile demo up`, then `:8080` (no API) versus
-`:8000` (live). Same files, two origins.
+`:8000` (live). Same files, two origins. The profile is named `demo` because
+it demonstrates the fallback; it has nothing to do with the demonstration
+data that used to ship with the site.
 
 ## What is still simulated
 
@@ -182,17 +343,23 @@ e-mail, the newsletter, the audio guide, Setswana and AR.
 `core/config.js` has a `FEATURES` object listing them in one place — that list
 is also the answer to several questions in `doc/TODO.md`.
 
-Scan statistics are **real rows** now, but the seeded history carries
-`source='seed'` and the staff simulate button carries `source='staff_demo'`,
-so nobody mistakes generated demo data for measurement. Only `source='qr'` is
-a visitor.
+Scan statistics and slot occupancy are **measured**, not generated. The
+staff statistics page reads `GET /api/staff/stats/scans` and the ticket page
+reads `GET /api/availability`; the prototype hashed the date for both, and
+nothing does any more. The staff "Simulate visitor scan" button still exists
+-- it is how a label is tested in a gallery -- but it writes
+`source='staff_demo'` and the chart counts it separately, so only
+`source='qr'` is a visitor.
+
+Offline there is no server to count anything, so both pages fall back to what
+this browser itself did and say so.
 
 ## Things that cost an afternoon if you do not know
 
 - `/docker-entrypoint-initdb.d` runs **only when the `dbdata` volume is
   empty**. After changing the schema: `docker compose down -v` locally, and a
   migration from `doc/migrations/` anywhere the data has to survive.
-- The server has **no `--reload`** (`compose.override.yaml`), and the source
+- The server has **no `--reload`** (`compose.prod.yaml`), and the source
   tree is a bind mount. `git pull` alone therefore ships the new frontend to
   visitors while the API still runs the old code: restart `api` in the same
   breath.

@@ -1,9 +1,13 @@
-/* Reference data. Everything here becomes a table in MySQL and is served
-   by GET /api/config once the backend lands. */
+/* Reference data: departments, gallery names, the floor plan, opening hours.
+   The server holds all of it and GET /api/config overwrites what is below, so
+   these values are only what the site falls back to when the API cannot be
+   reached. */
+import { applyTheme } from '../core/theme.js';
+import { setImageOverrides } from '../core/assets.js';
 
 /* ------------------------------------------------------------------
-   Sample content — every record here is demo data for the prototype.
-   The museum will replace it through the staff area (CMS).
+   The museum maintains all of this in the staff area; what stands here is
+   the last state the frontend shipped with, for the offline fallback.
 ------------------------------------------------------------------- */
 export const DEPTS = [
   { key: 'Archaeology', code: 'ARC' },
@@ -48,13 +52,19 @@ export let CAPACITY = 40;
 /* Length of one entry slot in minutes. The museum changes this in the staff
    area; GET /api/config carries the current value. */
 export let SLOT_MINUTES = 60;
+/* Days after a visit before a booking is deleted; 0 while the museum has not
+   set a period. The privacy notice states whichever it is. */
+export let RETENTION_DAYS = 0;
+/* Whether the server can send a confirmation. The ticket page promises one
+   only when it can. */
+export let EMAIL_ENABLED = false;
 export const TOUR_TIMES = [];
 export const HOLIDAYS = { '09-30': 'Botswana Day', '10-01': 'Public holiday', '12-25': 'Christmas' };
 /* Prices are in THEBE (100 thebe = 1 pula), matching price_thebe in the
    database, so money() has a single unit to format. */
 /* Admission is free and the same for everyone until the museum says
    otherwise. Visitor groups and their prices are maintained in the staff
-   area, so this is only the fallback the offline demo starts from. */
+   area, so this is only the fallback the site starts from offline. */
 export const TICKETS = [
   { key: 'gen', name: 'Admission', desc: 'Free entry for all visitors', price: 0 },
 ];
@@ -93,12 +103,8 @@ export const NAV = [
   ['departments', 'Departments', 'departments'],
 ];
 export const PAGES = {
-  learn: { t: 'Learn', l: 'Programmes for schools, families and lifelong learners.', items: ['School visits and teaching material per grade', 'Holiday workshops', 'Outreach: the museum’s mobile exhibitions in rural areas'], chip: 'Planned' },
   groups: { t: 'Groups & schools', l: 'Booking for school classes and larger groups.', items: ['Request form for school groups', 'Group sizes and supervision', 'Links to the ticketing system with group capacity'], chip: 'Next iteration' },
   accessibility: { t: 'Accessibility', l: 'Step-free access, assistance and easy-to-read information.', items: ['Access & seating', 'Easy English and Setswana texts', 'Contrast and font-size options on the website'], chip: 'Next iteration' },
-  press: { t: 'Press', l: 'Press releases and images.', items: ['Press releases', 'Image downloads', 'Contacts'], chip: 'Planned' },
-  ar: { t: 'AR in the galleries', l: 'Augmented reality on visitors’ phones, triggered by the same QR labels.', items: ['3D models from digitisation', '“View in your room” for selected objects', 'Reconstruction of objects in their original setting'], chip: 'Planned · phase 2' },
-  displays: { t: 'Interactive displays', l: 'Touch screens in the galleries that show content from the collection database.', items: ['Kiosk mode of the collection website', 'Themed stories per gallery', 'Content managed in the same staff area'], chip: 'Planned · phase 2' },
 };
 
 
@@ -110,6 +116,11 @@ export const PAGES = {
    without a re-import. CAPACITY is a scalar, so it is a `let`. */
 export function applyServerConfig(cfg) {
   if (!cfg) return;
+
+  /* Colours, fonts, logo and wording. Applied first, so the shell and the
+     home page render with the museum's own look rather than repainting. */
+  if (cfg.theme) applyTheme(cfg.theme);
+  if (cfg.imageOverrides) setImageOverrides(cfg.imageOverrides);
 
   if (cfg.departments) {
     DEPTS.length = 0;
@@ -155,5 +166,7 @@ export function applyServerConfig(cfg) {
 
   if (typeof cfg.capacity === 'number') CAPACITY = cfg.capacity;
   if (typeof cfg.slotMinutes === 'number') SLOT_MINUTES = cfg.slotMinutes;
+  if (typeof cfg.bookingRetentionDays === 'number') RETENTION_DAYS = cfg.bookingRetentionDays;
+  if (typeof cfg.emailEnabled === 'boolean') EMAIL_ENABLED = cfg.emailEnabled;
   if (cfg.tourTimes) { TOUR_TIMES.length = 0; TOUR_TIMES.push(...cfg.tourTimes); }
 }

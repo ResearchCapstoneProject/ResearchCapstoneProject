@@ -55,6 +55,29 @@ services:
     command: >
       uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
+  # A mail server that catches everything, for testing the confirmations
+  # without a mail account and without anything leaving the machine:
+  #
+  #   docker compose --profile mail up -d
+  #   .env:  MAIL_MODE=smtp  SMTP_HOST=mailpit  SMTP_PORT=1025  SMTP_STARTTLS=0
+  #   then  docker compose up -d   (NOT restart: Compose sets the
+  #         container's environment when it creates it, so a changed
+  #         .env reaches the API only through up -d)
+  #
+  # Every message the site sends then appears at http://localhost:8025.
+  # `latest` rather than a pinned version on purpose: it is a development
+  # tool, it never runs on the server, and nothing depends on its version.
+  mailpit:
+    profiles: ["mail"]
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    # Bound to localhost on purpose. This file is also the base for the
+    # server, and an inbox published there would hand out every visitor's
+    # confirmation to anyone who found the port.
+    ports:
+      - "127.0.0.1:8025:8025"   # the inbox, in a browser
+      - "127.0.0.1:1025:1025"   # SMTP from the host; the API uses mailpit:1025
+
   # Frontend with no API behind it, to demonstrate the offline fallback.
   static:
     profiles: ["demo"]
