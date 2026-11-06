@@ -1,4 +1,5 @@
 """Events, publications and replaced pictures, as the staff area edits them."""
+import re
 from datetime import date
 
 from pydantic import Field, field_validator
@@ -150,6 +151,44 @@ class PublicationPatch(PublicationWrite):
 
 
 # ------------------------------------------------------------ picture swaps
+
+class TextOverrideOut(CamelModel):
+    key: str
+    value: str
+    updated: int       # epoch milliseconds
+
+
+class TextOverrideWrite(CamelModel):
+    key: str = Field(max_length=191)
+    value: str = Field(max_length=20_000)
+
+    @field_validator("key")
+    @classmethod
+    def key_shape(cls, v: str) -> str:
+        """A path into the site's own content, e.g. 'pagecopy.events.lede'.
+
+        The key is handed to every browser in GET /api/config and is used by
+        core/text.js to walk into the content modules, so it is restricted to
+        the shape those paths have -- not a free-text field.
+        """
+        v = v.strip()
+        if not re.fullmatch(r"[a-z][a-z0-9-]*(\.[A-Za-z0-9_-]+){1,8}", v):
+            raise ValueError("That is not a text of this website.")
+        # core/text.js refuses these segments as well, and only ever replaces
+        # a string that is already there -- but a key that walks into an
+        # object's prototype has no business being stored in the first place.
+        if {"__proto__", "constructor", "prototype"} & set(v.split(".")):
+            raise ValueError("That is not a text of this website.")
+        return v
+
+    @field_validator("value")
+    @classmethod
+    def not_empty(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Please enter some text, or reset it to the original.")
+        return v
+
 
 class ImageOverrideOut(CamelModel):
     path: str          # the bundled path the site ships with

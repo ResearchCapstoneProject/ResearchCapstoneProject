@@ -17,7 +17,9 @@ export function eventRow(ev, past = false) {
   const d = fromKey(ev.d);
   const action = past
     ? (ev.pdf ? `<a class="btn ghost small" href="${esc(ev.pdf)}" target="_blank" rel="noopener">Flyer (PDF)</a>` : '<span class="chip">Past</span>')
-    : '<a class="btn ghost small" href="#/tickets">Book</a>';
+    /* With an id the ticket page knows which event it is booking for; the
+       bundled offline programme has none, and then it is a plain link. */
+    : `<a class="btn ghost small" href="${ev.id ? `#/tickets/event/${ev.id}` : '#/tickets'}">Book</a>`;
   return `<div class="event${past ? ' past' : ''}">
     <div class="date"><b>${d.getDate()}</b><span>${d.toLocaleDateString('en-GB', { month: 'short' })}<br>${past ? d.getFullYear() : d.toLocaleDateString('en-GB', { weekday: 'short' })}</span></div>
     <div><div class="eyebrow">${esc(ev.kind)}</div><h3>${esc(ev.title)}</h3><div class="meta">${esc(ev.time)} · ${esc(ev.place)}${ev.by ? ` · ${esc(ev.by)}` : ''}</div>${ev.text ? `<p class="evtext">${esc(ev.text)}</p>` : ''}</div>

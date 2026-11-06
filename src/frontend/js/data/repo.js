@@ -19,6 +19,18 @@ import {
   applyServerConfig, CAPACITY, EVENTS, SLOT_MINUTES, TICKETS,
 } from './constants.js';
 import { overrides } from '../core/assets.js';
+import { applyTextOverrides, setTextOverrides } from '../core/text.js';
+
+/* Everything GET /config carries, applied in one place: the reference data
+   and the look (applyServerConfig), the museum's own texts, and the picture
+   swaps (which applyServerConfig passes on to core/assets.js). Used at boot
+   and again after a change in the staff area. */
+function applyConfig(cfg) {
+  applyServerConfig(cfg);
+  setTextOverrides(cfg && cfg.texts);
+  applyTextOverrides();
+  return cfg;
+}
 import { applyTheme, contrastOnWhite, THEME } from '../core/theme.js';
 import { ApiError, Unreachable, probeHealth, request } from './api.js';
 import {
@@ -74,8 +86,7 @@ export async function bootstrap() {
 
   if (ok) {
     try {
-      const cfg = await request('/config');
-      applyServerConfig(cfg);
+      const cfg = applyConfig(await request('/config'));
       setPublicBaseUrl(cfg.publicBaseUrl);
       store.api.user = await currentUser();
       store.S = await loadFromApi();
@@ -98,11 +109,24 @@ export async function bootstrap() {
   return store.api.mode;
 }
 
+/* The API and the offline store disagreed on two field names: the server
+   says `minute` and `totalThebe`, the browser's own bookings say `min` and
+   `total`. Everything that renders a booking reads the second pair, so every
+   booking coming off the API passes through here -- which also quietly fixes
+   the staff list, where a server booking's start minute used to read as 0. */
+const fromApi = (b) => ({
+  ...b,
+  min: b.minute || 0,
+  total: b.totalThebe || 0,
+  checkedIn: !!b.checkedIn,
+});
+
 async function loadFromApi() {
   const [objects, bookings, events, publications] = await Promise.all([
     request('/objects').then((r) => r.items),
     // Bookings are staff-only; a visitor simply has none to show.
-    store.api.user ? request('/staff/bookings') : Promise.resolve([]),
+    store.api.user ? request('/staff/bookings').then((r) => r.map(fromApi))
+      : Promise.resolve([]),
     request('/events'),
     request('/publications'),
   ]);
@@ -253,8 +277,8 @@ export async function availability(startKey, days) {
 
 export async function createBooking(payload) {
   if (isOnline()) {
-    const b = await call(() =>
-      request('/bookings', { method: 'POST', body: payload }));
+    const b = fromApi(await call(() =>
+      request('/bookings', { method: 'POST', body: payload })));
     store.S.bookings.push(b);
     return b;
   }
@@ -268,9 +292,9 @@ export async function createBooking(payload) {
 
 export async function checkIn(code) {
   if (isOnline()) {
-    const b = await call(() =>
+    const b = fromApi(await call(() =>
       request(`/staff/bookings/${encodeURIComponent(code)}/check-in`,
-        { method: 'POST' }));
+        { method: 'POST' })));
     const i = store.S.bookings.findIndex((x) => x.code === code);
     if (i >= 0) store.S.bookings[i] = b;
     return b;
@@ -286,9 +310,7 @@ export async function checkIn(code) {
    capacity and the slot length the visitor-facing pages hold are the ones
    the museum just saved -- without a reload. */
 async function refreshConfig() {
-  const cfg = await call(() => request('/config'));
-  applyServerConfig(cfg);
-  return cfg;
+  return applyConfig(await call(() => request('/config')));
 }
 
 function offlineOnly() {
@@ -440,6 +462,23 @@ export async function uploadPublicationFile(id, what, file) {
     request(`/staff/publications/${encodeURIComponent(id)}/${what}`, { method: 'POST', form }));
   await refreshContent();
   return saved;
+}
+
+// -------------------------------------------------------- the museum's texts
+
+export async function saveText(key, value) {
+  if (!isOnline()) return offlineOnly();
+  const saved = await call(() =>
+    request('/staff/texts', { method: 'PUT', body: { key, value } }));
+  await refreshConfig();      // re-applies the texts for every open page
+  return saved;
+}
+
+export async function clearText(key) {
+  if (!isOnline()) return offlineOnly();
+  await call(() =>
+    request(`/staff/texts?key=${encodeURIComponent(key)}`, { method: 'DELETE' }));
+  await refreshConfig();
 }
 
 // ------------------------------------------------------------ replaced images

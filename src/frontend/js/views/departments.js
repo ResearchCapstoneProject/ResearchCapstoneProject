@@ -2,13 +2,14 @@ import { pagehead } from '../ui/cards.js';
 import { banner, blocks, card, photos } from '../ui/content.js';
 import { pageNotFound } from './notfound.js';
 import { esc } from '../core/dom.js';
-import { CRAFTS, DEPARTMENTS, DEPT_INTRO, craftByKey, deptByKey } from '../data/departments.js';
+import { CRAFTS, DEPARTMENTS, DEPT_COPY, craftByKey, deptByKey } from '../data/departments.js';
+import { PAGE_COPY } from '../data/pagecopy.js';
 
 const firstSentence = (t) => t.split(/(?<=\.)\s/)[0];
 
 /* ---------------- #/departments ---------------- */
 export function pageDepartments() {
-  return `${pagehead([['#/', 'Home'], ['', 'Departments']], 'Departments', esc(DEPT_INTRO))}
+  return `${pagehead([['#/', 'Home'], ['', esc(PAGE_COPY.departments.title)]], esc(PAGE_COPY.departments.title), esc(DEPT_COPY.intro))}
   <div class="wrap" style="padding-block:40px 80px">
     <div class="cgrid">${DEPARTMENTS.map((d) => card({ href: `#/departments/${d.key}`, img: d.cover, eyebrow: 'Division', title: d.name, text: firstSentence(d.lede) })).join('')}</div>
   </div>`;

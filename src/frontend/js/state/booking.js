@@ -18,7 +18,10 @@ export const taken = (k, h, m = 0) => Math.min(CAPACITY, sampleOcc(k, h, m) + on
 /* Quantities are keyed by whatever groups the museum has defined, so a group
    added in the staff area needs no change here. */
 export const emptyQ = () => Object.fromEntries(TICKETS.map((t) => [t.key, 0]));
-export const newT = () => ({ step: 1, date: null, hour: null, min: 0, q: emptyQ(), name: '', email: '', phone: '', country: 'Botswana', pay: 'desk', agree: false, done: null, err: {} });
+/* `eventId` is set when the visitor came from an event's Book button; the
+   ticket page then says which event they are booking for and the booking
+   carries it to the front desk. */
+export const newT = () => ({ step: 1, date: null, hour: null, min: 0, q: emptyQ(), name: '', email: '', phone: '', country: 'Botswana', pay: 'desk', agree: false, done: null, err: {}, eventId: null, busy: false });
 /* Add-ons (a guided tour, say) accompany a visitor rather than being one. */
 export const visitorsOf = (q) => TICKETS.filter((t) => !t.addon).reduce((a, t) => a + (q[t.key] || 0), 0);
 export const addonsOf = (q) => TICKETS.filter((t) => t.addon).reduce((a, t) => a + (q[t.key] || 0), 0);

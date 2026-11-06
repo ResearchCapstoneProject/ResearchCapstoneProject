@@ -3,9 +3,10 @@ import { store } from '../state/store.js';
 import { $, esc } from '../core/dom.js';
 import { DEPTS } from '../data/constants.js';
 import { filtered } from '../state/query.js';
+import { PAGE_COPY } from '../data/pagecopy.js';
 
 export function pageCollection() {
-  return `${pagehead([['#/', 'Home'], ['', 'Collection Online']], 'Collection Online', 'Explore objects from the museum’s archaeology, ethnography, natural history, history and art collections – including many that are not on display.')}
+  return `${pagehead([['#/', 'Home'], ['', esc(PAGE_COPY.collection.title)]], esc(PAGE_COPY.collection.title), esc(PAGE_COPY.collection.lede))}
   <div class="wrap">
     <div class="filters">
       <form class="search" id="colsearch" role="search"><label class="sr-only" for="cq">Search the collection</label><input type="search" id="cq" value="${esc(store.CQ.q)}" placeholder="Search by title, place, material or inventory number"><button class="btn" type="submit">Search</button></form>

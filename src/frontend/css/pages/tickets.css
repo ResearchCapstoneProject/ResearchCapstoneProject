@@ -69,3 +69,9 @@
 .eticket dd { margin: 0; font-weight: 600; }
 .eticket .flagrule { height: 10px; }
 @media (max-width: 620px) { .eticket { grid-template-columns: 1fr; } .eticket .r { border-left: 0; border-top: 2px dashed var(--ink); } }
+
+/* A booking that came from an event's Book button. */
+.evstrip { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: space-between;
+  margin: 0 0 18px; padding: 12px 16px; background: var(--sky-soft); border-radius: var(--radius); }
+.evstrip b { display: block; font-size: 17px; }
+.evstrip .small { display: block; }

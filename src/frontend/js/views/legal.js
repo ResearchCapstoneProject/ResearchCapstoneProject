@@ -2,6 +2,8 @@ import { pagehead } from '../ui/cards.js';
 import { blocks } from '../ui/content.js';
 import { CONTACT } from '../data/about.js';
 import { LS_KEY } from '../core/config.js';
+import { PAGE_COPY } from '../data/pagecopy.js';
+import { esc } from '../core/dom.js';
 
 /* Imprint and privacy notice.
 
@@ -16,7 +18,7 @@ const DRAFT = `<div class="callout" style="margin-bottom:36px"><div><div class="
 const address = [CONTACT.name, CONTACT.street, CONTACT.box, `Tel: ${CONTACT.tel.join(' / ')}`, `Fax: ${CONTACT.fax}`];
 
 export function pageImprint() {
-  return `${pagehead([['#/', 'Home'], ['', 'Imprint']], 'Imprint', 'Who publishes this website and who owns its content.')}
+  return `${pagehead([['#/', 'Home'], ['', esc(PAGE_COPY.imprint.title)]], esc(PAGE_COPY.imprint.title), esc(PAGE_COPY.imprint.lede))}
   <div class="wrap" style="padding-block:40px 80px">
     ${DRAFT}
     <div class="textblocks">${blocks([
@@ -40,7 +42,7 @@ export function pageImprint() {
 }
 
 export function pagePrivacy() {
-  return `${pagehead([['#/', 'Home'], ['', 'Privacy']], 'Privacy notice', 'Which personal data this website processes, why, and what your rights are.')}
+  return `${pagehead([['#/', 'Home'], ['', esc(PAGE_COPY.privacy.title)]], esc(PAGE_COPY.privacy.title), esc(PAGE_COPY.privacy.lede))}
   <div class="wrap" style="padding-block:40px 80px">
     ${DRAFT}
     <div class="textblocks">${blocks([

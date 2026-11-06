@@ -6,7 +6,11 @@
    be revised. */
 import { IMG } from './about.js';
 
-export const DEPT_INTRO = 'The Botswana National Museum is a multi-disciplinary institution with heritage collection of Ethnography, Archaeology, Audio-visual documentation and Natural History under its custody.';
+/* An object for the same reason as about.js's COPY: the text editor in the
+   staff area assigns into it. */
+export const DEPT_COPY = {
+  intro: 'The Botswana National Museum is a multi-disciplinary institution with heritage collection of Ethnography, Archaeology, Audio-visual documentation and Natural History under its custody.',
+};
 
 const ETH = `${IMG}/ethnology`;
 const NH = `${IMG}/natural-history/pix`;

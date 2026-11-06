@@ -76,3 +76,14 @@ table.data tr.new td { background: #FBF6E9; }
 .imname { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .imacts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .imacts .btn.link { padding: 0; font-size: 13px; }
+
+/* ---------- text editor (staff/texts) ---------- */
+.txtbar { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: flex-end; margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.txtitem { padding: 12px 14px; margin-bottom: 12px; border: 1px solid var(--line); border-left: 3px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+.txtitem.on { border-left-color: var(--ok); }
+.txthead { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; margin-bottom: 6px; }
+.txthead code { margin-left: auto; opacity: .6; }
+.txtitem textarea { width: 100%; font: inherit; font-size: 15px; line-height: 1.5; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); color: var(--ink); resize: vertical; }
+.txtitem .actions { display: flex; gap: 14px; margin-top: 6px; }
+.txtitem details { margin-top: 8px; color: var(--muted); }
+.txtitem details summary { cursor: pointer; }

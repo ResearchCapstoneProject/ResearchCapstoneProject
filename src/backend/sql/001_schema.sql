@@ -238,6 +238,16 @@ CREATE TABLE publication (
   KEY idx_publication_type (type_key, sort_order)
 ) ENGINE=InnoDB;
 
+-- One text the museum rewrote. The key is the path into the site's own
+-- content modules ('pagecopy.events.lede'), so a reset is a deleted row and
+-- the bundled text is always still there underneath.
+CREATE TABLE text_override (
+  text_key   VARCHAR(191) NOT NULL PRIMARY KEY,
+  value      TEXT         NOT NULL,
+  updated_at DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+                            ON UPDATE CURRENT_TIMESTAMP(3)
+) ENGINE=InnoDB;
+
 -- One replaced picture. The key is the path the site ships with, so a reset
 -- is a deleted row and no view needs to know whether a picture was replaced.
 CREATE TABLE image_override (
@@ -290,11 +300,18 @@ CREATE TABLE booking (
   country       VARCHAR(64)  NOT NULL DEFAULT '',
   source        ENUM('online','desk','demo') NOT NULL DEFAULT 'online',
   status        ENUM('confirmed','cancelled') NOT NULL DEFAULT 'confirmed',
+  -- Set when the visitor booked from an event. ON DELETE SET NULL: removing
+  -- an event from the programme must not take its bookings with it, because
+  -- the people are still coming.
+  event_id      INT UNSIGNED NULL,
   created_at    DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   checked_in_at DATETIME(3)  NULL,
   UNIQUE KEY uq_booking_code (code),
   KEY idx_booking_slot (visit_date, visit_hour, visit_minute, status),
   KEY idx_booking_email (email),
+  KEY idx_booking_event (event_id),
+  CONSTRAINT fk_booking_event FOREIGN KEY (event_id)
+    REFERENCES museum_event(id) ON DELETE SET NULL,
   CONSTRAINT ck_visit_hour   CHECK (visit_hour BETWEEN 0 AND 23),
   CONSTRAINT ck_visit_minute CHECK (visit_minute BETWEEN 0 AND 59)
 ) ENGINE=InnoDB;

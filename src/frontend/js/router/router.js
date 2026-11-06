@@ -19,7 +19,8 @@ import {
   bindPublications, pageStaffPublications, wirePublications,
 } from '../views/staff-publications.js';
 import { bindImages, pageStaffImages, wireImages } from '../views/staff-images.js';
-import { pageTickets } from '../views/tickets.js';
+import { bindTexts, pageStaffTexts, wireTexts } from '../views/staff-texts.js';
+import { pageTickets, startEventBooking } from '../views/tickets.js';
 import { pageDepartment, pageDepartments } from '../views/departments.js';
 import { pageImprint, pagePrivacy } from '../views/legal.js';
 import { pageExplore, pageExploreRoute } from '../views/explore.js';
@@ -74,7 +75,13 @@ export function route() {
     case 'events': html = pageEvents(); title = 'Events'; break;
     case 'imprint': html = pageImprint(); title = 'Imprint'; break;
     case 'privacy': html = pagePrivacy(); title = 'Privacy notice'; break;
-    case 'tickets': if (store.T.step === 4) store.T = newT(); html = pageTickets(); title = 'Tickets'; break;
+    /* #/tickets/event/<id> is where an event's Book button lands: the wizard
+       starts on that event, and the address goes back to #/tickets so a
+       reload does not start it over again. */
+    case 'tickets':
+      if (b === 'event' && c) { startEventBooking(c); history.replaceState(null, '', '#/tickets'); }
+      else if (store.T.step === 4) store.T = newT();
+      html = pageTickets(); title = 'Tickets'; break;
     /* #/collection/<craft> opens the collection filtered to one craft of the
        Art and Crafts of Botswana catalogue; the home page links them so. */
     case 'collection': if (b && store.CQ.craft !== b) store.CQ = newQuery({ craft: b }); html = pageCollection(); title = 'Collection Online'; after = renderResults; break;
@@ -108,6 +115,11 @@ export function route() {
           wireImages(again);
         };
         after = () => bindImages(again);
+      }
+      else if (b === 'texts') {
+        html = pageStaffTexts(); title = 'Texts';
+        const again = () => { $('#app').innerHTML = pageStaffTexts(); wireTexts(again); };
+        after = () => bindTexts(again);
       }
       else if (b === 'design') {
         html = pageStaffDesign(); title = 'Appearance';

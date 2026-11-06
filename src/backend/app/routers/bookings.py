@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from ..db import get_db
 from ..errors import bad_request, conflict, not_found
-from ..models import Booking, BookingLine, TicketType
+from ..models import Booking, BookingLine, MuseumEvent, TicketType
 from ..schemas.bookings import (
     BookingCreate, BookingOut, DayAvailability, SlotOut,
 )
@@ -18,7 +18,8 @@ router = APIRouter(prefix="/api", tags=["visits"])
 def booking_out(b: Booking) -> BookingOut:
     return BookingOut(
         code=b.code, date=b.visit_date.isoformat(), hour=b.visit_hour,
-        minute=b.visit_minute,
+        minute=b.visit_minute, event_id=b.event_id,
+        event_title=b.event.title if b.event else "",
         q={l.ticket_key: l.qty for l in b.lines},
         visitors=b.visitors, total_thebe=b.total_thebe,
         name=b.visitor_name, email=b.email, phone=b.phone, country=b.country,
@@ -75,6 +76,18 @@ def create_booking(payload: BookingCreate, db: Session = Depends(get_db)) -> Boo
     if availability.is_past(payload.date, payload.hour, payload.minute):
         raise bad_request("past_slot", "That time slot has already started.")
 
+    # An event the visitor booked from has to exist, be on the programme and
+    # be on the day they are booking -- otherwise the front desk would get a
+    # ticket that says "for the talk" on a day the talk is not happening.
+    if payload.event_id is not None:
+        event = db.get(MuseumEvent, payload.event_id)
+        if event is None or not event.is_published:
+            raise bad_request("event", "That event is not on the programme.")
+        if event.event_date != payload.date:
+            raise bad_request(
+                "event_date",
+                f"{event.title} is on {event.event_date.isoformat()}.")
+
     visitors = sum(q for k, q in payload.q.items() if not tickets[k].is_addon)
     if visitors < 1:
         raise bad_request("no_visitors", "Please choose at least one ticket.")
@@ -109,6 +122,7 @@ def create_booking(payload: BookingCreate, db: Session = Depends(get_db)) -> Boo
         visitors=visitors, total_thebe=total,
         visitor_name=payload.name, email=payload.email,
         phone=payload.phone, country=payload.country, source="online",
+        event_id=payload.event_id,
     ))
     for k, q in payload.q.items():
         if q:

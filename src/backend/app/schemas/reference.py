@@ -52,3 +52,5 @@ class ConfigOut(CamelModel):
     # Bundled picture path -> the upload that replaced it. core/assets.js
     # rewrites every <img> after a render with this.
     image_overrides: dict[str, str] = {}
+    # Path into the content modules -> the text the museum put there instead.
+    texts: dict[str, str] = {}
