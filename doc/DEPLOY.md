@@ -1,9 +1,16 @@
 # Deploying to the server
 
 The server runs the same `docker compose` stack as a laptop, with
-`compose.override.yaml` on top: Caddy in front on ports 80 and 443, the API
+`compose.prod.yaml` on top: Caddy in front on ports 80 and 443, the API
 bound to loopback, MySQL bound to loopback. Nothing is built on the server
 beyond the API image.
+
+That second file is **not** applied on its own; the server opts in with
+`COMPOSE_FILE=docker-compose.yml:compose.prod.yaml` in its `.env`. Every plain
+`docker compose …` below therefore needs no `-f` flags, and a machine without
+that line gets the development stack instead. `.env` is not committed, so a
+`git pull` never restores it: `docker compose config | grep -c caddy` says
+whether this machine is actually running the server's configuration.
 
 Two things about it are easy to get wrong and both have cost us a broken site
 already:
@@ -45,13 +52,13 @@ git branch --show-current
 
 The branch has to be the one that was merged (`main`, if the server follows
 `main`). If `git status` shows local changes to `Caddyfile` or
-`compose.override.yaml` — both were created by hand on the server before they
+`compose.prod.yaml` — both were created by hand on the server before they
 were committed — put them aside, pull, and compare:
 
 ```bash
-mv Caddyfile Caddyfile.local && mv compose.override.yaml compose.override.yaml.local
+mv Caddyfile Caddyfile.local && mv compose.prod.yaml compose.prod.yaml.local
 git pull
-diff Caddyfile.local Caddyfile && diff compose.override.yaml.local compose.override.yaml \
+diff Caddyfile.local Caddyfile && diff compose.prod.yaml.local compose.prod.yaml \
   && echo "identical, the .local copies can go"
 ```
 

@@ -60,7 +60,9 @@ services:
   #
   #   docker compose --profile mail up -d
   #   .env:  MAIL_MODE=smtp  SMTP_HOST=mailpit  SMTP_PORT=1025  SMTP_STARTTLS=0
-  #   then  docker compose restart api
+  #   then  docker compose up -d   (NOT restart: Compose sets the
+  #         container's environment when it creates it, so a changed
+  #         .env reaches the API only through up -d)
   #
   # Every message the site sends then appears at http://localhost:8025.
   # `latest` rather than a pinned version on purpose: it is a development
