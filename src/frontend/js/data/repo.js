@@ -371,6 +371,17 @@ export async function deleteTicketType(key) {
   return out;
 }
 
+/* Takes the demonstration out of the site: deletes the invented records and
+   switches the demo notes off. One way for the data, by design. */
+export async function goLive() {
+  if (!isOnline()) return offlineOnly();
+  const out = await call(() => request('/staff/go-live', { method: 'POST' }));
+  await refreshConfig();
+  const left = await call(() => request('/staff/bookings'));
+  store.S = { ...store.S, bookings: left.map(fromApi) };
+  return out;
+}
+
 export async function getVisitSettings() {
   if (isOnline()) return call(() => request('/staff/settings'));
   return {

@@ -3,7 +3,7 @@ import { blocks } from '../ui/content.js';
 import { CONTACT } from '../data/about.js';
 import { LS_KEY } from '../core/config.js';
 import { PAGE_COPY } from '../data/pagecopy.js';
-import { RETENTION_DAYS } from '../data/constants.js';
+import { DEMO_MODE, RETENTION_DAYS } from '../data/constants.js';
 import { esc } from '../core/dom.js';
 
 /* Imprint and privacy notice.
@@ -21,7 +21,7 @@ const address = [CONTACT.name, CONTACT.street, CONTACT.box, `Tel: ${CONTACT.tel.
 export function pageImprint() {
   return `${pagehead([['#/', 'Home'], ['', esc(PAGE_COPY.imprint.title)]], esc(PAGE_COPY.imprint.title), esc(PAGE_COPY.imprint.lede))}
   <div class="wrap" style="padding-block:40px 80px">
-    ${DRAFT}
+    ${DEMO_MODE ? DRAFT : ''}
     <div class="textblocks">${blocks([
       { h: 'Publisher', p: ['Botswana National Museum – Department of National Museum and Monuments (DNMM), Ministry of Environment and Tourism, Republic of Botswana.'], ul: address },
       { h: 'Responsible for content', p: ['Head of Division, Technical Support Services (TSS), Department of National Museum and Monuments, at the address above. The museum coordinates the institutional information and collection materials on this website through this division, in consultation with the respective divisions.'] },
@@ -45,7 +45,7 @@ export function pageImprint() {
 export function pagePrivacy() {
   return `${pagehead([['#/', 'Home'], ['', esc(PAGE_COPY.privacy.title)]], esc(PAGE_COPY.privacy.title), esc(PAGE_COPY.privacy.lede))}
   <div class="wrap" style="padding-block:40px 80px">
-    ${DRAFT}
+    ${DEMO_MODE ? DRAFT : ''}
     <div class="textblocks">${blocks([
       { h: 'Who is responsible', p: ['The Department of National Museum and Monuments (Botswana National Museum) is responsible for the processing of personal data on this website. Contact details are in the imprint.'], ul: address },
       { h: 'Visiting the website', p: ['You can browse the website without giving any personal data. The website does not use advertising, tracking or analytics cookies. Fonts and images are served from the museum’s own server.'] },

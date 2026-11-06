@@ -205,6 +205,27 @@ What is deliberately not here: the demo reset. It deletes everything that is
 server with the museum's records on it, so `DEMO_RESET_ENABLED=0` turns it
 off and `GET /api/config` tells the staff area to stop offering the button.
 
+## Going live
+
+`services/golive.py` is the other direction, and the module's docstring is
+the authoritative list: every row in the database is either the museum's own
+record, a record the project invented so the site could be shown, or real
+traffic -- and going live deletes exactly the middle group. The distinction
+that matters is the collection: all 60 objects carry a catalogue page from
+*Art and Crafts of Botswana*, so there is no such thing as a sample object to
+delete, and the code never touches `museum_object` at all.
+
+The notes that say "this is a demonstration" hang off a single setting,
+`demo_mode`, which `GET /api/config` carries: the draft banner on the legal
+pages, the footer's sample-content line, the staff area's wording and the
+reset button all read it. One switch, no scattered flags -- and because it is
+a setting rather than a schema change, going live needs no migration.
+
+Both this and the demo reset delete booking lines explicitly instead of
+leaving them to the foreign key, for the reason given under Personal data: the
+cascade exists in MySQL and not in SQLite, and an orphaned line is a row
+nobody ever looks at again.
+
 ## Rewriting a text
 
 The museum can change any text the site carries as content, and the mechanism

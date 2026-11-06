@@ -3,7 +3,7 @@ import { store } from '../state/store.js';
 import { $, esc } from '../core/dom.js';
 import { dkey, fmtDate, hh } from '../core/format.js';
 import { nextDays } from '../core/time.js';
-import { CAPACITY } from '../data/constants.js';
+import { CAPACITY, DEMO_MODE } from '../data/constants.js';
 import { holiday, slotEnd, slotLabel, slotStarts } from '../data/opening.js';
 import { addonsOf, onlineOcc, sampleOcc, taken } from '../state/booking.js';
 import { fromKey } from '../core/format.js';
@@ -30,13 +30,15 @@ export function pageStaffBookings() {
     <div class="kpis">
       <div><b>${tot}</b><span>visitors booked on ${esc(fmtDate(k, { weekday: 'short', day: 'numeric', month: 'short' }))}</span></div>
       <div><b>${cap ? Math.round((tot / cap) * 100) : 0}%</b><span>of ${cap} places filled</span></div>
-      <div><b>${onl}</b><span>from your demo bookings</span></div>
+      <div><b>${onl}</b><span>${DEMO_MODE ? 'from your demo bookings' : 'booked online'}</span></div>
       <div><b>${tours}</b><span>guided-tour participants</span></div>
     </div>
     <div class="twocol">
       <div>
         <h2 class="h3">Time slots <span class="muted small" style="font-weight:400">· <a href="#/staff/settings">change length</a></span></h2>
-        <div class="legend"><span><i style="background:var(--sky)"></i>Sample bookings</span><span><i style="background:var(--deep)"></i>Booked in this demo</span></div>
+        <div class="legend">${DEMO_MODE
+    ? '<span><i style="background:var(--sky)"></i>Sample bookings</span><span><i style="background:var(--deep)"></i>Booked in this demo</span>'
+    : '<span><i style="background:var(--deep)"></i>Booked places</span>'}</div>
         ${bars}
       </div>
       <div>

@@ -61,3 +61,6 @@ class ConfigOut(CamelModel):
     # Days after a visit before a booking is deleted; 0 while the museum has
     # not set a period. The privacy notice says which of the two it is.
     booking_retention_days: int = 0
+    # False once the museum has gone live: the draft banner, the footer's
+    # sample-content line and the staff area's demo wording disappear.
+    demo_mode: bool = True

@@ -17,7 +17,7 @@ from ...schemas.settings import (
     TicketTypeAdminOut, TicketTypeCreate, TicketTypeUpdate,
     VisitSettingsOut, VisitSettingsUpdate,
 )
-from ...services import audit, availability, retention
+from ...services import audit, availability, golive, retention
 
 router = APIRouter(tags=["staff:settings"])
 
@@ -140,6 +140,18 @@ def remove_ticket_type(key: str, db: Session = Depends(get_db),
 
 # ----------------------------------------------------------- visit settings
 
+@router.post("/go-live")
+def go_live(db: Session = Depends(get_db),
+            user: StaffUser = Depends(require_role("admin"))) -> dict:
+    """Take the demonstration out of the site. See services/golive.py for
+    what is deleted and -- more importantly -- what is not."""
+    out = golive.go_live(db)
+    audit.record(db, user_id=user.id, action="go-live", entity="setting",
+                 entity_id="demo_mode", detail=out)
+    db.commit()
+    return out
+
+
 @router.get("/settings", response_model=VisitSettingsOut)
 def get_settings(db: Session = Depends(get_db)) -> VisitSettingsOut:
     return VisitSettingsOut(
@@ -147,6 +159,7 @@ def get_settings(db: Session = Depends(get_db)) -> VisitSettingsOut:
         slot_minutes=availability.slot_minutes(db),
         booking_window_days=availability.window_days(db),
         booking_retention_days=retention.retention_days(db),
+        demo_mode=golive.demo_mode(db),
         tour_times=availability.tour_times(db),
         currency=availability.setting(db, "currency", "BWP"),
         slot_lengths=list(availability.SLOT_LENGTHS),
@@ -159,6 +172,8 @@ def update_settings(payload: VisitSettingsUpdate,
                     user: StaffUser = Depends(require_role("admin"))
                     ) -> VisitSettingsOut:
     changed = payload.model_dump(exclude_unset=True)
+    if "demo_mode" in changed:
+        golive.set_demo_mode(db, bool(changed["demo_mode"]))
 
     if payload.slot_minutes is not None \
             and payload.slot_minutes not in availability.SLOT_LENGTHS:
