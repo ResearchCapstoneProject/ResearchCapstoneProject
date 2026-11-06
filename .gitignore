@@ -1,6 +1,9 @@
 # --- secrets / local config ---
 .env
 .env.local
+# A copy of .env taken before editing it on the server; belongs in ~/, but
+# ignore it here too rather than let one `git add -A` publish every password.
+.env.bak*
 *.local
 
 # --- python ---

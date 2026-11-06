@@ -19,6 +19,16 @@
 # With a domain name instead of an IP, delete the whole `tls` block: Caddy
 # then obtains an ordinary certificate by itself.
 
+# An IP address cannot appear in SNI: the extension is defined for host names,
+# so a browser or curl opening https://138.2.190.25 sends no server name at
+# all. Caddy then has nothing to match a site against and aborts the handshake
+# with an internal error -- with the certificate already in hand, which makes
+# it look like an issuing problem when it is not. default_sni gives it the name
+# to assume. With a domain name this block is unnecessary.
+{
+	default_sni {$SITE_ADDRESS}
+}
+
 {$SITE_ADDRESS} {
 	tls {
 		issuer acme {
