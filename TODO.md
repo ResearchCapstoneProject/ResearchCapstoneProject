@@ -1,4 +1,16 @@
 # ToDo
+## As of 2026-11-06
+- Add the opportunity for staff to count people entering external sites
+- Fix the Newsletter
+- Add paging for the objects in the staff area
+- Remove vertical scroll bar from the tabs in the staff area
+- Remove the button 'Show in staff area' from the ticket view field
+- Add Setswana translations
+- Add more countries to ticketing system
+- Fix tour note at ticketing
+- Change editing feature
+- Add new roles like IT-administrator, receptionist, staff or account management in general
+
 ## As of 2026-10-22
 ### Adjustments for the website
 Session 1:

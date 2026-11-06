@@ -1,0 +1,170 @@
+{
+  "run_at": "2026-11-06T18:24:28+00:00",
+  "database": "MySQL 8.0",
+  "results": [
+    {
+      "test": "CT-01",
+      "requests": 30,
+      "by_status": {
+        "409": 22,
+        "201": 8
+      },
+      "p95_seconds": 0.224,
+      "max_seconds": 0.226,
+      "server_errors": 0,
+      "free_before": 16,
+      "final_visitors": 40,
+      "capacity": 40
+    },
+    {
+      "test": "CT-01b",
+      "requests": 20,
+      "by_status": {
+        "201": 7,
+        "500": 13
+      },
+      "p95_seconds": 0.215,
+      "max_seconds": 0.216,
+      "server_errors": 13,
+      "final_visitors": 14,
+      "capacity": 40
+    },
+    {
+      "test": "CT-02",
+      "runs": [
+        {
+          "requests": 10,
+          "by_status": {
+            "500": 9,
+            "201": 1
+          },
+          "p95_seconds": 0.124,
+          "max_seconds": 0.124,
+          "server_errors": 9,
+          "hour": 9,
+          "final_visitors": 1
+        },
+        {
+          "requests": 10,
+          "by_status": {
+            "500": 9,
+            "201": 1
+          },
+          "p95_seconds": 0.117,
+          "max_seconds": 0.117,
+          "server_errors": 9,
+          "hour": 12,
+          "final_visitors": 1
+        },
+        {
+          "requests": 10,
+          "by_status": {
+            "500": 9,
+            "201": 1
+          },
+          "p95_seconds": 0.107,
+          "max_seconds": 0.107,
+          "server_errors": 9,
+          "hour": 13,
+          "final_visitors": 1
+        },
+        {
+          "requests": 10,
+          "by_status": {
+            "201": 1,
+            "500": 9
+          },
+          "p95_seconds": 0.117,
+          "max_seconds": 0.117,
+          "server_errors": 9,
+          "hour": 14,
+          "final_visitors": 1
+        },
+        {
+          "requests": 10,
+          "by_status": {
+            "500": 9,
+            "201": 1
+          },
+          "p95_seconds": 0.131,
+          "max_seconds": 0.131,
+          "server_errors": 9,
+          "hour": 15,
+          "final_visitors": 1
+        }
+      ],
+      "requests": 50,
+      "server_errors": 45,
+      "october_server_errors": 21,
+      "note": "capacity invariant held in every run"
+    },
+    {
+      "test": "CT-03 (30 min)",
+      "requests": 25,
+      "by_status": {
+        "201": 11,
+        "500": 14
+      },
+      "p95_seconds": 0.232,
+      "max_seconds": 0.243,
+      "server_errors": 14,
+      "slot_minutes": 30,
+      "slot": "10:30",
+      "final_visitors": 22,
+      "capacity": 40
+    },
+    {
+      "test": "CT-03 (15 min)",
+      "requests": 25,
+      "by_status": {
+        "500": 14,
+        "201": 11
+      },
+      "p95_seconds": 0.246,
+      "max_seconds": 0.247,
+      "server_errors": 14,
+      "slot_minutes": 15,
+      "slot": "10:45",
+      "final_visitors": 22,
+      "capacity": 40
+    },
+    {
+      "test": "CT-03b",
+      "requests": 20,
+      "by_status": {
+        "500": 16,
+        "201": 4
+      },
+      "p95_seconds": 0.211,
+      "max_seconds": 0.22,
+      "server_errors": 16,
+      "slot_13_00": 2,
+      "slot_13_30": 6,
+      "accepted_13_00": 1,
+      "accepted_13_30": 3
+    },
+    {
+      "test": "CT-04 (bookings)",
+      "requests": 30,
+      "by_status": {
+        "201": 30
+      },
+      "p95_seconds": 0.303,
+      "max_seconds": 0.315,
+      "server_errors": 0,
+      "target_p95_seconds": 2.0,
+      "note": "one booking seeded per slot, so the measurement is not dominated by the CT-02 deadlock"
+    },
+    {
+      "test": "CT-04b (availability)",
+      "requests": 30,
+      "by_status": {
+        "200": 30
+      },
+      "p95_seconds": 0.502,
+      "max_seconds": 0.503,
+      "server_errors": 0,
+      "target_p95_seconds": 2.0
+    }
+  ]
+}

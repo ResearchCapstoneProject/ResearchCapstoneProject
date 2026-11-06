@@ -1,0 +1,106 @@
+name: tests
+
+# Every push and every pull request. The run history on GitHub is the dated
+# record that these tests were executed: see doc/TESTING.md.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  unit:
+    name: Unit and portable integration tests (SQLite)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r src/backend/requirements.txt
+          pip install -r src/backend/tests/requirements-test.txt
+
+      - name: Run the tests with coverage
+        run: |
+          pytest -v \
+            --cov=app --cov-report=term-missing --cov-report=xml \
+            --junitxml=reports/junit-sqlite.xml
+
+      - name: Upload the reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-sqlite
+          path: |
+            reports/
+            coverage.xml
+
+  mysql:
+    name: Full suite incl. concurrency (MySQL 8)
+    runs-on: ubuntu-latest
+
+    # The booking capacity lock is SELECT ... FOR UPDATE and the inventory
+    # numbers use LAST_INSERT_ID(); neither has a SQLite equivalent, so the
+    # tests that prove FR-26, NFR-01 and NFR-02 need a real MySQL 8.
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: bnm_test
+          MYSQL_USER: bnm
+          MYSQL_PASSWORD: bnm
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -ubnm -pbnm"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      BNM_TEST_DB: mysql+pymysql://bnm:bnm@127.0.0.1:3306/bnm_test?charset=utf8mb4
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r src/backend/requirements.txt
+          pip install -r src/backend/tests/requirements-test.txt
+
+      - name: Wait for MySQL
+        run: |
+          for i in $(seq 1 30); do
+            if mysqladmin ping -h 127.0.0.1 -P 3306 -ubnm -pbnm --silent; then
+              echo "MySQL is up"; exit 0
+            fi
+            sleep 2
+          done
+          echo "MySQL did not become ready"; exit 1
+
+      - name: Run the full suite
+        run: |
+          pytest -v \
+            --cov=app --cov-report=term-missing \
+            --junitxml=reports/junit-mysql.xml
+
+      - name: Upload the reports and the concurrency evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-mysql
+          path: |
+            reports/
+            doc/test-evidence/
