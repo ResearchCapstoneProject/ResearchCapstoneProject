@@ -191,6 +191,68 @@ docker compose logs api | grep -E "Unknown column|doesn't exist|\[startup\]"
 Anything there means the database is behind the code. Apply the missing migrations, then
 `docker compose restart api`.
 
+### HTTPS
+A booking sends the visitor's name, e-mail address and phone number, and the staff sign-in sends a
+password; on plain HTTP both are readable by every network in between. Switch it on from the
+server's `.env` — neither config file needs editing:
+
+```
+CADDY_CONFIG=Caddyfile.https
+SITE_ADDRESS=138.2.190.25     # or the museum's domain, once there is one
+COOKIE_SECURE=1
+```
+
+Then `docker compose up -d`. Caddy obtains the certificate itself and plain HTTP is redirected, so
+QR codes already printed with an `http://` address keep working. Let's Encrypt issues certificates
+for a bare IP only as short-lived ones, which is what the `tls` block in `Caddyfile.https` asks
+for; with a domain name that block can go. `COOKIE_SECURE=1` without HTTPS would lock the staff out
+of their own sign-in, so the two belong together.
+
+### Going live
+Staff → Settings has a **Going live** section (admin only) that takes the demonstration out of the
+site in one step. It deletes the records the project invented — the sample bookings
+(`source='demo'`), the generated scan history (`source='seed'`) and what the staff area's simulate
+button produced (`source='staff_demo'`), plus the prototype's exhibitions and themed tours, which no
+page has rendered since Explore replaced them — and switches off every note that calls the site a
+demonstration: the draft banner on the imprint and privacy pages, the sample-content line in the
+footer, the wording in the staff area.
+
+It keeps everything that is the museum's: all 60 objects of the *Art and Crafts of Botswana*
+catalogue (every one carries its catalogue page, so none of them is sample content), the events from
+the museum's own material, publications, rewritten texts, replaced pictures, colours and fonts,
+visitor groups, settings, staff accounts, and every booking a visitor actually made. The deleted
+records cannot be brought back; the notes can, for a presentation, with one click in the same place.
+
+Two environment settings belong to the same step, because they are not the app's to change:
+
+- **`DEMO_RESET_ENABLED=0`.** "Reset demo data" is the mirror image of going live: it deletes the
+  real rows and keeps the invented ones, which is what makes it useful for a presentation and
+  catastrophic afterwards. At 0 the API refuses it and the button is gone.
+- **`SEED_ON_START=0`** once the museum's own content is in, so nothing is topped up behind them.
+
+And set a **retention period** for booking data in the same page. It is 0 (keep) by default, because
+no deployment should start deleting records on a number a developer picked; the privacy notice states
+whichever is set.
+
+### Backups
+Nothing in this repository backs the database up — the museum's records live in one Docker volume.
+A dump is one command, and restoring it is the reason to take it:
+
+```bash
+# on the server, keeps 14 days
+docker compose exec -T db sh -c \
+  'mysqldump -u root -p"$MYSQL_ROOT_PASSWORD" --single-transaction --routines "$MYSQL_DATABASE"' \
+  | gzip > ~/backups/bnm-$(date +%F).sql.gz
+find ~/backups -name 'bnm-*.sql.gz' -mtime +14 -delete
+
+# restoring
+gunzip -c ~/backups/bnm-2026-11-06.sql.gz | docker compose exec -T db \
+  sh -c 'mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
+```
+
+Uploaded images and PDFs are in the `uploads` volume, not in the dump: `docker run --rm -v
+researchcapstoneproject_uploads:/data -v ~/backups:/out alpine tar czf /out/uploads-$(date +%F).tar.gz -C /data .`
+
 
 ## Content
 The texts and images of the museum's previous website (DNMM) are in the app:
@@ -274,7 +336,8 @@ README.md          this file
 TODO.md            open questions for the museum
 docker-compose.yml the stack: db + api (+ static, under the demo profile)
 compose.prod.yaml  what the server adds on top; opted into via COMPOSE_FILE in .env
-Caddyfile          the reverse proxy, server only
+Caddyfile          the reverse proxy, server only -- plain HTTP
+Caddyfile.https    the same over HTTPS; picked by CADDY_CONFIG in .env
 doc/               ARCHITECTURE, SMOKE-TEST, THIRD-PARTY
 doc/migrations/    one dated .sql per schema change, for databases with data
 doc/prototype/     the original single-file prototype, kept for reference

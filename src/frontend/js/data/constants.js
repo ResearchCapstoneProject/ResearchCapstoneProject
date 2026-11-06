@@ -50,6 +50,16 @@ export let CAPACITY = 40;
 /* Length of one entry slot in minutes. The museum changes this in the staff
    area; GET /api/config carries the current value. */
 export let SLOT_MINUTES = 60;
+/* Whether this deployment offers "Reset demo data" -- false on a server with
+   the museum's own records on it. */
+export let DEMO_RESET = true;
+/* Days after a visit before a booking is deleted; 0 while the museum has not
+   set a period. The privacy notice states whichever it is. */
+export let RETENTION_DAYS = 0;
+/* Whether the site still says it is a demonstration: the draft banner on the
+   legal pages, the sample-content line in the footer, the wording in the
+   staff area. Going live switches it off. */
+export let DEMO_MODE = true;
 export const TOUR_TIMES = [];
 export const HOLIDAYS = { '09-30': 'Botswana Day', '10-01': 'Public holiday', '12-25': 'Christmas' };
 /* Prices are in THEBE (100 thebe = 1 pula), matching price_thebe in the
@@ -162,5 +172,8 @@ export function applyServerConfig(cfg) {
 
   if (typeof cfg.capacity === 'number') CAPACITY = cfg.capacity;
   if (typeof cfg.slotMinutes === 'number') SLOT_MINUTES = cfg.slotMinutes;
+  if (typeof cfg.demoResetEnabled === 'boolean') DEMO_RESET = cfg.demoResetEnabled;
+  if (typeof cfg.bookingRetentionDays === 'number') RETENTION_DAYS = cfg.bookingRetentionDays;
+  if (typeof cfg.demoMode === 'boolean') DEMO_MODE = cfg.demoMode;
   if (cfg.tourTimes) { TOUR_TIMES.length = 0; TOUR_TIMES.push(...cfg.tourTimes); }
 }

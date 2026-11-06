@@ -79,7 +79,8 @@ export function shell() {
         <div><h4>Explore</h4><ul>${SECTIONS.map((s) => `<li><a href="#/explore/${s.key}">${esc(s.title)}</a></li>`).join('')}</ul></div>
       </div>
       <div class="legal">
-        <div class="notes"><span>${esc(THEME.footerNote)}</span><span>${esc(THEME.footerNote2)}</span></div>
+        <div class="notes">${[THEME.footerNote, THEME.footerNote2]
+    .filter((n) => n && n.trim()).map((n) => `<span>${esc(n)}</span>`).join('')}</div>
         <nav aria-label="Legal"><a href="#/visit/about">About us</a><a href="#/imprint">Imprint</a><a href="#/privacy">Privacy</a><a href="#/staff">Staff area</a></nav>
       </div>
     </div>

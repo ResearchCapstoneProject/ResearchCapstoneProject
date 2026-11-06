@@ -7,7 +7,7 @@ from ...config import settings
 from ...db import get_db
 from ...deps import require_role
 from ...errors import forbidden
-from ...models import Booking, MuseumObject, ScanEvent, StaffUser
+from ...models import Booking, BookingLine, MuseumObject, ScanEvent, StaffUser
 from ...services import audit
 
 router = APIRouter(tags=["staff:demo"])
@@ -19,6 +19,13 @@ def reset(db: Session = Depends(get_db),
     if not settings.demo_reset_enabled:
         raise forbidden("Demo reset is disabled on this deployment.")
 
+    # Ticket lines explicitly, for the reason given in services/golive.py:
+    # the cascade exists in MySQL and not in SQLite, and an orphaned line is
+    # a row nobody ever looks at again.
+    doomed = [row[0] for row in db.query(Booking.id)
+              .filter(Booking.source != "demo").all()]
+    if doomed:
+        db.execute(delete(BookingLine).where(BookingLine.booking_id.in_(doomed)))
     bookings = db.execute(delete(Booking).where(Booking.source != "demo")).rowcount
     scans = db.execute(delete(ScanEvent).where(ScanEvent.source != "seed")).rowcount
     objects = db.execute(

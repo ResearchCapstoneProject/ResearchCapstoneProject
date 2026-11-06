@@ -25,10 +25,17 @@ services:
       - api
     ports:
       - "80:80"
-      # Uncomment for the HTTPS-on-IP variant in the Caddyfile.
-      # - "443:443"
+      # Published either way: with CADDY_CONFIG=Caddyfile (plain HTTP) nothing
+      # listens here, which costs nothing, and the HTTPS variant needs it.
+      - "443:443"
+    environment:
+      # The address the certificate is for; read by Caddyfile.https.
+      SITE_ADDRESS: ${SITE_ADDRESS:-}
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # CADDY_CONFIG picks the configuration: Caddyfile for plain HTTP,
+      # Caddyfile.https for HTTPS on SITE_ADDRESS. One line in .env, no
+      # editing of either file.
+      - ./${CADDY_CONFIG:-Caddyfile}:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
 

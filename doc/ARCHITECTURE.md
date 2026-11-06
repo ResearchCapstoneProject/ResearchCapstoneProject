@@ -174,6 +174,58 @@ it in place. That is also what makes the staff page's live preview reach the
 header while someone is still typing in a field -- re-rendering the shell
 would take the focus out of it.
 
+## Personal data
+
+A booking holds a name, an e-mail address, usually a phone number and the day
+somebody was in the building; a staff session holds a password hash. Three
+decisions carry that:
+
+**Transport.** `Caddyfile.https` plus `COOKIE_SECURE=1` are the whole of it,
+switched on by two lines in the server's `.env` (see `README.md`). Without
+HTTPS everything above travels readable, and `COOKIE_SECURE=1` without HTTPS
+locks the staff out instead -- which is why they are documented as one step.
+
+**Retention.** `services/retention.py` deletes bookings whose visit is longer
+ago than a period the museum sets, on every API start and whenever the staff
+area asks. The default is 0, meaning keep: a deployment must not start
+deleting records because a developer chose a number. The booking lines are
+deleted explicitly rather than left to the foreign key -- MySQL cascades,
+SQLite only does with foreign keys switched on, and a deletion that depends
+on which database it runs against is not one to trust with personal data.
+
+**Deletion on request.** An administrator can delete one booking, which is
+the answer to "please remove my data". The audit entry keeps the booking code
+and nothing else: a log that recorded who had been deleted would defeat the
+deletion. Scan statistics never hold a person in the first place -- see
+`services/privacy.py`, where the IP and user agent become a hash with a
+daily-rotating salt.
+
+What is deliberately not here: the demo reset. It deletes everything that is
+*not* demo data, which is right for a presentation and catastrophic on a
+server with the museum's records on it, so `DEMO_RESET_ENABLED=0` turns it
+off and `GET /api/config` tells the staff area to stop offering the button.
+
+## Going live
+
+`services/golive.py` is the other direction, and the module's docstring is
+the authoritative list: every row in the database is either the museum's own
+record, a record the project invented so the site could be shown, or real
+traffic -- and going live deletes exactly the middle group. The distinction
+that matters is the collection: all 60 objects carry a catalogue page from
+*Art and Crafts of Botswana*, so there is no such thing as a sample object to
+delete, and the code never touches `museum_object` at all.
+
+The notes that say "this is a demonstration" hang off a single setting,
+`demo_mode`, which `GET /api/config` carries: the draft banner on the legal
+pages, the footer's sample-content line, the staff area's wording and the
+reset button all read it. One switch, no scattered flags -- and because it is
+a setting rather than a schema change, going live needs no migration.
+
+Both this and the demo reset delete booking lines explicitly instead of
+leaving them to the foreign key, for the reason given under Personal data: the
+cascade exists in MySQL and not in SQLite, and an orphaned line is a row
+nobody ever looks at again.
+
 ## Rewriting a text
 
 The museum can change any text the site carries as content, and the mechanism

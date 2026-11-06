@@ -290,6 +290,23 @@ export async function createBooking(payload) {
   return b;
 }
 
+/* For a visitor who asks to be forgotten. Admin only on the server. */
+export async function deleteBooking(code) {
+  if (!isOnline()) return offlineOnly();
+  await call(() =>
+    request(`/staff/bookings/${encodeURIComponent(code)}`, { method: 'DELETE' }));
+  const i = store.S.bookings.findIndex((b) => b.code === code);
+  if (i >= 0) store.S.bookings.splice(i, 1);
+}
+
+/* Applies the retention period now instead of at the next restart. */
+export async function purgeBookings() {
+  if (!isOnline()) return offlineOnly();
+  const out = await call(() => request('/staff/bookings/purge', { method: 'POST' }));
+  store.S.bookings = await call(() => request('/staff/bookings'));
+  return out;
+}
+
 export async function checkIn(code) {
   if (isOnline()) {
     const b = fromApi(await call(() =>
@@ -351,6 +368,17 @@ export async function deleteTicketType(key) {
   const out = await call(() =>
     request(`/staff/ticket-types/${encodeURIComponent(key)}`, { method: 'DELETE' }));
   await refreshConfig();
+  return out;
+}
+
+/* Takes the demonstration out of the site: deletes the invented records and
+   switches the demo notes off. One way for the data, by design. */
+export async function goLive() {
+  if (!isOnline()) return offlineOnly();
+  const out = await call(() => request('/staff/go-live', { method: 'POST' }));
+  await refreshConfig();
+  const left = await call(() => request('/staff/bookings'));
+  store.S = { ...store.S, bookings: left.map(fromApi) };
   return out;
 }
 
