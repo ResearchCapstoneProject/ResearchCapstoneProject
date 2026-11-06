@@ -273,7 +273,7 @@ a visitor.
 - `/docker-entrypoint-initdb.d` runs **only when the `dbdata` volume is
   empty**. After changing the schema: `docker compose down -v` locally, and a
   migration from `doc/migrations/` anywhere the data has to survive.
-- The server has **no `--reload`** (`compose.override.yaml`), and the source
+- The server has **no `--reload`** (`compose.prod.yaml`), and the source
   tree is a bind mount. `git pull` alone therefore ships the new frontend to
   visitors while the API still runs the old code: restart `api` in the same
   breath.

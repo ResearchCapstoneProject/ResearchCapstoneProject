@@ -29,3 +29,8 @@ Thumbs.db
 /tmp/
 /scratch/
 
+
+# Server-only compose config is named in that machine's .env (COMPOSE_FILE).
+# A stray local override must never apply on its own.
+compose.override.yaml
+compose.override.yml
