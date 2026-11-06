@@ -9,8 +9,8 @@ import { toast } from '../ui/toast.js';
 import { renderResults } from '../views/collection.js';
 import { pageStaffBookings } from '../views/staff-bookings.js';
 import {
-  addGroup, deleteGroup, pageStaffSettings, saveGroupPrice, saveVisitSettings,
-  toggleGroup,
+  addGroup, deleteGroup, pageStaffSettings, purgeBookings, saveGroupPrice,
+  saveVisitSettings, toggleGroup,
 } from '../views/staff-settings.js';
 import {
   discardDesign, pageStaffDesign, resetDesign, resetDesignFont,
@@ -155,6 +155,14 @@ document.addEventListener('click', (e) => {
     case 'pub-toggle': togglePublication(t.dataset.id, t.dataset.to === '1', rerenderPublications); break;
     case 'pub-del': deletePublication(t.dataset.id, rerenderPublications); break;
     case 'im-reset': resetImage(t.dataset.path, rerenderImages); break;
+    case 'set-purge': purgeBookings(rerenderSettings); break;
+    case 'bk-del':
+      if (confirm('Delete this booking? The visitor\'s name, e-mail address and phone number are removed with it.')) {
+        repo.deleteBooking(t.dataset.code)
+          .then(() => { route(); toast('Booking deleted.'); })
+          .catch((err) => toast(err.message || 'Could not delete the booking.'));
+      }
+      break;
     case 'txt-save': saveText(t.dataset.key, rerenderTexts); break;
     case 'txt-reset': resetText(t.dataset.key, rerenderTexts); break;
     case 'dsg-save': saveDesign(rerenderDesign); break;

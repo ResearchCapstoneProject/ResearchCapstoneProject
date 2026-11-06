@@ -174,6 +174,37 @@ it in place. That is also what makes the staff page's live preview reach the
 header while someone is still typing in a field -- re-rendering the shell
 would take the focus out of it.
 
+## Personal data
+
+A booking holds a name, an e-mail address, usually a phone number and the day
+somebody was in the building; a staff session holds a password hash. Three
+decisions carry that:
+
+**Transport.** `Caddyfile.https` plus `COOKIE_SECURE=1` are the whole of it,
+switched on by two lines in the server's `.env` (see `README.md`). Without
+HTTPS everything above travels readable, and `COOKIE_SECURE=1` without HTTPS
+locks the staff out instead -- which is why they are documented as one step.
+
+**Retention.** `services/retention.py` deletes bookings whose visit is longer
+ago than a period the museum sets, on every API start and whenever the staff
+area asks. The default is 0, meaning keep: a deployment must not start
+deleting records because a developer chose a number. The booking lines are
+deleted explicitly rather than left to the foreign key -- MySQL cascades,
+SQLite only does with foreign keys switched on, and a deletion that depends
+on which database it runs against is not one to trust with personal data.
+
+**Deletion on request.** An administrator can delete one booking, which is
+the answer to "please remove my data". The audit entry keeps the booking code
+and nothing else: a log that recorded who had been deleted would defeat the
+deletion. Scan statistics never hold a person in the first place -- see
+`services/privacy.py`, where the IP and user agent become a hash with a
+daily-rotating salt.
+
+What is deliberately not here: the demo reset. It deletes everything that is
+*not* demo data, which is right for a presentation and catastrophic on a
+server with the museum's records on it, so `DEMO_RESET_ENABLED=0` turns it
+off and `GET /api/config` tells the staff area to stop offering the button.
+
 ## Rewriting a text
 
 The museum can change any text the site carries as content, and the mechanism

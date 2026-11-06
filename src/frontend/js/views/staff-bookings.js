@@ -9,6 +9,10 @@ import { addonsOf, onlineOcc, sampleOcc, taken } from '../state/booking.js';
 import { fromKey } from '../core/format.js';
 import { hoursFor } from '../data/opening.js';
 
+/* Deleting a booking is an administrator's job: it is the answer to "please
+   remove my data", not something to do while checking visitors in. */
+const canDelete = () => !!(store.api.user && store.api.user.role === 'admin');
+
 export function pageStaffBookings() {
   const days = nextDays(14);
   const k = store.SB.date;
@@ -37,7 +41,7 @@ export function pageStaffBookings() {
       </div>
       <div>
         <h2 class="h3" style="margin-bottom:14px">Online bookings</h2>
-        ${rows.length ? `<div class="tablewrap"><table class="data" style="min-width:520px"><thead><tr><th>Code</th><th>Visit</th><th>Name</th><th>Visitors</th><th style="text-align:right">Entry</th></tr></thead><tbody>${rows.map((b) => `<tr><td class="inv"><b>${b.code}</b></td><td class="small">${esc(fmtDate(b.date, { weekday: 'short', day: 'numeric', month: 'short' }))}, ${slotLabel(b.hour, b.min || 0)}–${slotEnd(b.hour, b.min || 0)}</td><td>${esc(b.name)}${b.eventTitle ? `<div class="small muted">for ${esc(b.eventTitle)}</div>` : ''}</td><td class="tnum">${b.visitors}${addonsOf(b.q) ? ` <span class="chip">${addonsOf(b.q)} add-on</span>` : ''}</td><td style="text-align:right">${b.checkedIn ? '<span class="chip live dot">Checked in</span>' : `<button class="btn small ghost" type="button" data-act="checkin" data-code="${b.code}">Check in</button>`}</td></tr>`).join('')}</tbody></table></div>`
+        ${rows.length ? `<div class="tablewrap"><table class="data" style="min-width:520px"><thead><tr><th>Code</th><th>Visit</th><th>Name</th><th>Visitors</th><th style="text-align:right">Entry</th></tr></thead><tbody>${rows.map((b) => `<tr><td class="inv"><b>${b.code}</b></td><td class="small">${esc(fmtDate(b.date, { weekday: 'short', day: 'numeric', month: 'short' }))}, ${slotLabel(b.hour, b.min || 0)}–${slotEnd(b.hour, b.min || 0)}</td><td>${esc(b.name)}${b.eventTitle ? `<div class="small muted">for ${esc(b.eventTitle)}</div>` : ''}</td><td class="tnum">${b.visitors}${addonsOf(b.q) ? ` <span class="chip">${addonsOf(b.q)} add-on</span>` : ''}</td><td style="text-align:right">${b.checkedIn ? '<span class="chip live dot">Checked in</span>' : `<button class="btn small ghost" type="button" data-act="checkin" data-code="${b.code}">Check in</button>`}${canDelete() ? `<button class="btn link" type="button" data-act="bk-del" data-code="${b.code}" style="color:var(--full);margin-left:10px">Delete</button>` : ''}</td></tr>`).join('')}</tbody></table></div>`
           : `<div class="empty" style="text-align:left;padding:24px;border:1px dashed #AEB7BF"><p style="margin:0 0 14px">No online bookings yet. Book a time slot on the website and it appears here instantly.</p><a class="btn small" href="#/tickets">Open ticket shop</a></div>`}
       </div>
     </div>`;

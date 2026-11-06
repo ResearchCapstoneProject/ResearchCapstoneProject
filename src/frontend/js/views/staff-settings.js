@@ -91,7 +91,12 @@ export function pageStaffSettings() {
       <div class="field"><label for="s-win">Booking window</label>
         <input id="s-win" type="number" min="1" max="365" value="${s.bookingWindowDays}" ${isOnline() ? '' : 'disabled'}>
         <span class="hint">How many days ahead visitors may book.</span></div>
-      <div class="full"><button class="btn" type="submit" ${isOnline() ? '' : 'disabled'}>Save slot settings</button></div>
+      <div class="field"><label for="s-ret">Delete bookings after</label>
+        <input id="s-ret" type="number" min="0" max="3650" value="${s.bookingRetentionDays || 0}" ${isOnline() ? '' : 'disabled'}>
+        <span class="hint">Days after the visit. <b>0 keeps them</b>. A booking holds a name, an e-mail address and
+          usually a phone number, so this is the period the privacy notice promises — it says what is set here.</span></div>
+      <div class="full"><button class="btn" type="submit" ${isOnline() ? '' : 'disabled'}>Save slot settings</button>
+        ${s.bookingRetentionDays ? `<button class="btn ghost" type="button" data-act="set-purge" ${isOnline() ? '' : 'disabled'}>Delete old bookings now</button>` : ''}</div>
     </form>
 
     <p class="small muted" style="margin-top:28px">Payment is always taken at the front desk; the website never charges anyone online.
@@ -124,6 +129,20 @@ export function invalidateSettings() { state.groups = null; state.settings = nul
 /* ---- actions, called from events/bind.js ---- */
 
 const pula = (el) => Math.round(Number(el.value || 0) * 100);
+
+export async function purgeBookings(rerender) {
+  const days = (state.settings || {}).bookingRetentionDays || 0;
+  if (!days) { toast('Set a retention period first.'); return; }
+  if (!confirm(`Delete every booking whose visit was more than ${days} days ago? This cannot be undone.`)) return;
+  try {
+    const out = await repo.purgeBookings();
+    toast(out.deleted
+      ? `${out.deleted} old booking(s) deleted.`
+      : 'Nothing was old enough to delete.');
+  } catch (e) { toast(e.message || 'Could not delete the old bookings.'); }
+  invalidateSettings();
+  await bindSettings(rerender);
+}
 
 export async function saveGroupPrice(key, rerender) {
   const el = $(`[data-price="${key}"]`);
@@ -177,6 +196,7 @@ export async function saveVisitSettings(rerender) {
       slotMinutes: Number($('#s-len').value),
       capacityPerSlot: Number($('#s-cap').value),
       bookingWindowDays: Number($('#s-win').value),
+      bookingRetentionDays: Number($('#s-ret').value || 0),
     });
     toast('Saved. New bookings use the new slots right away.');
   } catch (e) { toast(e.message || 'Could not save the settings.'); }

@@ -57,6 +57,9 @@ class VisitSettingsOut(CamelModel):
     capacity_per_slot: int
     slot_minutes: int
     booking_window_days: int
+    # Days after a visit before the booking is deleted. 0 keeps them, which
+    # is the default until the museum decides.
+    booking_retention_days: int
     tour_times: list[int]
     currency: str
     # The lengths the UI may offer; anything else would leave slots that do
@@ -68,6 +71,7 @@ class VisitSettingsUpdate(CamelModel):
     capacity_per_slot: int | None = Field(default=None, ge=1, le=10_000)
     slot_minutes: int | None = None
     booking_window_days: int | None = Field(default=None, ge=1, le=365)
+    booking_retention_days: int | None = Field(default=None, ge=0, le=3650)
     tour_times: list[int] | None = None
 
     @field_validator("tour_times")

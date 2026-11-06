@@ -68,6 +68,51 @@ docker compose logs api --tail=30   # must end in "Application startup complete"
 If the site comes up but pages stay empty, check `docker compose logs api` for
 `Unknown column` — that is the migration step having been skipped.
 
+### HTTPS
+A booking sends the visitor's name, e-mail address and phone number, and the staff sign-in sends a
+password; on plain HTTP both are readable by every network in between. Switch it on from the
+server's `.env` — neither config file needs editing:
+
+```
+CADDY_CONFIG=Caddyfile.https
+SITE_ADDRESS=138.2.190.25     # or the museum's domain, once there is one
+COOKIE_SECURE=1
+```
+
+Then `docker compose up -d`. Caddy obtains the certificate itself and plain HTTP is redirected, so
+QR codes already printed with an `http://` address keep working. Let's Encrypt issues certificates
+for a bare IP only as short-lived ones, which is what the `tls` block in `Caddyfile.https` asks
+for; with a domain name that block can go. `COOKIE_SECURE=1` without HTTPS would lock the staff out
+of their own sign-in, so the two belong together.
+
+### Before the museum enters real records
+- **`DEMO_RESET_ENABLED=0`.** "Reset demo data" deletes everything that is *not* demo data: real
+  bookings, real scan statistics, every object the staff entered. With the flag at 0 the API refuses
+  it and the button disappears from the staff area.
+- **`SEED_ON_START=0`** once the museum's own content is in, so nothing is topped up behind them.
+- **Set a retention period** for booking data in Staff → Settings. It is 0 (keep) by default,
+  because no deployment should start deleting records on a number a developer picked. The privacy
+  notice states whichever is set.
+
+### Backups
+Nothing in this repository backs the database up — the museum's records live in one Docker volume.
+A dump is one command, and restoring it is the reason to take it:
+
+```bash
+# on the server, keeps 14 days
+docker compose exec -T db sh -c \
+  'mysqldump -u root -p"$MYSQL_ROOT_PASSWORD" --single-transaction --routines "$MYSQL_DATABASE"' \
+  | gzip > ~/backups/bnm-$(date +%F).sql.gz
+find ~/backups -name 'bnm-*.sql.gz' -mtime +14 -delete
+
+# restoring
+gunzip -c ~/backups/bnm-2026-11-06.sql.gz | docker compose exec -T db \
+  sh -c 'mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
+```
+
+Uploaded images and PDFs are in the `uploads` volume, not in the dump: `docker run --rm -v
+researchcapstoneproject_uploads:/data -v ~/backups:/out alpine tar czf /out/uploads-$(date +%F).tar.gz -C /data .`
+
 
 ## Content
 The texts and images of the museum's previous website (DNMM) are in the app:
